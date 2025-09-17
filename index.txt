@@ -1,0 +1,398 @@
+this is index.js file in backend "" and this is admin.js file in frontend ""and this is table structure in MSSQL
+"image_Carouse(image_ID(PK),name(varchar),image(image)),
+news_tb(news_ID(PK),name(varchar),content(varchar)),
+mon_calendar(mon_ID(PK),name(varchar),image(image)),
+events_tb(event_ID(PK),name(varchar),description(varchar),date(date)),
+achieve(ach_ID(PK),title(varchar),description(varchar),date(date),image(image))". want to connect fronend image carousel awith backend.
+only do image carousel.no need to update others.
+
+//
+
+
+////correct one////
+
+const express = require('express');
+const bodyParser = require('body-parser');
+const cors = require('cors');
+const sql = require('mssql'); 
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+
+const app = express();
+
+// Middleware
+app.use(cors());
+app.use(bodyParser.json());
+app.use('/uploads', express.static('uploads'));
+
+// Create uploads directory if it doesn't exist
+if (!fs.existsSync('uploads')) {
+  fs.mkdirSync('uploads');
+  fs.mkdirSync('uploads/carousel');
+  fs.mkdirSync('uploads/calendar');
+  fs.mkdirSync('uploads/achievements');
+}
+
+// Configure multer for file uploads
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    let uploadPath = 'uploads/';
+    if (req.baseUrl.includes('carousel')) {
+      uploadPath += 'carousel/';
+    } else if (req.baseUrl.includes('calendar')) {
+      uploadPath += 'calendar/';
+    } else if (req.baseUrl.includes('achievements')) {
+      uploadPath += 'achievements/';
+    }
+    cb(null, uploadPath);
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + '-' + Math.round(Math.random() * 1E9) + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({ storage: storage });
+
+// MSSQL database connection 
+const dbConfig = {
+  server: 'IT-Software1\\SOFTWARE1',     
+  user: 'SOFTWARE1',        
+  password: 'sof123',
+  database: 'intranet_db',
+  options: {
+    encrypt: false,
+    trustServerCertificate: true
+  }
+};
+
+// Connect to MSSQL
+let pool;
+sql.connect(dbConfig, (err) => {
+  if (err) {
+    console.error('Database connection failed:', err.message);
+  } else {
+    console.log('MSSQL database connection is successful');
+    pool = new sql.ConnectionPool(dbConfig);
+    pool.connect();
+  }
+});
+
+// API Endpoints
+
+// Image Carousel Endpoints
+app.get('/api/carousel', async (req, res) => {
+  try {
+    const result = await pool.request().query('SELECT * FROM image_Carousel');
+    res.json(result.recordset);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/carousel', upload.single('image'), async (req, res) => {
+  try {
+    const { name } = req.body;
+    const imagePath = req.file ? req.file.filename : null;
+    
+    const result = await pool.request()
+      .input('name', sql.VarChar, name)
+      .input('imagePath', sql.VarChar, imagePath)
+      .query('INSERT INTO image_Carousel (name, image) VALUES (@name, @imagePath)');
+    
+    res.json({ message: 'Image added successfully', id: result.recordset });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.put('/api/carousel/:id', upload.single('image'), async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name } = req.body;
+    let imagePath = null;
+    
+    if (req.file) {
+      imagePath = req.file.filename;
+      // Delete old image if needed
+    }
+    
+    let query = 'UPDATE image_Carousel SET name = @name';
+    if (imagePath) {
+      query += ', image = @imagePath';
+    }
+    query += ' WHERE image_ID = @id';
+    
+    const request = pool.request()
+      .input('id', sql.Int, id)
+      .input('name', sql.VarChar, name);
+    
+    if (imagePath) {
+      request.input('imagePath', sql.VarChar, imagePath);
+    }
+    
+    await request.query(query);
+    res.json({ message: 'Image updated successfully' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.delete('/api/carousel/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    // Get image path first to delete the file
+    const imageResult = await pool.request()
+      .input('id', sql.Int, id)
+      .query('SELECT image FROM image_Carousel WHERE image_ID = @id');
+    
+    if (imageResult.recordset.length > 0 && imageResult.recordset[0].image) {
+      const imagePath = path.join('uploads', 'carousel', imageResult.recordset[0].image);
+      if (fs.existsSync(imagePath)) {
+        fs.unlinkSync(imagePath);
+      }
+    }
+    
+    await pool.request()
+      .input('id', sql.Int, id)
+      .query('DELETE FROM image_Carousel WHERE image_ID = @id');
+    
+    res.json({ message: 'Image deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// News Endpoints
+app.get('/api/news', async (req, res) => {
+  try {
+    const result = await pool.request().query('SELECT * FROM news_tb');
+    res.json(result.recordset);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/news', async (req, res) => {
+  try {
+    const { name, content } = req.body;
+    
+    const result = await pool.request()
+      .input('name', sql.VarChar, name)
+      .input('content', sql.VarChar, content)
+      .query('INSERT INTO news_tb (name, content) VALUES (@name, @content)');
+    
+    res.json({ message: 'News added successfully', id: result.recordset });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.put('/api/news/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, content } = req.body;
+    
+    await pool.request()
+      .input('id', sql.Int, id)
+      .input('name', sql.VarChar, name)
+      .input('content', sql.VarChar, content)
+      .query('UPDATE news_tb SET name = @name, content = @content WHERE news_ID = @id');
+    
+    res.json({ message: 'News updated successfully' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.delete('/api/news/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    await pool.request()
+      .input('id', sql.Int, id)
+      .query('DELETE FROM news_tb WHERE news_ID = @id');
+    
+    res.json({ message: 'News deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Calendar Endpoints
+app.get('/api/calendar', async (req, res) => {
+  try {
+    const result = await pool.request().query('SELECT * FROM mon_calendar');
+    res.json(result.recordset);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/calendar', upload.single('image'), async (req, res) => {
+  try {
+    const { name } = req.body;
+    const imagePath = req.file ? req.file.filename : null;
+    
+    const result = await pool.request()
+      .input('name', sql.VarChar, name)
+      .input('imagePath', sql.VarChar, imagePath)
+      .query('INSERT INTO mon_calendar (name, image) VALUES (@name, @imagePath)');
+    
+    res.json({ message: 'Calendar image added successfully', id: result.recordset });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Events Endpoints
+app.get('/api/events', async (req, res) => {
+  try {
+    const result = await pool.request().query('SELECT * FROM events_tb');
+    res.json(result.recordset);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/events', async (req, res) => {
+  try {
+    const { name, description, date } = req.body;
+    
+    const result = await pool.request()
+      .input('name', sql.VarChar, name)
+      .input('description', sql.VarChar, description)
+      .input('date', sql.Date, date)
+      .query('INSERT INTO events_tb (name, description, date) VALUES (@name, @description, @date)');
+    
+    res.json({ message: 'Event added successfully', id: result.recordset });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.put('/api/events/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, description, date } = req.body;
+    
+    await pool.request()
+      .input('id', sql.Int, id)
+      .input('name', sql.VarChar, name)
+      .input('description', sql.VarChar, description)
+      .input('date', sql.Date, date)
+      .query('UPDATE events_tb SET name = @name, description = @description, date = @date WHERE event_ID = @id');
+    
+    res.json({ message: 'Event updated successfully' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.delete('/api/events/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    await pool.request()
+      .input('id', sql.Int, id)
+      .query('DELETE FROM events_tb WHERE event_ID = @id');
+    
+    res.json({ message: 'Event deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Achievements Endpoints
+app.get('/api/achievements', async (req, res) => {
+  try {
+    const result = await pool.request().query('SELECT * FROM achieve');
+    res.json(result.recordset);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/achievements', upload.single('image'), async (req, res) => {
+  try {
+    const { title, description, date } = req.body;
+    const imagePath = req.file ? req.file.filename : null;
+    
+    const result = await pool.request()
+      .input('title', sql.VarChar, title)
+      .input('description', sql.VarChar, description)
+      .input('date', sql.Date, date)
+      .input('imagePath', sql.VarChar, imagePath)
+      .query('INSERT INTO achieve (title, description, date, image) VALUES (@title, @description, @date, @imagePath)');
+    
+    res.json({ message: 'Achievement added successfully', id: result.recordset });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.put('/api/achievements/:id', upload.single('image'), async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, description, date } = req.body;
+    let imagePath = null;
+    
+    if (req.file) {
+      imagePath = req.file.filename;
+      // Delete old image if needed
+    }
+    
+    let query = 'UPDATE achieve SET title = @title, description = @description, date = @date';
+    if (imagePath) {
+      query += ', image = @imagePath';
+    }
+    query += ' WHERE ach_ID = @id';
+    
+    const request = pool.request()
+      .input('id', sql.Int, id)
+      .input('title', sql.VarChar, title)
+      .input('description', sql.VarChar, description)
+      .input('date', sql.Date, date);
+    
+    if (imagePath) {
+      request.input('imagePath', sql.VarChar, imagePath);
+    }
+    
+    await request.query(query);
+    res.json({ message: 'Achievement updated successfully' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.delete('/api/achievements/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    // Get image path first to delete the file
+    const imageResult = await pool.request()
+      .input('id', sql.Int, id)
+      .query('SELECT image FROM achieve WHERE ach_ID = @id');
+    
+    if (imageResult.recordset.length > 0 && imageResult.recordset[0].image) {
+      const imagePath = path.join('uploads', 'achievements', imageResult.recordset[0].image);
+      if (fs.existsSync(imagePath)) {
+        fs.unlinkSync(imagePath);
+      }
+    }
+    
+    await pool.request()
+      .input('id', sql.Int, id)
+      .query('DELETE FROM achieve WHERE ach_ID = @id');
+    
+    res.json({ message: 'Achievement deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+const PORT = 3001;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
