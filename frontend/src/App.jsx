@@ -14,7 +14,7 @@ import Appraisal from "./pages/Appraisal";
 import FeedbackForm from "./pages/FeedbackForm";
 import NonConfirmity from "./pages/NonConfirmity";
 import Docware from "./pages/Docware";
-import IFS from "./pages/IFS";
+//import IFS from "./pages/IFS";
 //policies imports
 import SOP from "./pages/SOP";
 import POS from "./pages/POS";
@@ -44,7 +44,7 @@ function App() {
         <Route element={<Appraisal/>} path="/appraisal"/>
         <Route element={<FeedbackForm/>} path="/feed"/>
         <Route element={<NonConfirmity/>} path="/noncnf"/>
-        <Route element={<IFS/>} path="/ifs"/>
+        {/* <Route element={<IFS/>} path="/ifs"/> */}
         
         {/* Docware and Production Display */}
         <Route element={<Docware/>} path="/docware"/>
