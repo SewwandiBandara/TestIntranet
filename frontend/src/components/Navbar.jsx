@@ -2,12 +2,22 @@ import React, { useState } from 'react';
 import logoImg from '../assets/logoImg.jpg';
 import { Link, NavLink } from 'react-router-dom';
 import { HiMenu, HiX } from 'react-icons/hi';
+import extension_list from '../assets/extension_list.pdf';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isPdfModalOpen, setIsPdfModalOpen] = useState(false);
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
+  };
+
+  const openPdfModal = () => {
+    setIsPdfModalOpen(true);
+  };
+
+  const closePdfModal = () => {
+    setIsPdfModalOpen(false);
   };
 
   return (
@@ -151,10 +161,32 @@ const Navbar = () => {
                     Docuware
                   </Link>
                 </li>
-                <li className="px-4 py-2 hover:bg-yellow-400 hover:text-black">
-                  <Link to="http://192.168.100.51:8086/sfaeports.html" className="block" onClick={() => setIsOpen(false)}>
+                <li className="relative px-4 py-2 hover:bg-yellow-400 hover:text-black group/sfa">
+                  <Link to="#" className="block" onClick={() => setIsOpen(false)}>
                     SFA
                   </Link>
+                  <div className="absolute hidden group-hover/sfa:block left-full top-0 ml-1 bg-blue-400 min-w-[150px] rounded-md shadow-lg z-20 lg:left-auto lg:right-full lg:mr-1 transition-opacity duration-200 opacity-0 group-hover/sfa:opacity-100">
+                    <ul className="py-1">
+                      <li>
+                        <Link
+                          to="http://192.168.100.89:29099/ventura_live/"
+                          className="block px-4 py-2 hover:bg-yellow-200 hover:text-black"
+                          onClick={() => setIsOpen(false)}
+                        >
+                          DSI
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          to="http://192.168.100.89:28181/ventura_lotus_live/"
+                          className="block px-4 py-2 hover:bg-yellow-200 hover:text-black"
+                          onClick={() => setIsOpen(false)}
+                        >
+                          Lotus
+                        </Link>
+                      </li>
+                    </ul>
+                  </div>
                 </li>
               </ul>
             </div>
@@ -220,13 +252,12 @@ const Navbar = () => {
                   </Link>
                 </li>
                 <li>
-                  <Link
-                    to="/"
-                    className="block px-4 py-2 hover:bg-yellow-400 hover:text-black"
-                    onClick={() => setIsOpen(false)}
+                  <button
+                    className="block px-4 py-2 hover:bg-yellow-400 hover:text-black w-full text-left"
+                    onClick={openPdfModal}
                   >
                     EXT List
-                  </Link>
+                  </button>
                 </li>
               </ul>
             </div>
@@ -244,6 +275,39 @@ const Navbar = () => {
           </NavLink>
         </div>
       </div>
+
+      {/* PDF Modal */}
+      {isPdfModalOpen && (
+        <div className="fixed inset-0 bg-blue-50 bg-opacity-50 flex items-center justify-center z-50">
+          <div className="w-3/4 h-180 bg-green-50 rounded-lg p-6 flex flex-col">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold text-black">Extension List</h2>
+              <button
+                onClick={closePdfModal}
+                className="text-black hover:text-red-600 focus:outline-none"
+              >
+                <HiX className="h-6 w-6" />
+              </button>
+            </div>
+            <div className="flex-1 overflow-auto">
+              <iframe
+                src={extension_list}
+                title="Extension List PDF"
+                className="w-full h-[70vh] border-0"
+              />
+            </div>
+            <div className="mt-4 flex justify-end">
+              <a
+                href={extension_list}
+                download="extension_list.pdf"
+                className="bg-blue-950 text-white px-4 py-2 rounded hover:bg-blue-800"
+              >
+                Download PDF
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

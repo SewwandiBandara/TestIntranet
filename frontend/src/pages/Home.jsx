@@ -210,7 +210,7 @@ const Home = () => {
           {/* Company Image Carousel */}
           <div className="mb-4 flex justify-center pt-17">
             <div className="rounded-lg overflow-hidden w-full h-100">
-              <div className="relative w-full h-full border-9 border-white">
+              <div className="relative w-full h-full border-7 border-white">
                 {loading ? (
                   <div className="w-full h-full flex items-center justify-center bg-gray-200">
                     <span className="text-gray-500">Loading...</span>
@@ -309,11 +309,11 @@ const Home = () => {
             {/* Right side - Calendar and Events */}
             <div className="lg:w-96 xl:w-96 space-y-6 mt-4">
               {/* Monthly calendar */}
-              <div className="bg-transparent rounded-lg shadow-lg shadow-black hover:shadow-blue-800 p-4 backdrop-blur-sm bg-opacity-90">
+              <div className=" bg-transparent rounded-lg shadow-lg shadow-black  p-4 backdrop-blur-sm bg-opacity-90">
                 <h2 className="text-xl font-semibold text-black mb-4 text-center">
                   Monthly Calendar
                 </h2>
-                <div className="bg-gray-50 rounded-lg border border-dashed border-gray-300 p-4 flex flex-col items-center justify-center h-48 sm:h-60">
+                <div className=" bg-gray-50 rounded-lg border border-dashed border-gray-300 p-4 flex flex-col items-center justify-center h-48 sm:h-60">
                   {calendarLoading ? (
                     <span className="text-gray-500">Loading...</span>
                   ) : calendarError ? (
@@ -322,7 +322,7 @@ const Home = () => {
                     <img 
                       src={calendarImage} 
                       alt="Monthly calendar" 
-                      className="w-full h-full object-contain rounded-md"
+                      className="w-full h-full object-contain rounded-md "
                     />
                   ) : (
                     <span className="text-gray-600">No monthly calendar available.</span>
@@ -425,11 +425,11 @@ const Home = () => {
                   </div>
                   <div>
                     <h4 className="font-medium text-base sm:text-lg text-red-600">Address</h4>
-                    <p className="text-black text-sm sm:text-base">
+                    <p className="text-white text-sm sm:text-base">
                       Samson Rubber Industries (Pvt) Ltd,
                     </p>
-                    <p className="text-black text-sm sm:text-base">Jinasena Mawatha, Mahara,</p>
-                    <p className="text-black text-sm sm:text-base">Kadawatha, Sri Lanka</p>
+                    <p className="text-white text-sm sm:text-base">Jinasena Mawatha, Mahara,</p>
+                    <p className="text-white text-sm sm:text-base">Kadawatha, Sri Lanka</p>
                   </div>
                 </div>
                 {/* Phone */}
@@ -439,8 +439,8 @@ const Home = () => {
                   </div>
                   <div>
                     <h4 className="font-medium text-base sm:text-lg text-red-600">Phone</h4>
-                    <p className="text-black text-sm sm:text-base">+94 77 060 0601</p>
-                    <p className="text-black text-sm sm:text-base">+94 11 292 8700</p>
+                    <p className="text-white text-sm sm:text-base">+94 77 781 5300</p>
+                    <p className="text-white text-sm sm:text-base">+94 11 292 8700</p>
                   </div>
                 </div>
                 {/* Email */}
@@ -450,9 +450,9 @@ const Home = () => {
                   </div>
                   <div>
                     <h4 className="font-medium text-base sm:text-lg text-red-600">Email</h4>
-                    <p className="text-black text-sm sm:text-base">
+                    <p className="text-white text-sm sm:text-base">
                       <a href="mailto:dsityreshop@dsityre.lk" className="hover:text-amber-500">
-                        dsityreshop@dsityre.lk
+                        dsityre@dsityre.lk
                       </a>
                     </p>
                   </div>

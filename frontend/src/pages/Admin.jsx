@@ -936,7 +936,7 @@ const Admin = () => {
                                         </button>
                                     </form>
                                     {currentMonthlyImage && (
-                                        <div className="mt-4 p-4 bg-blue-50 rounded-lg">
+                                        <div className="mt-4 p-4 bg-blue-100 rounded-lg">
                                             <p className="text-sm font-medium mb-2">Current Monthly Plan:</p>
                                             <img src={`http://localhost:3001${currentMonthlyImage}`} alt="Current Monthly" className="max-h-48 max-w-full object-contain mx-auto" />
                                         </div>
@@ -970,7 +970,7 @@ const Admin = () => {
                                         </button>
                                     </form>
                                     {currentCalendarImage && (
-                                        <div className="mt-4 p-4 bg-blue-50 rounded-lg">
+                                        <div className="mt-4 p-4 bg-blue-100 rounded-lg">
                                             <p className="text-sm font-medium mb-2">Current Calendar Image:</p>
                                             <img src={`http://localhost:3001${currentCalendarImage}`} alt="Current Calendar" className="max-h-48 max-w-full object-contain mx-auto" />
                                         </div>

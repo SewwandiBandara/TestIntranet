@@ -118,18 +118,7 @@ sql.connect(dbConfig, (err) => {
     }
 });
 
-
-//API for login
-// app.post('/api/login', async (req, res) => {
-//     const {username, password} = req.body;
-//     if (username === 'Admin' && password === 'admin123') {
-//         res.json({ success: true, token: 'admin-token-123' });
-//     }
-//     else {
-//         res.status(401).json({success: false, error: 'Invalid credentials'});
-//     }
-// });
-
+//Login API
 app.post('/api/login', async (req, res) => {
     console.log('Login attempt:', { username: req.body.username, timestamp: new Date().toISOString() });
     const {username, password} = req.body;
