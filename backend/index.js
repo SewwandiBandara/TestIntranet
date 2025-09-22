@@ -6,6 +6,7 @@ require('dotenv').config();
 const path = require('path');
 const fs = require('fs');
 const multer = require('multer');
+const pdfParse = require('pdf-parse');
 
 const app = express();
 
@@ -13,10 +14,11 @@ const app = express();
 const baseUploadsDir = path.join(__dirname, 'Uploads');
 const carouselDir = path.join(baseUploadsDir, 'Carousel');
 const calendarDir = path.join(baseUploadsDir, 'Calendar');
-const monthDir = path.join(baseUploadsDir, 'Month')
+const monthDir = path.join(baseUploadsDir, 'Month');
 const achievementsDir = path.join(baseUploadsDir, 'Achievements');
+const extensionsDir = path.join(baseUploadsDir, 'Contacts');
 
-[baseUploadsDir, carouselDir, calendarDir, achievementsDir, monthDir].forEach(dir => {
+[baseUploadsDir, carouselDir, calendarDir, achievementsDir, monthDir, extensionsDir].forEach(dir => {
     if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir, { recursive: true });
     }
@@ -36,6 +38,8 @@ const storage = multer.diskStorage({
             uploadPath = achievementsDir;
         } else if (req.path.includes('/api/calendar-image')) {
             uploadPath = monthDir;
+        } else if (req.path.includes('/api/extension')) {
+            uploadPath = extensionsDir;    
         } else {
             uploadPath = baseUploadsDir;
         }
@@ -53,6 +57,8 @@ const storage = multer.diskStorage({
             prefix = 'achievement-';
         } else if (req.path.includes('/api/calendar-image')) {
             prefix = 'calendar-';
+        } else if (req.path.includes('/api/extension')) {
+            prefix = 'extension-';    
         } else {
             prefix = 'upload-';
         }
@@ -65,17 +71,26 @@ const storage = multer.diskStorage({
 const upload = multer({
     storage: storage,
     fileFilter: (req, file, cb) => {
-        const filetypes = /jpeg|jpg|png/;
-        const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-        const mimetype = filetypes.test(file.mimetype);
-        if (extname && mimetype) {
-            cb(null, true);
+        if (req.path.includes('/api/extension')) {
+            if (file.mimetype === 'application/pdf') {
+                cb(null, true);
+            } else {
+                cb(new Error('Only PDF files are allowed for extensions'), false);
+            }
         } else {
-            cb(new Error('Only JPEG/PNG images are allowed'), false);
+            const filetypes = /jpeg|jpg|png/;
+            const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+            const mimetype = filetypes.test(file.mimetype);
+            if (extname && mimetype) {
+                cb(null, true);
+            } else {
+                cb(new Error('Only JPEG/PNG images are allowed'), false);
+            }
         }
     },
     limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
 });
+
 
 // Middleware
 app.use(cors());
@@ -537,6 +552,7 @@ app.get('/api/calendar-image', async (req, res) => {
     }
 });
 
+
 app.post('/api/calendar-image', upload.single('image'), async (req, res) => {
     try{
         console.log('Upload request recieved:', req.file);
@@ -777,8 +793,53 @@ app.delete('/api/achievements/:id', async (req, res)=> {
 
 
 
+///communication- add extension file upload
+app.get('/api/extension', async (req, res) => {
+    try {
+        const files = await fs.promises.readdir(extensionsDir);
+        const latestFile = files.sort((a,b) => b.localeCompare(a)) [0];
+        res.json({
+            imagePath: latestFile ? `/backend/uploads/Contacts/${latestFile}` : null
+        });
+    }
+    catch(err) {
+        console.error('Erroe fetching extension list:', err);
+        res.status(500).json({error: 'Failed to fetch extension list'});
+    }
+});
 
 
+
+// app.post('/api/extension', upload.single('extensionList'), async (req, res) => {
+//     if (!req.file) {
+//         return res.status(400).json({ message: 'No file uploaded' });
+//     }
+//     const dataBuffer = fs.readFileSync(req.file.path);
+//     const data = await pdfParse(dataBuffer);
+//     console.log('PDF Text:', data.text);
+//     res.json({ message: 'File uploaded successfully', filename: req.file.filename });
+// });
+
+app.post('/api/extension', upload.single('extensionList'), async (req, res) => {
+    console.log('Received POST /api/extension at', new Date().toISOString());
+    if (!req.file) {
+        console.log('No file uploaded');
+        return res.status(400).json({ message: 'No file uploaded' });
+    }
+    try {
+        const dataBuffer = fs.readFileSync(req.file.path);
+        const data = await pdfParse(dataBuffer);
+        console.log('PDF Text:', data.text);
+        res.json({ message: 'File uploaded successfully', filename: req.file.filename });
+    } catch (err) {
+        console.error('Error processing PDF:', err);
+        res.status(500).json({ message: 'Failed to process PDF' });
+    }
+});
+
+app.get('/api/test', (req, res) => {
+    res.json({ message: 'Test endpoint working' });
+});
 
 
 const PORT = 3001;

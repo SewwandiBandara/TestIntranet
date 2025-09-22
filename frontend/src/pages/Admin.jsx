@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FiMail, FiCalendar, FiImage, FiFileText, FiUsers, FiSettings, FiAward, FiMessageSquare, FiUser, FiLock } from 'react-icons/fi';
 import { TbLogout } from "react-icons/tb";
 import Navbar from '../components/Navbar';
 import { FaNewspaper } from "react-icons/fa6";
 import { IoSearchOutline } from "react-icons/io5";
+import { MdOutlineCancel } from "react-icons/md";
+import {  FiUpload } from 'react-icons/fi';
 
 const COPYRIGHT_TEXT = `All rights reserved © DSI Samson Rubber Industries - Information Technology Department`;
 
@@ -47,6 +49,11 @@ const Admin = () => {
     const [currentCalendarImage, setCurrentCalendarImage] = useState(null);
     const [calendarForm, setCalendarForm] = useState({ image: null });
     const [calendarPreview, setCalendarPreview] = useState(null);
+
+    //status for add extansions in communication
+    const [uploadedFile, setUploadedFile] = useState(null);
+    const [uploadStatus, setUploadStatus] = useState('');
+    const fileInputRef = useRef(null);
 
     // Check login state on mount
     useEffect(() => {
@@ -91,6 +98,12 @@ const Admin = () => {
         setIsLoggedIn(false);
         navigate('/');  // Navigate to home page after logout
     };
+
+    //Function to handle cancel
+    const handleCancel = () => {
+        setUsername('');
+        setPassword('');
+    }
 
     // Function to fetch carousel images from the backend
     const fetchCarouselImages = async () => {
@@ -210,6 +223,7 @@ const Admin = () => {
         }
     };
 
+    //form submission
     const handleUpload = async (e) => {
         e.preventDefault();
         const formData = new FormData();
@@ -236,6 +250,7 @@ const Admin = () => {
         }
     };
 
+    //handle deletion
     const handleDeleteCarousel = async (imageId) => {
         const isConfirmed = window.confirm("Are you sure you want to delete this image?");
         if (isConfirmed) {
@@ -260,6 +275,7 @@ const Admin = () => {
     };
 
     //////==========/functions in news==============////
+    //form submission
     const handleAddOrUpdate = async (e) => {
         e.preventDefault();
         try {
@@ -295,6 +311,7 @@ const Admin = () => {
         }
     };
 
+    //handle deletion
     const handleDeleteNews = async (id) => {
         try {
             const parsedId = parseInt(id, 10);
@@ -323,6 +340,7 @@ const Admin = () => {
         }
     };
 
+    //handle edit
     const handleEdit = (item) => {
         setTitle(item.Title);
         setContent(item.Content);
@@ -593,6 +611,72 @@ const Admin = () => {
             }
         }
     };
+
+    ////////========functions in add extensions/contacts in communication====////
+    //  const handleFileUpload = async (e) => {
+    //     const file = e.target.files[0];
+    //     if (file && file.type === 'application/pdf') {
+    //         setUploadedFile(file);
+    //         setUploadStatus('Uploading...');
+
+    //         const formData = new FormData();
+    //         formData.append('extensionList', file);
+
+    //         try {
+    //             const response = await fetch('http://localhost:3002/api/extension', {
+    //                 method: 'POST',
+    //                 body: formData,
+    //             });
+
+    //             if (response.ok) {
+    //                 setUploadStatus('File uploaded successfully!');
+    //             } else {
+    //                 const errorData = await response.json();
+    //                 setUploadStatus(`Upload failed: ${errorData.message || 'Unknown error'}`);
+    //             }
+    //         } catch (error) {
+    //             setUploadStatus(`Upload error: ${error.message}`);
+    //         }
+    //     } else {
+    //         setUploadStatus('Please upload a valid PDF file');
+    //     }
+    // };
+
+    const handleFileUpload = async (e) => {
+        const file = e.target.files[0];
+        if (file && file.type === 'application/pdf') {
+            setUploadedFile(file);
+            setUploadStatus('Uploading...');
+            const formData = new FormData();
+            formData.append('extensionList', file);
+            try {
+                const response = await fetch('http://localhost:3001/api/extension', {
+                    method: 'POST',
+                    body: formData,
+                });
+                if (response.ok) {
+                    setUploadStatus('File uploaded successfully!');
+                } else {
+                    const errorData = await response.json();
+                    setUploadStatus(`Upload failed: ${errorData.message || 'Unknown error'}`);
+                }
+            } catch (error) {
+                setUploadStatus(`Upload error: ${error.message}`);
+            }
+        } else {
+            setUploadStatus('Please upload a valid PDF file');
+        }
+    };
+
+    //handle cancel
+    const handleExtCancel = () => {
+        setUploadedFile(null);
+        setUploadStatus('');
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+        }
+    };
+
 
     const applications = [
         { id: 'hr', name: 'Human Resource Management', icon: <FiUsers /> },
@@ -1092,75 +1176,88 @@ const Admin = () => {
             ///----------------------- manage communication section -------------------------------///
             case 'communication':
                 return (
-                    <div className="space-y-6">
-                        <h2 className="text-2xl font-bold mb-4">Communication</h2>
-                        <div className="grid grid-cols-2 gap-6">
-                            <div className="border rounded-lg p-4 bg-blue-50">
-                                <h3 className="font-medium mb-3 flex items-center">
-                                    <FiMail className="mr-2" /> Email Management
-                                </h3>
-                                <div className="space-y-3">
-                                    <button
-                                        onClick={() => navigate('#')}
-                                        className="w-full text-left px-4 py-3 rounded flex items-center space-x-3 hover:bg-gray-400 text-black hover:text-white transition-colors">
-                                        Send Bulk Email
-                                    </button>
-                                    <button
-                                        onClick={() => navigate('#')}
-                                        className="w-full text-left px-4 py-3 rounded flex items-center space-x-3 hover:bg-gray-400 text-black hover:text-white transition-colors">
-                                        Email Templates
-                                    </button>
-                                    <button
-                                        onClick={() => navigate('#')}
-                                        className="w-full text-left px-4 py-3 rounded flex items-center space-x-3 hover:bg-gray-400 text-black hover:text-white transition-colors">
-                                        Subscriber List
-                                    </button>
+                    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+                        <div className="max-w-7xl mx-auto">
+                            <h2 className="text-3xl font-extrabold text-gray-900 bg-clip-text text-transparent bg-gradient-to-r from-blue-800 to-black mb-8 text-center">
+                                Communication
+                            </h2>
+                            <div className="flex flex-col gap-6">
+                                <div className="border rounded-lg p-6 bg-green-100 shadow-lg">
+                                    <h3 className="text-lg font-semibold mb-4 flex items-center text-gray-900">
+                                        <FiMail className="mr-2 h-5 w-5 text-blue-600" /> Email Management
+                                    </h3>
+                                    <div className="space-y-3">
+                                        <button
+                                            onClick={() => navigate('#')}
+                                            className="w-full text-left px-4 py-3 rounded-lg bg-white text-gray-900 hover:bg-gray-400 hover:text-white transition-colors duration-300 flex items-center space-x-3"
+                                        >
+                                            Send Bulk Email
+                                        </button>
+                                        <button
+                                            onClick={() => navigate('#')}
+                                            className="w-full text-left px-4 py-3 rounded-lg bg-white text-gray-900 hover:bg-gray-400 hover:text-white transition-colors duration-300 flex items-center space-x-3"
+                                        >
+                                            Email Templates
+                                        </button>
+                                        <button
+                                            onClick={() => navigate('#')}
+                                            className="w-full text-left px-4 py-3 rounded-lg bg-white text-gray-900 hover:bg-gray-400 hover:text-white transition-colors duration-300 flex items-center space-x-3"
+                                        >
+                                            Subscriber List
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="border rounded-lg p-4 bg-blue-50">
-                                <h3 className="font-medium mb-3">Internal Contacts</h3>
-                                <div className="space-y-3">
-                                    <input type="text" placeholder="Add new contact" className="w-full border rounded px-3 py-2" />
-                                    <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700">
-                                        Add Contact
-                                    </button>
+                                <div className="border rounded-lg p-6 bg-pink-100 shadow-lg">
+                                    <h3 className="text-lg font-semibold mb-4 text-gray-900">Internal Contacts (Extensions)</h3>
+                                    <div className="space-y-4">
+                                        <div>
+                                            <label htmlFor="extensionList" className="block text-sm font-medium text-gray-700">
+                                                Upload Extension List (PDF)
+                                            </label>
+                                            <div className="mt-1 flex items-center space-x-4">
+                                                <input
+                                                    id="extensionList"
+                                                    type="file"
+                                                    accept="application/pdf"
+                                                    onChange={handleFileUpload}
+                                                    ref={fileInputRef}
+                                                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => document.getElementById('extensionList').click()}
+                                                    className="group relative px-4 py-2 bg-gradient-to-r from-blue-300 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-300 shadow-md hover:shadow-lg flex items-center space-x-2"
+                                                >
+                                                    <FiUpload className="h-5 w-5" />
+                                                    <span>Upload PDF</span>
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={handleExtCancel}
+                                                    className="group relative px-4 py-2 bg-gradient-to-r from-gray-300 to-gray-400 text-white rounded-lg hover:from-gray-600 hover:to-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-300 shadow-md hover:shadow-lg flex items-center space-x-2"
+                                                >
+                                                    <MdOutlineCancel className="h-5 w-5" />
+                                                    <span>Cancel</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        {uploadedFile && (
+                                            <div className="mt-4 text-sm text-gray-700">
+                                                <p>Uploaded File: <span className="font-medium">{uploadedFile.name}</span></p>
+                                            </div>
+                                        )}
+                                        {uploadStatus && (
+                                            <div className={`mt-4 text-sm ${uploadStatus.includes('success') ? 'text-green-600' : 'text-red-600'}`}>
+                                                <p>{uploadStatus}</p>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
-                            </div>
-
-                            <div className='border rounded flex flex-col gap-4 p-4'>
-                                <h2 className='text-xl text-blue-950 font-bold p-2'>Internal Contact Extensions</h2>
-                                <table className="min-w-full bg-black border-1 border-black rounded-lg overflow-hidden">
-                                    <thead className="bg-gray-200">
-                                        <tr className="text-center">
-                                            <th className="px-6 py-3 text-xs font-medium text-gray-600 uppercase tracking-wider">Name</th>
-                                            <th className="px-6 py-3 text-xs font-medium text-gray-600 uppercase tracking-wider">Extension</th>
-                                            <th className="px-6 py-3 text-xs font-medium text-gray-600 uppercase tracking-wider">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-gray-200 bg-white">
-                                        <tr className="text-center align-middle">
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">IT</td>
-                                            <td className="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">136</td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                                <button className="text-blue-600 hover:text-blue-900 mr-3 border px-3">Edit</button>
-                                                <button className="text-red-600 hover:text-red-900 border px-2">Delete</button>
-                                            </td>
-                                        </tr>        
-                                        <tr className='text-center align-middle'>
-                                            <td className='px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900'>HR</td>
-                                            <td className='px-6 py-4 text-sm text-gray-500 max-w xs truncate'>112</td>
-                                            <td className='px-6 py-4 whitespace-nowrap text-sm font-medium'>
-                                                <button className='text-blue-600 hover:text-blue-900 mr-3 border px-3'>Edit</button>
-                                                <button className='text-red-600 hover:text-red-900 border px-2'>Delete</button>
-                                            </td>
-                                        </tr>
-                                        <tr><td colSpan="5" className="text-center py-4 text-gray-500">No contacts found.</td></tr>
-                                    </tbody>
-                                </table>
                             </div>
                         </div>
                     </div>
                 );
+
 
             ///----------------------- manage achievements page -----------------------------------///
             case 'achievements':
@@ -1327,15 +1424,25 @@ const Admin = () => {
                                 />
                             </div>
                         </div>
-                        <div>
+                        <div className="flex space-x-4">
                             <button
                                 type="submit"
-                                className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-xl"
+                                className="group relative flex-1 justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-xl"
                             >
                                 <span className="absolute left-0 inset-y-0 flex items-center pl-3">
                                     <FiLock className="h-5 w-5 text-blue-200 group-hover:text-blue-100" />
                                 </span>
                                 Sign In
+                            </button>
+                            <button
+                                type="reset"
+                                onClick={handleCancel}
+                                className="group relative flex-1 justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-xl"
+                            >
+                                <span className="absolute left-0 inset-y-0 flex items-center pl-3">
+                                    <MdOutlineCancel className="h-5 w-5 text-blue-200 group-hover:text-blue-100" />
+                                </span>
+                                Cancel
                             </button>
                         </div>
                     </form>
