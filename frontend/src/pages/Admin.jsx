@@ -1173,7 +1173,7 @@ const Admin = () => {
                     </div>
                 );
 
-            ///----------------------- manage communication section -------------------------------///
+            ///----------------------- manage communication section ------------------------------///
             case 'communication':
                 return (
                     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-gray-100 py-12 px-4 sm:px-6 lg:px-8">
@@ -1234,7 +1234,7 @@ const Admin = () => {
                                                 <button
                                                     type="button"
                                                     onClick={handleExtCancel}
-                                                    className="group relative px-4 py-2 bg-gradient-to-r from-gray-300 to-gray-400 text-white rounded-lg hover:from-gray-600 hover:to-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-300 shadow-md hover:shadow-lg flex items-center space-x-2"
+                                                    className="group relative px-4 py-4 bg-gradient-to-r from-gray-300 to-gray-400 text-white rounded-lg hover:from-gray-600 hover:to-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-300 shadow-md hover:shadow-lg flex items-center space-x-2"
                                                 >
                                                     <MdOutlineCancel className="h-5 w-5" />
                                                     <span>Cancel</span>

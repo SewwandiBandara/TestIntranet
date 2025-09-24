@@ -809,7 +809,7 @@ app.get('/api/extension', async (req, res) => {
 });
 
 
-
+//
 // app.post('/api/extension', upload.single('extensionList'), async (req, res) => {
 //     if (!req.file) {
 //         return res.status(400).json({ message: 'No file uploaded' });
@@ -821,20 +821,67 @@ app.get('/api/extension', async (req, res) => {
 // });
 
 app.post('/api/extension', upload.single('extensionList'), async (req, res) => {
-    console.log('Received POST /api/extension at', new Date().toISOString());
-    if (!req.file) {
-        console.log('No file uploaded');
-        return res.status(400).json({ message: 'No file uploaded' });
-    }
     try {
-        const dataBuffer = fs.readFileSync(req.file.path);
-        const data = await pdfParse(dataBuffer);
-        console.log('PDF Text:', data.text);
-        res.json({ message: 'File uploaded successfully', filename: req.file.filename });
-    } catch (err) {
-        console.error('Error processing PDF:', err);
-        res.status(500).json({ message: 'Failed to process PDF' });
+        console.log('Received POST /api/extension at', new Date().toISOString());
+        Console.log('Upload request recieved', req.file);
+
+        if (!req.file) {
+            console.log('No file uploaded');
+            return res.status(400).json({ error: 'PDF file is required.' });
+        }
+
+        //file details
+        Console.log('File details:' , {
+            fileName: req.file.filename,
+            originalname: req.file.originalname,
+            path: req.file.path,
+            size: req.file.size
+        });
+
+        //check if the file was actually saved
+        try {
+            const fileExists = fs.existsSync(req.file.path);
+            console.log('File exists after upload:', fileExists);
+
+            if (fileExists) {
+                const stats = fs.statSync(req.file.path);
+                console.log('File size on disk:', stats.size);
+            }
+        }
+        catch (fileError) {
+            console.error('Error checking file existence:', fileError)
+        }
+
+        //delete any existing files in Contacts directory
+        try{
+            const files = await fs.promises.readdir(extensionsDir);
+            console.log('Existing files in Contacts dir', files);
+
+            for (const file of files) {
+                if (file !== req.file.filename) {
+                    const filePath = path.join(extensionsDir, file);
+                    console.log('Deleting old file:', filePath);
+                    await fs.promises.unlink(filePath);
+                }
+            }
+        }
+        catch (deleteError) {
+            console.error('Error deleting old files:', deleteError);
+        }
+        res.status(201).json({
+            message: 'File uploaded successfully!',
+            pdfPath: `/backend/uploads/Contacts/$req.file.filename`
+        });
+
+    } catch (error) {
+        console.error ('Error uploading extension file:', {
+            message: err.message,
+            stack: err.stack,
+            code: err.code
+        });
+        res.status(500).json({error: 'Failed to upload extension file'})
     }
+
 });
 
 app.get('/api/test', (req, res) => {

@@ -1,24 +1,57 @@
-import React, { useState } from 'react';
+// Updated Navbar.jsx
+
+import React, { useState, useEffect } from 'react';
 import logoImg from '../assets/logoImg.jpg';
 import { Link, NavLink } from 'react-router-dom';
 import { HiMenu, HiX } from 'react-icons/hi';
-import extension_list from '../assets/extension_list.pdf';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isPdfModalOpen, setIsPdfModalOpen] = useState(false);
+  const [extensionPdfUrl, setExtensionPdfUrl] = useState(null);
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
   };
 
-  const openPdfModal = () => {
+  const fetchExtensionPdf = async () => {
+    try {
+      const response = await fetch('http://localhost:3001/api/extension');
+      if (!response.ok) {
+        throw new Error('Failed to fetch extension PDF');
+      }
+      const data = await response.json();
+      if (data.imagePath) {
+        setExtensionPdfUrl(`http://localhost:3001${data.imagePath}`);
+      } else {
+        setExtensionPdfUrl(null);
+      }
+    } catch (error) {
+      console.error('Error fetching extension PDF:', error);
+      setExtensionPdfUrl(null);
+    }
+  };
+
+  useEffect(() => {
+    fetchExtensionPdf();
+  }, []);
+
+  const openPdfModal = async () => {
+    if (!extensionPdfUrl) {
+      await fetchExtensionPdf(); // Refetch if not loaded
+    }
     setIsPdfModalOpen(true);
   };
 
   const closePdfModal = () => {
     setIsPdfModalOpen(false);
   };
+
+  const noPdfMessage = !extensionPdfUrl ? (
+    <div className="flex items-center justify-center h-[70vh] text-gray-500">
+      No extension list available. Please upload one via Admin Panel.
+    </div>
+  ) : null;
 
   return (
     <div className="fixed w-full bg-blue-950 py-2 z-50">
@@ -231,6 +264,11 @@ const Navbar = () => {
                     </ul>
                   </div>
                 </li>
+                <li className='block px-4 py-2 hover:bg-yellow-400 hover:text-black'>
+                  <Link to="#" onClick={() => setIsOpen(false)}>
+                    DFS
+                  </Link>
+                </li>
               </ul>
             </div>
           </div>
@@ -290,20 +328,31 @@ const Navbar = () => {
               </button>
             </div>
             <div className="flex-1 overflow-auto">
-              <iframe
-                src={extension_list}
-                title="Extension List PDF"
-                className="w-full h-[70vh] border-0"
-              />
+              {noPdfMessage || (
+                <iframe
+                  src={extensionPdfUrl}
+                  title="Extension List PDF"
+                  className="w-full h-[70vh] border-0"
+                />
+              )}
             </div>
             <div className="mt-4 flex justify-end">
-              <a
-                href={extension_list}
-                download="extension_list.pdf"
-                className="bg-blue-950 text-white px-4 py-2 rounded hover:bg-blue-800"
-              >
-                Download PDF
-              </a>
+              {extensionPdfUrl ? (
+                <a
+                  href={extensionPdfUrl}
+                  download="extension_list.pdf"
+                  className="bg-blue-950 text-white px-4 py-2 rounded hover:bg-blue-800"
+                >
+                  Download PDF
+                </a>
+              ) : (
+                <button
+                  onClick={closePdfModal}
+                  className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+                >
+                  Close
+                </button>
+              )}
             </div>
           </div>
         </div>
