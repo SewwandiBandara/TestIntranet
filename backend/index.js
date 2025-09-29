@@ -17,8 +17,9 @@ const calendarDir = path.join(baseUploadsDir, 'Calendar');
 const monthDir = path.join(baseUploadsDir, 'Month');
 const achievementsDir = path.join(baseUploadsDir, 'Achievements');
 const extensionsDir = path.join(baseUploadsDir, 'Contacts');
+const emailsDir = path.join(baseUploadsDir, 'Emails');
 
-[baseUploadsDir, carouselDir, calendarDir, achievementsDir, monthDir, extensionsDir].forEach(dir => {
+[baseUploadsDir, carouselDir, calendarDir, achievementsDir, monthDir, extensionsDir, emailsDir].forEach(dir => {
     if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir, { recursive: true });
     }
@@ -40,6 +41,8 @@ const storage = multer.diskStorage({
             uploadPath = monthDir;
         } else if (req.path.includes('/api/extension')) {
             uploadPath = extensionsDir;    
+        } else if (req.path.includes('/api/emailList')) {
+            uploadPath = emailsDir; 
         } else {
             uploadPath = baseUploadsDir;
         }
@@ -59,6 +62,8 @@ const storage = multer.diskStorage({
             prefix = 'calendar-';
         } else if (req.path.includes('/api/extension')) {
             prefix = 'extension-';    
+        } else if (req.path.includes('/api/emailList')) {
+            prefix = 'email-';
         } else {
             prefix = 'upload-';
         }
@@ -76,6 +81,12 @@ const upload = multer({
                 cb(null, true);
             } else {
                 cb(new Error('Only PDF files are allowed for extensions'), false);
+            }
+        } else if (req.path.includes('/api/emailList')) {
+            if (file.mimetype === 'application/pdf') {
+                cb(null, true);
+            } else {
+                cb(new Error('Only PDF files are allowed for Email List'), false);
             }
         } else {
             const filetypes = /jpeg|jpg|png/;
@@ -791,9 +802,7 @@ app.delete('/api/achievements/:id', async (req, res)=> {
 });
 
 
-
-
-///communication- add extension file upload
+///communication - add extension file upload
 app.get('/api/extension', async (req, res) => {
     try {
         const files = await fs.promises.readdir(extensionsDir);
@@ -808,37 +817,25 @@ app.get('/api/extension', async (req, res) => {
     }
 });
 
-
-//
-// app.post('/api/extension', upload.single('extensionList'), async (req, res) => {
-//     if (!req.file) {
-//         return res.status(400).json({ message: 'No file uploaded' });
-//     }
-//     const dataBuffer = fs.readFileSync(req.file.path);
-//     const data = await pdfParse(dataBuffer);
-//     console.log('PDF Text:', data.text);
-//     res.json({ message: 'File uploaded successfully', filename: req.file.filename });
-// });
-
 app.post('/api/extension', upload.single('extensionList'), async (req, res) => {
     try {
         console.log('Received POST /api/extension at', new Date().toISOString());
-        Console.log('Upload request recieved', req.file);
+        console.log('Upload request received', req.file);
 
         if (!req.file) {
             console.log('No file uploaded');
             return res.status(400).json({ error: 'PDF file is required.' });
         }
 
-        //file details
-        Console.log('File details:' , {
-            fileName: req.file.filename,
+        // File details
+        console.log('File details:', {
+            filename: req.file.filename,
             originalname: req.file.originalname,
             path: req.file.path,
             size: req.file.size
         });
 
-        //check if the file was actually saved
+        // Check if the file was actually saved
         try {
             const fileExists = fs.existsSync(req.file.path);
             console.log('File exists after upload:', fileExists);
@@ -847,13 +844,12 @@ app.post('/api/extension', upload.single('extensionList'), async (req, res) => {
                 const stats = fs.statSync(req.file.path);
                 console.log('File size on disk:', stats.size);
             }
-        }
-        catch (fileError) {
-            console.error('Error checking file existence:', fileError)
+        } catch (fileError) {
+            console.error('Error checking file existence:', fileError);
         }
 
-        //delete any existing files in Contacts directory
-        try{
+        // Delete any existing files in Contacts directory
+        try {
             const files = await fs.promises.readdir(extensionsDir);
             console.log('Existing files in Contacts dir', files);
 
@@ -864,24 +860,167 @@ app.post('/api/extension', upload.single('extensionList'), async (req, res) => {
                     await fs.promises.unlink(filePath);
                 }
             }
+        } catch (deleteError) {
+            console.error('Error deleting old files:', deleteError);
         }
-        catch (deleteError) {
+
+        res.status(201).json({
+            message: 'File uploaded successfully!',
+            pdfPath: `/backend/uploads/Contacts/${req.file.filename}`
+        });
+    } catch (error) {
+        console.error('Error uploading extension file:', {
+            message: error.message,
+            stack: error.stack,
+            code: error.code
+        });
+        res.status(500).json({ error: 'Failed to upload extension file' });
+    }
+});
+
+
+///communication - add email list
+app.get('/api/emailList', async (req, res) => {
+    try{
+        const files = await fs.promises.readdir(emailsDir);
+        const latestFile = files.sort((a,b) => b.localeCompare(a)) [0];
+        res.json({
+            imagePath: latestFile ? `/backend/uploads/Emails/${latestFile}` : null
+        });
+    }
+    catch(err) {
+        console.error('Error fetching email list:', err);
+        res.status(500).json({error: 'Failed to fetch email list'});
+    }
+});
+
+// app.post('/api/emailList', (req, res, next) => {
+//   upload.single('emails')(req, res, err => {
+//     if (err instanceof multer.MulterError) {
+//       return res.status(400).json({ error: err.message });
+//     } else if (err) {
+//       return res.status(400).json({ error: err.message });
+//     }
+//     next();
+//   });
+// }, async (req, res) => {
+//     try {
+//         console.log('Received POST /api/emailList at', new Date().toISOString());
+//         console.log('Upload request received', req.file);
+
+//         if (!req.file) {
+//             console.log('No file uploaded');
+//             return res.status(400).json({ error: 'PDF file is required.' });
+//         }
+
+//         // File details
+//         console.log('File details:', {
+//             filename: req.file.filename,
+//             originalname: req.file.originalname,
+//             path: req.file.path,
+//             size: req.file.size
+//         });
+
+//         // Check if the file was actually saved
+//         try {
+//             const fileExists = fs.existsSync(req.file.path);
+//             console.log('File exists after upload:', fileExists);
+
+//             if (fileExists) {
+//                 const stats = fs.statSync(req.file.path);
+//                 console.log('File size on disk:', stats.size);
+//             }
+//         } catch (fileError) {
+//             console.error('Error checking file existence:', fileError);
+//         }
+
+//         // Delete any existing files in Emails directory
+//         try {
+//             const files = await fs.promises.readdir(emailsDir);
+//             console.log('Existing files in Emails dir:', files);
+
+//             for (const file of files) {
+//                 if (file !== req.file.filename) {
+//                     const filePath = path.join(emailsDir, file);
+//                     console.log('Deleting old file:', filePath);
+//                     await fs.promises.unlink(filePath);
+//                 }
+//             }
+//         } catch (deleteError) {
+//             console.error('Error deleting old files:', deleteError);
+//         }
+//         res.status(201).json({
+//             message: 'File uploaded successfully!',
+//             pdfPath: `/backend/uploads/Emails/${req.file.filename}`
+//         });
+//     } catch (error) {
+//         console.error('Error uploading email file:', {
+//             message: error.message,
+//             stack: error.stack,
+//             code: error.code
+//         });
+//         res.status(500).json({ error: 'Failed to upload email file' });
+//     }
+// });
+
+app.post('/api/emailList', upload.single('emails'), async (req, res) => {
+    try {
+        console.log('Received POST /api/emailList at', new Date().toISOString());
+        console.log('Upload request received', req.file);
+
+        if (!req.file) {
+            console.log('No file uploaded');
+            return res.status(400).json({ error: 'PDF file is required.' });
+        }
+
+        // File details
+        console.log('File details:', {
+            filename: req.file.filename,
+            originalname: req.file.originalname,
+            path: req.file.path,
+            size: req.file.size
+        });
+
+        // Check if the file was actually saved
+        try {
+            const fileExists = fs.existsSync(req.file.path);
+            console.log('File exists after upload:', fileExists);
+
+            if (fileExists) {
+                const stats = fs.statSync(req.file.path);
+                console.log('File size on disk:', stats.size);
+            }
+        } catch (fileError) {
+            console.error('Error checking file existence:', fileError);
+        }
+
+        // Delete any existing files in Emails directory
+        try {
+            const files = await fs.promises.readdir(emailsDir);
+            console.log('Existing files in Emails dir:', files);
+
+            for (const file of files) {
+                if (file !== req.file.filename) {
+                    const filePath = path.join(emailsDir, file);
+                    console.log('Deleting old file:', filePath);
+                    await fs.promises.unlink(filePath);
+                }
+            }
+        } catch (deleteError) {
             console.error('Error deleting old files:', deleteError);
         }
         res.status(201).json({
             message: 'File uploaded successfully!',
-            pdfPath: `/backend/uploads/Contacts/$req.file.filename`
+            pdfPath: `/backend/uploads/Emails/${req.file.filename}`
         });
-
     } catch (error) {
-        console.error ('Error uploading extension file:', {
-            message: err.message,
-            stack: err.stack,
-            code: err.code
+        console.error('Error uploading email file:', {
+            message: error.message,
+            stack: error.stack,
+            code: error.code
         });
-        res.status(500).json({error: 'Failed to upload extension file'})
+        res.status(500).json({ error: 'Failed to upload email file' });
     }
-
 });
 
 app.get('/api/test', (req, res) => {

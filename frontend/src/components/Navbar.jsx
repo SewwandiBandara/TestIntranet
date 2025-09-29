@@ -1,5 +1,3 @@
-// Updated Navbar.jsx
-
 import React, { useState, useEffect } from 'react';
 import logoImg from '../assets/logoImg.jpg';
 import { Link, NavLink } from 'react-router-dom';
@@ -8,7 +6,9 @@ import { HiMenu, HiX } from 'react-icons/hi';
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isPdfModalOpen, setIsPdfModalOpen] = useState(false);
+  const [isEmailModalOpen, setIsEmailModalOpen] = useState(false); // New state for email modal
   const [extensionPdfUrl, setExtensionPdfUrl] = useState(null);
+  const [emailPdfUrl, setEmailPdfUrl] = useState(null); // New state for email PDF
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
@@ -32,8 +32,27 @@ const Navbar = () => {
     }
   };
 
+  const fetchEmailPdf = async () => {
+    try {
+      const response = await fetch('http://localhost:3001/api/emailList');
+      if (!response.ok) {
+        throw new Error('Failed to fetch email PDF');
+      }
+      const data = await response.json();
+      if (data.imagePath) {
+        setEmailPdfUrl(`http://localhost:3001${data.imagePath}`);
+      } else {
+        setEmailPdfUrl(null);
+      }
+    } catch (error) {
+      console.error('Error fetching email PDF:', error);
+      setEmailPdfUrl(null);
+    }
+  };
+
   useEffect(() => {
     fetchExtensionPdf();
+    fetchEmailPdf(); // Fetch email PDF on mount
   }, []);
 
   const openPdfModal = async () => {
@@ -43,13 +62,30 @@ const Navbar = () => {
     setIsPdfModalOpen(true);
   };
 
+  const openEmailModal = async () => {
+    if (!emailPdfUrl) {
+      await fetchEmailPdf(); // Refetch if not loaded
+    }
+    setIsEmailModalOpen(true);
+  };
+
   const closePdfModal = () => {
     setIsPdfModalOpen(false);
+  };
+
+  const closeEmailModal = () => {
+    setIsEmailModalOpen(false);
   };
 
   const noPdfMessage = !extensionPdfUrl ? (
     <div className="flex items-center justify-center h-[70vh] text-gray-500">
       No extension list available. Please upload one via Admin Panel.
+    </div>
+  ) : null;
+
+  const noEmailMessage = !emailPdfUrl ? (
+    <div className="flex items-center justify-center h-[70vh] text-gray-500">
+      No email list available. Please upload one via Admin Panel.
     </div>
   ) : null;
 
@@ -70,9 +106,7 @@ const Navbar = () => {
 
         {/* Navigation items */}
         <div
-          className={`${
-            isOpen ? 'flex' : 'hidden'
-          } lg:flex flex-col lg:flex-row lg:flex-1 lg:justify-evenly gap-4 lg:gap-10 font-medium absolute lg:static top-12 left-0 w-full lg:w-auto bg-blue-950 lg:bg-transparent p-4 lg:p-0 transition-all duration-300`}
+          className={`${isOpen ? 'flex' : 'hidden'} lg:flex flex-col lg:flex-row lg:flex-1 lg:justify-evenly gap-4 lg:gap-10 font-medium absolute lg:static top-12 left-0 w-full lg:w-auto bg-blue-950 lg:bg-transparent p-4 lg:p-0 transition-all duration-300`}
         >
           {/* Home Link */}
           <NavLink
@@ -281,13 +315,12 @@ const Navbar = () => {
             <div className="absolute left-0 lg:group-hover:block hidden bg-blue-950 min-w-[150px] rounded-md shadow-lg z-10 mt-1 transition-opacity duration-200 opacity-0 group-hover:opacity-100">
               <ul className="py-1">
                 <li>
-                  <Link
-                    to="/"
-                    className="block px-4 py-2 hover:bg-yellow-400 hover:text-black"
-                    onClick={() => setIsOpen(false)}
+                  <button
+                    className="block px-4 py-2 hover:bg-yellow-400 hover:text-black w-full text-left"
+                    onClick={openEmailModal} // Open email modal on click
                   >
                     E-mail
-                  </Link>
+                  </button>
                 </li>
                 <li>
                   <button
@@ -314,7 +347,7 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* PDF Modal */}
+      {/* PDF Modal (for Extension List) */}
       {isPdfModalOpen && (
         <div className="fixed inset-0 bg-blue-50 bg-opacity-50 flex items-center justify-center z-50">
           <div className="w-3/4 h-180 bg-green-50 rounded-lg p-6 flex flex-col">
@@ -348,6 +381,50 @@ const Navbar = () => {
               ) : (
                 <button
                   onClick={closePdfModal}
+                  className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+                >
+                  Close
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Email Modal (for Email List) */}
+      {isEmailModalOpen && (
+        <div className="fixed inset-0 bg-blue-50 bg-opacity-50 flex items-center justify-center z-50">
+          <div className="w-3/4 h-180 bg-green-50 rounded-lg p-6 flex flex-col">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold text-black">Email List</h2>
+              <button
+                onClick={closeEmailModal}
+                className="text-black hover:text-red-600 focus:outline-none"
+              >
+                <HiX className="h-6 w-6" />
+              </button>
+            </div>
+            <div className="flex-1 overflow-auto">
+              {noEmailMessage || (
+                <iframe
+                  src={emailPdfUrl}
+                  title="Email List PDF"
+                  className="w-full h-[70vh] border-0"
+                />
+              )}
+            </div>
+            <div className="mt-4 flex justify-end">
+              {emailPdfUrl ? (
+                <a
+                  href={emailPdfUrl}
+                  download="email_list.pdf"
+                  className="bg-blue-950 text-white px-4 py-2 rounded hover:bg-blue-800"
+                >
+                  Download PDF
+                </a>
+              ) : (
+                <button
+                  onClick={closeEmailModal}
                   className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
                 >
                   Close

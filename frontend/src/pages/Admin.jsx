@@ -55,6 +55,11 @@ const Admin = () => {
     const [uploadStatus, setUploadStatus] = useState('');
     const fileInputRef = useRef(null);
 
+    //status for add email list in communication
+    const [uploadedEmailFile, setUploadedEmailFile] = useState(null);
+    const [uploadEmailStatus, setUploadEmailStatus] = useState('');
+   
+
     // Check login state on mount
     useEffect(() => {
         const token = localStorage.getItem('adminToken');
@@ -612,22 +617,19 @@ const Admin = () => {
         }
     };
 
-    ////////========functions in add extensions/contacts in communication====////
+    ////////========functions in add extensions/contacts in communication====//////
     //  const handleFileUpload = async (e) => {
     //     const file = e.target.files[0];
     //     if (file && file.type === 'application/pdf') {
     //         setUploadedFile(file);
     //         setUploadStatus('Uploading...');
-
     //         const formData = new FormData();
     //         formData.append('extensionList', file);
-
     //         try {
-    //             const response = await fetch('http://localhost:3002/api/extension', {
+    //             const response = await fetch('http://localhost:3001/api/extension', {
     //                 method: 'POST',
     //                 body: formData,
     //             });
-
     //             if (response.ok) {
     //                 setUploadStatus('File uploaded successfully!');
     //             } else {
@@ -642,41 +644,177 @@ const Admin = () => {
     //     }
     // };
 
-    const handleFileUpload = async (e) => {
-        const file = e.target.files[0];
-        if (file && file.type === 'application/pdf') {
-            setUploadedFile(file);
-            setUploadStatus('Uploading...');
-            const formData = new FormData();
-            formData.append('extensionList', file);
-            try {
-                const response = await fetch('http://localhost:3001/api/extension', {
-                    method: 'POST',
-                    body: formData,
-                });
-                if (response.ok) {
-                    setUploadStatus('File uploaded successfully!');
-                } else {
-                    const errorData = await response.json();
-                    setUploadStatus(`Upload failed: ${errorData.message || 'Unknown error'}`);
-                }
-            } catch (error) {
-                setUploadStatus(`Upload error: ${error.message}`);
-            }
-        } else {
-            setUploadStatus('Please upload a valid PDF file');
-        }
-    };
-
     //handle cancel
-    const handleExtCancel = () => {
-        setUploadedFile(null);
-        setUploadStatus('');
-        if (fileInputRef.current) {
-            fileInputRef.current.value = '';
-        }
-    };
+    // const handleExtCancel = () => {
+    //     setUploadedFile(null);
+    //     setUploadStatus('');
+    //     if (fileInputRef.current) {
+    //         fileInputRef.current.value = '';
+    //     }
+    // };
 
+
+    ////////========functions in uploading email list in communication==//////////
+//     const handleEmailUpload = async (e) => {
+//         e.preventDefault();
+//     if (!uploadedEmailFile) {
+//         setUploadEmailStatus('Please select a PDF file to upload.');
+//         return;
+//     }
+//     const formData = new FormData();
+//     formData.append('emails', uploadedEmailFile);
+//     try {
+//         const response = await fetch('/api/emailList', {  // Changed to relative URL
+//             method: 'POST',
+//             body: formData,
+//         });
+//         if (!response.ok) {
+//             const text = await response.text();  // Log raw response for debugging
+//             console.error('Raw response (not JSON):', text);  // Will show <!DOCTYPE if hitting frontend HTML
+//             setUploadEmailStatus(`Upload failed: ${text.substring(0, 100)}... Check console for details.`);
+//             return;
+//         }
+//         const data = await response.json();
+//         if (response.ok) {
+//             setUploadEmailStatus('File uploaded successfully!');
+//             setUploadedEmailFile(null);
+//             if (fileInputRef.current) fileInputRef.current.value = '';
+//         } else {
+//             setUploadEmailStatus(`Upload failed: ${data.error || 'Unknown error'}`);
+//         }
+//     } catch (error) {
+//         console.error('Upload error:', error);
+//         setUploadEmailStatus('Upload failed. Please check if the backend is running and try again.');
+//     }
+// };
+
+//        const handleEmailUpload = async (e) => {
+//         e.preventDefault();
+//         if (!uploadedEmailFile) {
+//             setUploadEmailStatus('Please select a PDF file to upload.');
+//             return;
+//         }
+//         const formData = new FormData();
+//         formData.append('emails', uploadedEmailFile);
+//         try {
+//             const response = await fetch('/api/emailList', {
+//                 method: 'POST',
+//                 body: formData,
+//             });
+//             if (!response.ok) {
+//                 const text = await response.text();
+//                 console.error('Raw response:', text); // Log HTML if present
+//                 setUploadEmailStatus(`Upload failed: ${text.substring(0, 100)}... Check console.`);
+//                 return;
+//             }
+//             const data = await response.json();
+//             if (response.ok) {
+//                 setUploadEmailStatus('File uploaded successfully!');
+//                 setUploadedEmailFile(null);
+//                 if (fileInputRef.current) fileInputRef.current.value = '';
+//             } else {
+//                 setUploadEmailStatus(`Upload failed: ${data.error || 'Unknown error'}`);
+//             }
+//         } catch (error) {
+//             console.error('Upload error:', error);
+//             setUploadEmailStatus('Upload failed. Please check if the backend is running.');
+//         }
+// };
+
+
+// Inside the Admin component, add these handlers
+
+// Handler for email list file selection
+const handleEmailFileChange = (e) => {
+  const file = e.target.files[0];
+  if (file && file.type === 'application/pdf') {
+    setUploadedEmailFile(file);
+    setUploadEmailStatus(''); // Clear error message on valid file selection
+  } else {
+    setUploadedEmailFile(null);
+    setUploadEmailStatus('Please select a PDF file to upload.');
+  }
+};
+
+// Handler for extension file selection
+const handleExtensionFileChange = (e) => {
+  const file = e.target.files[0];
+  if (file && file.type === 'application/pdf') {
+    setUploadedFile(file);
+    setUploadStatus(''); // Clear error message on valid file selection
+  } else {
+    setUploadedFile(null);
+    setUploadStatus('Please select a PDF file to upload.');
+  }
+};
+
+// Handler for email list upload
+const handleUploadEmail = async (e) => {
+  e.preventDefault();
+  if (!uploadedEmailFile) {
+    setUploadEmailStatus('Please select a PDF file to upload.');
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('emails', uploadedEmailFile);
+
+  try {
+    const response = await fetch('http://localhost:3001/api/emailList', {
+      method: 'POST',
+      body: formData,
+    });
+    const data = await response.json();
+    if (response.ok) {
+      setUploadEmailStatus('File uploaded successfully!');
+      setUploadedEmailFile(null); // Reset after success
+      fileInputRef.current.value = ''; // Clear the file input
+    } else {
+      setUploadEmailStatus(`Error: ${data.error || 'Failed to upload file'}`);
+    }
+  } catch (error) {
+    console.error('Upload failed:', error);
+    setUploadEmailStatus('Upload failed. Please check the server connection.');
+  }
+};
+
+// Handler for extension upload (similar to email list)
+const handleUploadExtension = async (e) => {
+  e.preventDefault();
+  if (!uploadedFile) {
+    setUploadStatus('Please select a PDF file to upload.');
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('extensionList', uploadedFile);
+
+  try {
+    const response = await fetch('http://localhost:3001/api/extension', {
+      method: 'POST',
+      body: formData,
+    });
+    const data = await response.json();
+    if (response.ok) {
+      setUploadStatus('File uploaded successfully!');
+      setUploadedFile(null); // Reset after success
+      fileInputRef.current.value = ''; // Clear the file input
+    } else {
+      setUploadStatus(`Error: ${data.error || 'Failed to upload file'}`);
+    }
+  } catch (error) {
+    console.error('Upload failed:', error);
+    setUploadStatus('Upload failed. Please check the server connection.');
+  }
+};
+
+    // const handleEmailCancel = () => {
+    //    setUploadedEmailFile(null);
+    //    setUploadEmailStatus('');
+    //    if (fileInputRef.current) {
+    //     fileInputRef.current.value = '';
+    //    }
+    // }
 
     const applications = [
         { id: 'hr', name: 'Human Resource Management', icon: <FiUsers /> },
@@ -1207,55 +1345,82 @@ const Admin = () => {
                                         </button>
                                     </div>
                                 </div>
-                                <div className="border rounded-lg p-6 bg-pink-100 shadow-lg">
-                                    <h3 className="text-lg font-semibold mb-4 text-gray-900">Internal Contacts (Extensions)</h3>
-                                    <div className="space-y-4">
-                                        <div>
-                                            <label htmlFor="extensionList" className="block text-sm font-medium text-gray-700">
-                                                Upload Extension List (PDF)
-                                            </label>
-                                            <div className="mt-1 flex items-center space-x-4">
-                                                <input
-                                                    id="extensionList"
-                                                    type="file"
-                                                    accept="application/pdf"
-                                                    onChange={handleFileUpload}
-                                                    ref={fileInputRef}
-                                                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                                                />
-                                                <button
-                                                    type="button"
-                                                    onClick={() => document.getElementById('extensionList').click()}
-                                                    className="group relative px-4 py-2 bg-gradient-to-r from-blue-300 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-300 shadow-md hover:shadow-lg flex items-center space-x-2"
-                                                >
-                                                    <FiUpload className="h-5 w-5" />
-                                                    <span>Upload PDF</span>
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    onClick={handleExtCancel}
-                                                    className="group relative px-4 py-4 bg-gradient-to-r from-gray-300 to-gray-400 text-white rounded-lg hover:from-gray-600 hover:to-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-300 shadow-md hover:shadow-lg flex items-center space-x-2"
-                                                >
-                                                    <MdOutlineCancel className="h-5 w-5" />
-                                                    <span>Cancel</span>
-                                                </button>
-                                            </div>
-                                        </div>
-                                        {uploadedFile && (
-                                            <div className="mt-4 text-sm text-gray-700">
-                                                <p>Uploaded File: <span className="font-medium">{uploadedFile.name}</span></p>
-                                            </div>
-                                        )}
-                                        {uploadStatus && (
-                                            <div className={`mt-4 text-sm ${uploadStatus.includes('success') ? 'text-green-600' : 'text-red-600'}`}>
-                                                <p>{uploadStatus}</p>
-                                            </div>
-                                        )}
+                               {/* Extension Upload Section */}
+                                <div className="mb-6 p-4 bg-indigo-100 rounded-lg shadow">
+                                    <h2 className="text-xl font-semibold mb-2">Upload Extension List</h2>
+                                    <form onSubmit={handleUploadExtension}>
+                                    <div className="mb-6">
+                                        <label className="block text-sm font-medium text-gray-700">
+                                        Select PDF File
+                                        </label>
+                                        <input
+                                        type="file"
+                                        ref={fileInputRef}
+                                        onChange={handleExtensionFileChange}
+                                        className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                                        />
                                     </div>
+                                    <div className="text-red-500 text-sm mb-4">{uploadStatus}</div>
+                                    <button
+                                        type="submit"
+                                        className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-700"
+                                        disabled={!uploadedFile}
+                                    >
+                                        Upload PDF
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                        setUploadedFile(null);
+                                        setUploadStatus('');
+                                        fileInputRef.current.value = '';
+                                        }}
+                                        className="ml-2 px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
+                                    >
+                                        Cancel
+                                    </button>
+                                    </form>
+                                </div>
+
+                                {/* Email List Upload Section */}
+                                <div className="mb-6 p-4 bg-fuchsia-100 rounded-lg shadow">
+                                    <h2 className="text-xl font-semibold mb-2">Upload Email List</h2>
+                                    <form onSubmit={handleUploadEmail}>
+                                    <div className="mb-4">
+                                        <label className="block text-sm font-medium text-gray-700">
+                                        Select PDF File
+                                        </label>
+                                        <input
+                                        type="file"
+                                        ref={fileInputRef}
+                                        onChange={handleEmailFileChange}
+                                        className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                                        />
+                                    </div>
+                                    <div className="text-red-500 text-sm mb-4">{uploadEmailStatus}</div>
+                                    <button
+                                        type="submit"
+                                        className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-700"
+                                        disabled={!uploadedEmailFile}
+                                    >
+                                        Upload PDF
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                        setUploadedEmailFile(null);
+                                        setUploadEmailStatus('');
+                                        fileInputRef.current.value = '';
+                                        }}
+                                        className="ml-2 px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
+                                    >
+                                        Cancel
+                                    </button>
+                                    </form>
+                                </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
                 );
 
 
