@@ -9,6 +9,9 @@ const Navbar = () => {
   const [isEmailModalOpen, setIsEmailModalOpen] = useState(false); // New state for email modal
   const [extensionPdfUrl, setExtensionPdfUrl] = useState(null);
   const [emailPdfUrl, setEmailPdfUrl] = useState(null); // New state for email PDF
+  const [QmsPdfUrl, setQmsPdfUrl] = useState(null); // New state for QMS PDF
+  const [isQmsModalOpen, setIsQmsModalOpen] = useState(false); // New state for QMS modal
+
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
@@ -50,10 +53,31 @@ const Navbar = () => {
     }
   };
 
+  const fetchQmsPdf = async () => {
+    try {
+      const response = await fetch('http://localhost:3001/api/qms');
+      if (!response.ok) {
+        throw new Error('Failed to fetch QMS PDF');
+      }
+      const data = await response.json();
+      if (data.imagePath) {
+        setQmsPdfUrl(`http://localhost:3001${data.imagePath}`);
+      } else {
+        setQmsPdfUrl(null);
+      }
+    } catch (error) {
+      console.error('Error fetching QMS PDF:', error);
+      setQmsPdfUrl(null);
+    }
+  };
+
+
   useEffect(() => {
     fetchExtensionPdf();
-    fetchEmailPdf(); // Fetch email PDF on mount
+    fetchEmailPdf();
+    fetchQmsPdf(); 
   }, []);
+
 
   const openPdfModal = async () => {
     if (!extensionPdfUrl) {
@@ -69,6 +93,13 @@ const Navbar = () => {
     setIsEmailModalOpen(true);
   };
 
+  const openQmsModal = async () => {
+    if (!QmsPdfUrl) {
+      await fetchQmsPdf(); // Refetch if not loaded
+    }
+    setIsQmsModalOpen(true);
+  };
+
   const closePdfModal = () => {
     setIsPdfModalOpen(false);
   };
@@ -76,6 +107,12 @@ const Navbar = () => {
   const closeEmailModal = () => {
     setIsEmailModalOpen(false);
   };
+
+  const closeQmsModal = () => {
+    setIsQmsModalOpen(false);
+  };
+
+  
 
   const noPdfMessage = !extensionPdfUrl ? (
     <div className="flex items-center justify-center h-[70vh] text-gray-500">
@@ -88,6 +125,13 @@ const Navbar = () => {
       No email list available. Please upload one via Admin Panel.
     </div>
   ) : null;
+
+  const noQmsMessage = !QmsPdfUrl ? (
+    <div className="flex items-center justify-center h-[70vh] text-gray-500">
+      No QMS document available. Please upload one via Admin Panel.
+    </div>
+  ) : null;
+
 
   return (
     <div className="fixed w-full bg-blue-950 py-2 z-50">
@@ -278,13 +322,13 @@ const Navbar = () => {
                   <div className="absolute hidden group-hover/iso:block left-full top-0 ml-1 bg-blue-400 min-w-[200px] rounded-md shadow-lg z-20 lg:left-auto lg:right-full lg:mr-1 transition-opacity duration-200 opacity-0 group-hover/iso:opacity-100">
                     <ul className="py-1">
                       <li>
-                        <Link
-                          to="#"
+                        <button
                           className="block px-4 py-2 hover:bg-yellow-200 hover:text-black"
-                          onClick={() => setIsOpen(false)}
+                          // onClick={() => setIsOpen(false)}
+                           onClick={openQmsModal} 
                         >
                           QMS
-                        </Link>
+                        </button>
                       </li>
                       <li>
                         <Link
@@ -434,6 +478,51 @@ const Navbar = () => {
           </div>
         </div>
       )}
+
+        {/* QMSModal (for QMS List) */}
+        {isQmsModalOpen && (
+          <div className="fixed inset-0 bg-blue-50 bg-opacity-50 flex items-center justify-center z-50">
+            <div className="w-3/4 h-180 bg-green-50 rounded-lg p-6 flex flex-col">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-semibold text-black">QMS Document List</h2>
+                <button
+                  onClick={closeQmsModal}
+                  className="text-black hover:text-red-600 focus:outline-none"
+                >
+                  <HiX className="h-6 w-6" />
+                </button>
+              </div>
+              <div className="flex-1 overflow-auto">
+                {noQmsMessage || (
+                  <iframe
+                    src={QmsPdfUrl}
+                    title="Email List PDF"
+                    className="w-full h-[70vh] border-0"
+                  />
+                )}
+              </div>
+              <div className="mt-4 flex justify-end">
+                {QmsPdfUrl ? (
+                  <a
+                    href={QmsPdfUrl}
+                    download="email_list.pdf"
+                    className="bg-blue-950 text-white px-4 py-2 rounded hover:bg-blue-800"
+                  >
+                    Download PDF/Doc
+                  </a>
+                ) : (
+                  <button
+                    onClick={closeQmsModal}
+                    className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+                  >
+                    Close
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
     </div>
   );
 };

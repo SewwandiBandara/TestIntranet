@@ -58,6 +58,13 @@ const Admin = () => {
     //status for add email list in communication
     const [uploadedEmailFile, setUploadedEmailFile] = useState(null);
     const [uploadEmailStatus, setUploadEmailStatus] = useState('');
+
+    //status for add QMS document in policies
+    const [fileQms, setFileQms] = useState(null);
+    const [uploadQmsStatus, setUploadQmsStatus] = useState('');
+    const qmsInputRef = useRef(null);   
+
+
    
 
     // Check login state on mount
@@ -808,78 +815,85 @@ const handleUploadExtension = async (e) => {
   }
 };
 
-    // const handleEmailCancel = () => {
-    //    setUploadedEmailFile(null);
-    //    setUploadEmailStatus('');
-    //    if (fileInputRef.current) {
-    //     fileInputRef.current.value = '';
-    //    }
-    // }
+  
 
-
-    // Add these handler functions to your component
-const handleFileUpload = (event, policyId) => {
-    const files = Array.from(event.target.files);
-    if (files.length > 0) {
-        // Update your state to include the uploaded files for this policy
-        const updatedPolicies = policies.map(policy => {
-            if (policy.id === policyId) {
-                const currentFiles = policy.uploadedFiles || [];
-                return {
-                    ...policy,
-                    uploadedFiles: [...currentFiles, ...files.map(file => ({
-                        name: file.name,
-                        size: file.size,
-                        type: file.type,
-                        file: file
-                    }))]
-                };
-            }
-            return policy;
-        });
-        // Update your policies state here
-        // setPolicies(updatedPolicies);
-        
-        // You can also upload to your backend here
-        files.forEach(file => {
-            uploadFileToServer(file, policyId);
-        });
-    }
-};
-
-const handleFileRemove = (policyId, fileIndex) => {
-    const updatedPolicies = policies.map(policy => {
-        if (policy.id === policyId) {
-            const updatedFiles = policy.uploadedFiles ? 
-                policy.uploadedFiles.filter((_, index) => index !== fileIndex) : [];
-            return {
-                ...policy,
-                uploadedFiles: updatedFiles
-            };
+    //////////========functions in uploading QMS document in policies==//////////
+    // Handler for QMS file selection
+    const handleQmsFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file && (
+            file.type === 'application/pdf' || 
+            file.type === 'application/msword' ||
+            file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+            file.type === 'text/plain' ||
+            file.type.startsWith('image/')
+        )) {
+            setFileQms(file);
+            setUploadQmsStatus(''); // Clear error message on valid file selection
+        } else {
+            setFileQms(null);
+            setUploadQmsStatus('Please select a valid file (PDF, DOC, DOCX, TXT, or image).');
         }
-        return policy;
-    });
-    // Update your policies state here
-    // setPolicies(updatedPolicies);
-};
+    };
 
-const uploadFileToServer = async (file, policyId) => {
-    // Implement your file upload logic to your backend
+   // Handler for QMS upload
+const handleUploadQms = async (e) => {
+    e.preventDefault();
+    if (!fileQms) {
+        setUploadQmsStatus('Please select a file to upload.');
+        return;
+    }
+
     const formData = new FormData();
-    formData.append('file', file);
-    formData.append('policyId', policyId);
-    
+    formData.append('qms', fileQms);
+
     try {
-        // const response = await fetch('/api/upload-policy-file', {
-        //     method: 'POST',
-        //     body: formData
-        // });
-        // Handle response
+        console.log('Uploading QMS file:', fileQms.name);
+        
+        const response = await fetch('http://localhost:3001/api/qms', {
+            method: 'POST',
+            body: formData,
+        });
+        
+        // Check if response is JSON
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            // If not JSON, get the text to see what's wrong
+            const text = await response.text();
+            console.error('Non-JSON response:', text.substring(0, 200));
+            throw new Error('Server returned an error page. Please check if the backend is running.');
+        }
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(data.error || `Server error: ${response.status}`);
+        }
+        
+        setUploadQmsStatus('File uploaded successfully!');
+        setFileQms(null);
+        if (qmsInputRef.current) {
+            qmsInputRef.current.value = '';
+        }
+        
+        // Clear success message after 3 seconds
+        setTimeout(() => {
+            setUploadQmsStatus('');
+        }, 3000);
+        
     } catch (error) {
-        console.error('Error uploading file:', error);
+        console.error('Upload failed:', error);
+        setUploadQmsStatus(`Upload failed: ${error.message}`);
+        
+        // Clear error message after 5 seconds
+        setTimeout(() => {
+            setUploadQmsStatus('');
+        }, 5000);
     }
 };
 
+
+    // Handler for QMS cancel 
     const applications = [
         { id: 'hr', name: 'Human Resource Management', icon: <FiUsers /> },
         { id: 'medical', name: 'Medical', icon: <FiFileText /> },
@@ -1352,75 +1366,84 @@ const uploadFileToServer = async (file, policyId) => {
                 );
 
             ///----------------------- policies and procedures section ---------------------------///
-              case 'policies':
-    return (
-        <div className="space-y-6 w-1/2">
-            <h2 className="text-2xl font-bold text-blue-900 mb-4">Policies & Procedures</h2>
-            <div className="space-y-4">
-                {policies.map(policy => (
-                    <div
-                        key={policy.id}
-                        className="border rounded-lg p-4 hover:bg-blue-50 transition-colors"
-                    >
-                        <div className="flex justify-between items-center mb-3">
-                            <div className="flex-1">
-                                <h3 className="font-medium">{policy.title}</h3>
-                                <span className="text-sm text-gray-500">{policy.category}</span>
-                            </div>
-                            <button
-                                onClick={() => navigate(`/policies/${policy.id}`)}
-                                className="ml-4 px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors text-sm"
-                            >
-                                View
-                            </button>
-                        </div>
+            case 'policies':
+                return (
+                    <div className="space-y-6 w-full">
+                        <h2 className="text-2xl font-bold text-blue-900 mb-4">Policies & Procedures</h2>
                         
-                        {/* File Upload Section */}
-                        <div className="border-t pt-3">
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Upload related files
-                            </label>
-                            <div className="flex items-center space-x-2">
-                                <input
-                                    type="file"
-                                    multiple
-                                    onChange={(e) => handleFileUpload(e, policy.id)}
-                                    className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                                    accept=".pdf,.doc,.docx,.txt,.jpg,.png"
-                                />
-                                <button
-                                    onClick={() => document.querySelector(`input[type="file"]`).click()}
-                                    className="px-3 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors text-sm"
+                        {/* QMS Quick Access */}
+                        {/* <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+                            <h3 className="text-xl font-semibold mb-4">Quality Management System (QMS)</h3>
+                            <p className="text-gray-600 mb-4">
+                                Manage all your QMS documents including SOPs, ISO documentation, policies, and procedures.
+                            </p>
+                            <button
+                                onClick={() => window.location.href = '/qms'}
+                                className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                            >
+                                Go to QMS Documents
+                            </button>
+                        </div> */}
+
+                        <div className="space-y-4">
+                            {policies.map(policy => (
+                                <div
+                                    key={policy.id}
+                                    className="border rounded-lg p-4 hover:bg-blue-50 transition-colors"
                                 >
-                                    Browse
-                                </button>
-                            </div>
-                            
-                            {/* Display uploaded files */}
-                            {policy.uploadedFiles && policy.uploadedFiles.length > 0 && (
-                                <div className="mt-2">
-                                    <p className="text-xs text-gray-500 mb-1">Uploaded files:</p>
-                                    <div className="space-y-1">
-                                        {policy.uploadedFiles.map((file, index) => (
-                                            <div key={index} className="flex items-center justify-between text-xs">
-                                                <span className="text-gray-600">{file.name}</span>
-                                                <button
-                                                    onClick={() => handleFileRemove(policy.id, index)}
-                                                    className="text-red-500 hover:text-red-700"
-                                                >
-                                                    Remove
-                                                </button>
-                                            </div>
-                                        ))}
+                                    <div className="flex justify-between items-center mb-3">
+                                        <div className="flex-1">
+                                            <h3 className="font-medium text-lg">{policy.title}</h3>
+                                            <span className="text-sm text-gray-500">{policy.category}</span>
+                                        </div>
                                     </div>
+                                    
+                                    {/* File Upload Section - Only show for QMS */}
+                                    {policy.category === 'QMS' && (
+                                        <div className="mb-6 p-4 bg-indigo-100 rounded-lg shadow">
+                                            <h2 className="text-xl font-semibold mb-2">Upload QMS Document</h2>
+                                            <form onSubmit={handleUploadQms}>
+                                                <div className="mb-4">
+                                                    <label className="block text-sm font-medium text-gray-700">
+                                                        Select PDF File
+                                                    </label>
+                                                    <input
+                                                        type="file"
+                                                        ref={qmsInputRef}
+                                                        onChange={handleQmsFileChange}
+                                                        accept=".pdf,.doc,.docx,.txt,image/*"
+                                                        className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                                                    />
+                                                </div>
+                                                <div className="text-red-500 text-sm mb-4">{uploadQmsStatus}</div>
+                                                <button
+                                                    type="submit"
+                                                    className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-700"
+                                                    disabled={!fileQms}
+                                                >
+                                                    Upload Document
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        setFileQms(null);
+                                                        setUploadQmsStatus('');
+                                                        if (qmsInputRef.current) {
+                                                            qmsInputRef.current.value = '';
+                                                        }
+                                                    }}
+                                                    className="ml-2 px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
+                                                >
+                                                    Cancel
+                                                </button>
+                                            </form>
+                                        </div>
+                                    )}
                                 </div>
-                            )}
+                            ))}
                         </div>
                     </div>
-                ))}
-            </div>
-        </div>
-    );
+                );
 
             ///----------------------- manage communication section -------------------------------///
             case 'communication':

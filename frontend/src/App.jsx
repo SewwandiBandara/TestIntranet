@@ -12,6 +12,7 @@ import DisplayPanel from "./pages/DisplayPanel";
 import SOP from "./pages/SOP";
 import POS from "./pages/POS";
 import ISO from "./pages/ISO";
+import QMS from "./pages/QMS";
 //admin import
 import Admin from "./pages/Admin";
 
@@ -37,6 +38,7 @@ function App() {
         <Route element={<SOP/>} path="/sop"/>
         <Route element={<POS/>} path="/pos"/>
         <Route element={<ISO/>} path="/iso"/>
+        <Route element={<QMS/>} path="/qms"/>
                
     </Routes>
     </BrowserRouter>
