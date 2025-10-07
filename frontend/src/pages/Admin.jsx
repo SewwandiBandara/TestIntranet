@@ -816,6 +816,70 @@ const handleUploadExtension = async (e) => {
     //    }
     // }
 
+
+    // Add these handler functions to your component
+const handleFileUpload = (event, policyId) => {
+    const files = Array.from(event.target.files);
+    if (files.length > 0) {
+        // Update your state to include the uploaded files for this policy
+        const updatedPolicies = policies.map(policy => {
+            if (policy.id === policyId) {
+                const currentFiles = policy.uploadedFiles || [];
+                return {
+                    ...policy,
+                    uploadedFiles: [...currentFiles, ...files.map(file => ({
+                        name: file.name,
+                        size: file.size,
+                        type: file.type,
+                        file: file
+                    }))]
+                };
+            }
+            return policy;
+        });
+        // Update your policies state here
+        // setPolicies(updatedPolicies);
+        
+        // You can also upload to your backend here
+        files.forEach(file => {
+            uploadFileToServer(file, policyId);
+        });
+    }
+};
+
+const handleFileRemove = (policyId, fileIndex) => {
+    const updatedPolicies = policies.map(policy => {
+        if (policy.id === policyId) {
+            const updatedFiles = policy.uploadedFiles ? 
+                policy.uploadedFiles.filter((_, index) => index !== fileIndex) : [];
+            return {
+                ...policy,
+                uploadedFiles: updatedFiles
+            };
+        }
+        return policy;
+    });
+    // Update your policies state here
+    // setPolicies(updatedPolicies);
+};
+
+const uploadFileToServer = async (file, policyId) => {
+    // Implement your file upload logic to your backend
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('policyId', policyId);
+    
+    try {
+        // const response = await fetch('/api/upload-policy-file', {
+        //     method: 'POST',
+        //     body: formData
+        // });
+        // Handle response
+    } catch (error) {
+        console.error('Error uploading file:', error);
+    }
+};
+
     const applications = [
         { id: 'hr', name: 'Human Resource Management', icon: <FiUsers /> },
         { id: 'medical', name: 'Medical', icon: <FiFileText /> },
@@ -1069,7 +1133,7 @@ const handleUploadExtension = async (e) => {
                 return (
                     <div className="space-y-6">
                         <h2 className="text-2xl font-bold mb-4">Working Calendar</h2>
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div className="flex flex-col gap-6">
                             <div className="bg-blue-50 rounded-lg shadow p-6 border border-gray-200">
                                 <h1 className="text-xl font-bold text-gray-800 mb-6">{editingId ? 'Edit Event' : 'Add New Event'}</h1>
                                 <div className="bg-white rounded-lg shadow p-6">
@@ -1288,28 +1352,75 @@ const handleUploadExtension = async (e) => {
                 );
 
             ///----------------------- policies and procedures section ---------------------------///
-            case 'policies':
-                return (
-                    <div className="space-y-6 w-1/2">
-                        <h2 className="text-2xl font-bold text-blue-900 mb-4">Policies & Procedures</h2>
-                        <div className="space-y-4">
-                            {policies.map(policy => (
-                                <div
-                                    key={policy.id}
-                                    className="border rounded-lg p-4 hover:bg-blue-50 cursor-pointer transition-colors"
-                                    onClick={() => navigate(`/policies/${policy.id}`)}
+              case 'policies':
+    return (
+        <div className="space-y-6 w-1/2">
+            <h2 className="text-2xl font-bold text-blue-900 mb-4">Policies & Procedures</h2>
+            <div className="space-y-4">
+                {policies.map(policy => (
+                    <div
+                        key={policy.id}
+                        className="border rounded-lg p-4 hover:bg-blue-50 transition-colors"
+                    >
+                        <div className="flex justify-between items-center mb-3">
+                            <div className="flex-1">
+                                <h3 className="font-medium">{policy.title}</h3>
+                                <span className="text-sm text-gray-500">{policy.category}</span>
+                            </div>
+                            <button
+                                onClick={() => navigate(`/policies/${policy.id}`)}
+                                className="ml-4 px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors text-sm"
+                            >
+                                View
+                            </button>
+                        </div>
+                        
+                        {/* File Upload Section */}
+                        <div className="border-t pt-3">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Upload related files
+                            </label>
+                            <div className="flex items-center space-x-2">
+                                <input
+                                    type="file"
+                                    multiple
+                                    onChange={(e) => handleFileUpload(e, policy.id)}
+                                    className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                                    accept=".pdf,.doc,.docx,.txt,.jpg,.png"
+                                />
+                                <button
+                                    onClick={() => document.querySelector(`input[type="file"]`).click()}
+                                    className="px-3 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors text-sm"
                                 >
-                                    <div className="flex justify-between items-center">
-                                        <div>
-                                            <h3 className="font-medium">{policy.title}</h3>
-                                            <span className="text-sm text-gray-500">{policy.category}</span>
-                                        </div>
+                                    Browse
+                                </button>
+                            </div>
+                            
+                            {/* Display uploaded files */}
+                            {policy.uploadedFiles && policy.uploadedFiles.length > 0 && (
+                                <div className="mt-2">
+                                    <p className="text-xs text-gray-500 mb-1">Uploaded files:</p>
+                                    <div className="space-y-1">
+                                        {policy.uploadedFiles.map((file, index) => (
+                                            <div key={index} className="flex items-center justify-between text-xs">
+                                                <span className="text-gray-600">{file.name}</span>
+                                                <button
+                                                    onClick={() => handleFileRemove(policy.id, index)}
+                                                    className="text-red-500 hover:text-red-700"
+                                                >
+                                                    Remove
+                                                </button>
+                                            </div>
+                                        ))}
                                     </div>
                                 </div>
-                            ))}
+                            )}
                         </div>
                     </div>
-                );
+                ))}
+            </div>
+        </div>
+    );
 
             ///----------------------- manage communication section -------------------------------///
             case 'communication':
