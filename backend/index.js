@@ -1121,6 +1121,23 @@ app.post('/api/emailList', upload.single('emails'), async (req, res) => {
 });
 
 
+app.delete('/api/emailList', async (req, res) => {
+    try {
+        console.log('Received DELETE /api/emailList at', new Date().toISOString());
+        const files = await fs.promises.readdir(emailsDir);
+        let deletedCount = 0;
+        for (const file of files) {
+            const filePath = path.join(emailsDir, file);
+            await fs.promises.unlink(filePath);
+            deletedCount++;
+        }
+        console.log(`Deleted ${deletedCount} email files`);
+        res.status(200).json({ message: 'Email list deleted successfully!' });
+    } catch (error) {
+        console.error('Error deleting email file:', error);
+        res.status(500).json({ error: 'Failed to delete email file' });
+    }
+});
 
 
 app.get('/api/qms/test', (req, res) => {

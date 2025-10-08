@@ -1,17 +1,13 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { FiUpload, FiFile, FiDownload, FiTrash2, FiFolder, FiSearch } from 'react-icons/fi';
+import React, { useState, useEffect } from 'react';
+import { FiFile, FiFolder, FiSearch, FiEye, FiDownload } from 'react-icons/fi';
 
 const QMS = () => {
   const [documents, setDocuments] = useState([]);
-  const [selectedFiles, setSelectedFiles] = useState([]);
-  const [uploading, setUploading] = useState(false);
-  const [category, setCategory] = useState('SOP');
-  const [description, setDescription] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('All');
   const [error, setError] = useState('');
   const [debugInfo, setDebugInfo] = useState('');
-  const fileInputRef = useRef(null);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [selectedDocument, setSelectedDocument] = useState(null);
 
   // Fetch documents on component mount
   useEffect(() => {
@@ -19,157 +15,81 @@ const QMS = () => {
     testConnection();
   }, []);
 
-    const testConnection = async () => {
+  const testConnection = async () => {
     try {
-        console.log('Testing QMS API connection...');
-        const response = await fetch('http://localhost:3001/api/test'); // Changed from /api/qms/test to /api/test
-        const text = await response.text();
-        console.log('Test response:', text);
-        
-        let data;
-        try {
-        data = JSON.parse(text);
-        } catch (e) {
-        throw new Error(`Server returned HTML instead of JSON. Response: ${text.substring(0, 100)}...`);
-        }
-        
-        if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${data.error || 'Unknown error'}`);
-        }
-        
-        setDebugInfo(`API Connection: ✓ Working (${data.message})`);
-    } catch (error) {
-        console.error('Connection test failed:', error);
-        setDebugInfo(`API Connection: ✗ Failed - ${error.message}`);
-    }
-    };
-
-    const fetchDocuments = async () => {
-    try {
-        console.log('Fetching QMS documents...');
-        const response = await fetch('http://localhost:3001/api/qms/documents');
-        
-        if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-        
-        const data = await response.json();
-        console.log('Fetched documents:', data);
-        
-        setDocuments(data);
-        setError('');
-    } catch (error) {
-        console.error('Error fetching documents:', error);
-        setError(`Failed to load documents: ${error.message}`);
-        
-        // Check if it's a CORS issue
-        if (error.message.includes('Failed to fetch')) {
-        setError('Network error: Cannot connect to server. Make sure the backend is running on port 3001.');
-        }
-    }
-    };
-
-  const handleFileSelect = (event) => {
-    const files = Array.from(event.target.files);
-    setSelectedFiles(files);
-    setError('');
-  };
-
-  const handleUpload = async () => {
-    if (selectedFiles.length === 0) {
-      setError('Please select files to upload');
-      return;
-    }
-
-    setUploading(true);
-    setError('');
-    
-    const formData = new FormData();
-    
-    // Append all files
-    selectedFiles.forEach(file => {
-      formData.append('documents', file);
-    });
-    
-    // Append metadata
-    formData.append('category', category);
-    formData.append('description', description);
-
-    try {
-      console.log('Starting upload...', {
-        files: selectedFiles.map(f => f.name),
-        category,
-        description
-      });
-
-      const response = await fetch('http://localhost:3001/api/qms/upload', {
-        method: 'POST',
-        body: formData,
-      });
-
+      console.log('Testing QMS API connection...');
+      const response = await fetch('http://localhost:3001/api/test');
       const text = await response.text();
-      console.log('Upload raw response:', text);
-
-      let result;
+      console.log('Test response:', text);
+      
+      let data;
       try {
-        result = JSON.parse(text);
+        data = JSON.parse(text);
       } catch (e) {
-        throw new Error(`Server returned invalid JSON. Response: ${text.substring(0, 200)}...`);
+        throw new Error(`Server returned HTML instead of JSON. Response: ${text.substring(0, 100)}...`);
       }
-
-      console.log('Upload parsed response:', result);
-
-      if (response.ok && result.success) {
-        alert(result.message);
-        setSelectedFiles([]);
-        setDescription('');
-        if (fileInputRef.current) {
-          fileInputRef.current.value = '';
-        }
-        fetchDocuments();
-      } else {
-        throw new Error(result.error || 'Upload failed');
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${data.error || 'Unknown error'}`);
       }
+      
+      setDebugInfo(`API Connection: ✓ Working (${data.message})`);
     } catch (error) {
-      console.error('Upload error:', error);
-      setError(`Upload failed: ${error.message}`);
-    } finally {
-      setUploading(false);
+      console.error('Connection test failed:', error);
+      setDebugInfo(`API Connection: ✗ Failed - ${error.message}`);
     }
   };
 
-  const handleDelete = async (documentId) => {
-    if (!window.confirm('Are you sure you want to delete this document?')) {
-      return;
-    }
-
+  const fetchDocuments = async () => {
     try {
-      const response = await fetch(`http://localhost:3001/api/qms/documents/${documentId}`, {
-        method: 'DELETE',
-      });
-
-      const result = await response.json();
-
-      if (response.ok && result.success) {
-        alert('Document deleted successfully!');
-        fetchDocuments();
-      } else {
-        throw new Error(result.error || 'Delete failed');
+      console.log('Fetching QMS documents...');
+      const response = await fetch('http://localhost:3001/api/qms');
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
+      
+      const data = await response.json();
+      console.log('Fetched documents:', data);
+      
+      // Map backend data to expected structure
+      const mappedDocuments = data.files.map((file, index) => ({
+        Id: index + 1, // Generate simple ID
+        DocumentName: file.filename,
+        FileType: file.filename.split('.').pop().toLowerCase() || 'unknown',
+        FileSize: file.size || 0, // Assuming backend includes size; otherwise 0
+        Category: 'QMS', // Default category
+        Description: `QMS Document: ${file.filename}`, // Default description
+        UploadedAt: file.uploadDate,
+        FilePath: file.filePath
+      }));
+      
+      setDocuments(mappedDocuments);
+      setError('');
     } catch (error) {
-      console.error('Delete error:', error);
-      alert('Delete failed. Please try again.');
+      console.error('Error fetching documents:', error);
+      setError(`Failed to load documents: ${error.message}`);
+      
+      // Check if it's a CORS issue
+      if (error.message.includes('Failed to fetch')) {
+        setError('Network error: Cannot connect to server. Make sure the backend is running on port 3001.');
+      }
     }
+  };
+
+  const handleView = (document) => {
+    setSelectedDocument(document);
+    setIsPreviewOpen(true);
   };
 
   const handleDownload = (document) => {
     const fullUrl = `http://localhost:3001${document.FilePath}`;
-    console.log('Opening document:', fullUrl);
+    console.log('Downloading document:', fullUrl);
     window.open(fullUrl, '_blank');
   };
 
   const formatFileSize = (bytes) => {
-    if (bytes === 0) return '0 Bytes';
+    if (bytes === 0) return 'Unknown';
     const k = 1024;
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
@@ -177,26 +97,20 @@ const QMS = () => {
   };
 
   const getFileIcon = (fileType) => {
-    if (fileType.includes('word') || fileType.includes('document')) {
+    if (fileType.includes('word') || fileType.includes('doc')) {
       return <FiFile className="text-blue-600" />;
     } else if (fileType.includes('pdf')) {
       return <FiFile className="text-red-600" />;
-    } else if (fileType.includes('image')) {
+    } else if (fileType.includes('image') || fileType.includes('jpg') || fileType.includes('png')) {
       return <FiFile className="text-green-600" />;
     }
     return <FiFile className="text-gray-600" />;
   };
 
-  // Filter documents based on search and category
-  const filteredDocuments = documents.filter(doc => {
-    const matchesSearch = doc.DocumentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         doc.Description?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === 'All' || doc.Category === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
-
-  // Get unique categories for filter
-  const categories = ['All', ...new Set(documents.map(doc => doc.Category))];
+  // Filter documents based on search
+  const filteredDocuments = documents.filter(doc => 
+    doc.DocumentName.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
@@ -206,7 +120,7 @@ const QMS = () => {
             Quality Management System
           </h1>
           <p className="text-lg text-gray-600">
-            Manage your QMS documents and procedures
+            View your QMS documents and procedures
           </p>
         </div>
 
@@ -237,97 +151,6 @@ const QMS = () => {
           </div>
         )}
 
-        {/* Upload Section */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-          <h2 className="text-xl font-semibold mb-4 flex items-center">
-            <FiUpload className="mr-2" />
-            Upload Documents
-          </h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Select Documents (Multiple files allowed)
-              </label>
-              <input
-                ref={fileInputRef}
-                type="file"
-                multiple
-                onChange={handleFileSelect}
-                accept=".doc,.docx,.pdf,.txt,image/*"
-                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-              />
-              {selectedFiles.length > 0 && (
-                <div className="mt-2">
-                  <p className="text-sm text-gray-600">
-                    Selected {selectedFiles.length} file(s):
-                  </p>
-                  <ul className="text-xs text-gray-500 mt-1 max-h-20 overflow-y-auto">
-                    {selectedFiles.map((file, index) => (
-                      <li key={index} className="truncate">
-                        {file.name} ({(file.size / 1024).toFixed(1)} KB)
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
-
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Category
-                </label>
-                <select
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="SOP">Standard Operating Procedures</option>
-                  <option value="QMS">Quality Management System</option>
-                  <option value="ISO">ISO Documentation</option>
-                  <option value="Policy">Policies</option>
-                  <option value="Procedure">Procedures</option>
-                  <option value="Form">Forms</option>
-                  <option value="Manual">Manuals</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Description (Optional)
-                </label>
-                <textarea
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Brief description of the documents..."
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 h-20"
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-6 flex justify-end">
-            <button
-              onClick={handleUpload}
-              disabled={uploading || selectedFiles.length === 0}
-              className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center"
-            >
-              {uploading ? (
-                <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                  Uploading...
-                </>
-              ) : (
-                <>
-                  <FiUpload className="mr-2" />
-                  Upload {selectedFiles.length} Document(s)
-                </>
-              )}
-            </button>
-          </div>
-        </div>
-
         {/* Documents List Section */}
         <div className="bg-white rounded-lg shadow-md p-6">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
@@ -336,27 +159,15 @@ const QMS = () => {
               QMS Documents ({filteredDocuments.length})
             </h2>
             
-            <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-              <div className="relative">
-                <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Search documents..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                {categories.map(cat => (
-                  <option key={cat} value={cat}>{cat}</option>
-                ))}
-              </select>
+            <div className="relative">
+              <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search documents..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
             </div>
           </div>
 
@@ -365,7 +176,7 @@ const QMS = () => {
               <FiFile className="mx-auto h-12 w-12 text-gray-400" />
               <h3 className="mt-4 text-lg font-medium text-gray-900">No documents found</h3>
               <p className="mt-2 text-gray-500">
-                {documents.length === 0 ? 'Get started by uploading your first document.' : 'No documents match your search criteria.'}
+                {documents.length === 0 ? 'No documents available. Please upload via Admin Panel.' : 'No documents match your search criteria.'}
               </p>
             </div>
           ) : (
@@ -424,18 +235,18 @@ const QMS = () => {
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <div className="flex space-x-2">
                           <button
-                            onClick={() => handleDownload(document)}
+                            onClick={() => handleView(document)}
                             className="text-blue-600 hover:text-blue-900 flex items-center"
                           >
-                            <FiDownload className="mr-1" />
-                            View
+                            <FiEye className="mr-1" />
+                            Preview
                           </button>
                           <button
-                            onClick={() => handleDelete(document.Id)}
-                            className="text-red-600 hover:text-red-900 flex items-center"
+                            onClick={() => handleDownload(document)}
+                            className="text-green-600 hover:text-green-900 flex items-center"
                           >
-                            <FiTrash2 className="mr-1" />
-                            Delete
+                            <FiDownload className="mr-1" />
+                            Download
                           </button>
                         </div>
                       </td>
@@ -446,6 +257,40 @@ const QMS = () => {
             </div>
           )}
         </div>
+
+        {/* Preview Modal */}
+        {isPreviewOpen && selectedDocument && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg max-w-4xl max-h-full overflow-hidden flex flex-col">
+              <div className="flex justify-between items-center p-4 border-b">
+                <h3 className="text-lg font-semibold">
+                  Preview: {selectedDocument.DocumentName}
+                </h3>
+                <div className="flex space-x-2">
+                  <button
+                    onClick={() => handleDownload(selectedDocument)}
+                    className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600"
+                  >
+                    Download
+                  </button>
+                  <button
+                    onClick={() => setIsPreviewOpen(false)}
+                    className="px-3 py-1 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+              <div className="flex-1 overflow-auto">
+                <iframe
+                  src={`http://localhost:3001${selectedDocument.FilePath}`}
+                  title={`Preview of ${selectedDocument.DocumentName}`}
+                  className="w-full h-[70vh] border-0"
+                />
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

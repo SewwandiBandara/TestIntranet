@@ -59,9 +59,11 @@ const Admin = () => {
     const [uploadedEmailFile, setUploadedEmailFile] = useState(null);
     const [uploadEmailStatus, setUploadEmailStatus] = useState('');
     const emailInputRef = useRef(null);
+    const [currentEmailFile, setCurrentEmailFile] = useState(null);
+
 
     //status for add QMS document in policies
-const [qmsFiles, setQmsFiles] = useState([]);
+    const [qmsFiles, setQmsFiles] = useState([]);
     const [qmsUploadedFiles, setQmsUploadedFiles] = useState([]);
     const [uploadQmsStatus, setUploadQmsStatus] = useState('');
     const qmsInputRef = useRef(null);
@@ -208,6 +210,22 @@ const [qmsFiles, setQmsFiles] = useState([]);
         }
     };
 
+    //Function to fetch email list
+    const fetchEmailList = async () => {
+        try {
+            const response = await fetch('http://localhost:3001/api/emailList');
+            if (!response.ok) {
+            throw new Error('Failed to fetch email list');
+            }
+            const data = await response.json();
+            setCurrentEmailFile(data.emailPath);
+        } catch (error) {
+            console.error('Error fetching email list:', error);
+            setCurrentEmailFile(null);
+        }
+        };
+
+
     // Function to fetch QMS files
     const fetchQmsFiles = async () => {
         try {
@@ -237,6 +255,8 @@ const [qmsFiles, setQmsFiles] = useState([]);
             fetchAchievements();
         } else if (activeTab === 'policies') {
             fetchQmsFiles();
+        } else if (activeTab === 'communication') {
+            fetchEmailList();
         }
     }, [activeTab]);
 
@@ -775,6 +795,17 @@ const handleExtensionFileChange = (e) => {
 
 
 // Handler for email list file selection
+// const handleEmailFileChange = (e) => {
+//   const file = e.target.files[0];
+//   if (file && file.type === 'application/pdf') {
+//     setUploadedEmailFile(file);
+//     setUploadEmailStatus(''); // Clear error message on valid file selection
+//   } else {
+//     setUploadedEmailFile(null);
+//     setUploadEmailStatus('Please select a PDF file to upload.');
+//   }
+// };
+
 const handleEmailFileChange = (e) => {
   const file = e.target.files[0];
   if (file && file.type === 'application/pdf') {
@@ -822,6 +853,27 @@ const handleUploadEmail = async (e) => {
   }
 };
 
+const handleDeleteEmail = async () => {
+  if (!currentEmailFile) return;
+  if (!window.confirm('Are you sure you want to delete the current email list?')) {
+    return;
+  }
+  try {
+    const response = await fetch('http://localhost:3001/api/emailList', {
+      method: 'DELETE',
+    });
+    if (response.ok) {
+      setCurrentEmailFile(null);
+      setUploadEmailStatus('Email list deleted successfully.');
+    } else {
+      const errorData = await response.json();
+      setUploadEmailStatus(`Error: ${errorData.error || 'Failed to delete'}`);
+    }
+  } catch (error) {
+    console.error('Delete failed:', error);
+    setUploadEmailStatus('Failed to delete. Please check the server connection.');
+  }
+};
 
 
 // const handleUploadEmail = async (e) => {
@@ -1735,9 +1787,34 @@ const handleUploadExtension = async (e) => {
                                     </button>
                                     </form>
                                 </div>
+                                
+                                {/* Current Email List Display */}
+                                {currentEmailFile && (
+                                    <div className="mt-6 p-4 bg-white rounded-lg shadow border">
+                                    <h3 className="text-lg font-semibold mb-2">Current Email List</h3>
+                                    <div className="flex justify-between items-center">
+                                        <a
+                                        href={`http://localhost:3001${currentEmailFile}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-blue-500 hover:underline flex-1 truncate"
+                                        title={currentEmailFile.split('/').pop()}
+                                        >
+                                        📄 {currentEmailFile.split('/').pop()}
+                                        </a>
+                                        <button
+                                        onClick={handleDeleteEmail}
+                                        className="ml-4 px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 text-sm"
+                                        >
+                                        Delete
+                                        </button>
+                                    </div>
+                                    </div>
+                                )}
+                                </div>
+
                                 </div>
                             </div>
-                        </div>
                 );
 
 
