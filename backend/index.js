@@ -253,7 +253,15 @@ const uploadMultiple = multer({
 
 
 // Middleware
-app.use(cors());
+ app.use(cors());
+
+// app.use(cors({
+//   origin: 'http://localhost:3000', // Adjust to your frontend port, e.g., 3000
+//   credentials: true,
+//   methods: ['GET', 'POST', 'OPTIONS'],
+//   allowedHeaders: ['Content-Type', 'Authorization']
+// }));
+
 app.use(bodyParser.json());
 
 
@@ -1037,171 +1045,81 @@ app.post('/api/extension', upload.single('extensionList'), async (req, res) => {
 
 ///communication - add email list
 app.get('/api/emailList', async (req, res) => {
-    try{
+    try {
         const files = await fs.promises.readdir(emailsDir);
-        const latestFile = files.sort((a,b) => b.localeCompare(a)) [0];
+        // Sort descending lexically to pick the latest file
+        const latestFile = files.sort((a, b) => b.localeCompare(a))[0];
         res.json({
-            imagePath: latestFile ? `/backend/uploads/Emails/${latestFile}` : null
+            emailPath: latestFile ? `/backend/uploads/Emails/${latestFile}` : null
         });
-    }
-    catch(err) {
+    } catch (err) {
         console.error('Error fetching email list:', err);
-        res.status(500).json({error: 'Failed to fetch email list'});
+        res.status(500).json({ error: 'Failed to fetch email list' });
     }
 });
 
-// app.post('/api/emailList', (req, res, next) => {
-//   upload.single('emails')(req, res, err => {
-//     if (err instanceof multer.MulterError) {
-//       return res.status(400).json({ error: err.message });
-//     } else if (err) {
-//       return res.status(400).json({ error: err.message });
-//     }
-//     next();
-//   });
-// }, async (req, res) => {
-//     try {
-//         console.log('Received POST /api/emailList at', new Date().toISOString());
-//         console.log('Upload request received', req.file);
 
-//         if (!req.file) {
-//             console.log('No file uploaded');
-//             return res.status(400).json({ error: 'PDF file is required.' });
-//         }
+app.post('/api/emailList', upload.single('emails'), async (req, res) => {
+    try {
+        console.log('Received POST /api/emailList at', new Date().toISOString());
+        console.log('Upload request received', req.file);
 
-//         // File details
-//         console.log('File details:', {
-//             filename: req.file.filename,
-//             originalname: req.file.originalname,
-//             path: req.file.path,
-//             size: req.file.size
-//         });
+        if (!req.file) {
+            console.log('No file uploaded');
+            return res.status(400).json({ error: 'PDF file is required.' });
+        }
 
-//         // Check if the file was actually saved
-//         try {
-//             const fileExists = fs.existsSync(req.file.path);
-//             console.log('File exists after upload:', fileExists);
+        // File details
+        console.log('File details:', {
+            filename: req.file.filename,
+            originalname: req.file.originalname,
+            path: req.file.path,
+            size: req.file.size
+        });
 
-//             if (fileExists) {
-//                 const stats = fs.statSync(req.file.path);
-//                 console.log('File size on disk:', stats.size);
-//             }
-//         } catch (fileError) {
-//             console.error('Error checking file existence:', fileError);
-//         }
+        // Check if the file was actually saved
+        try {
+            const fileExists = fs.existsSync(req.file.path);
+            console.log('File exists after upload:', fileExists);
 
-//         // Delete any existing files in Emails directory
-//         try {
-//             const files = await fs.promises.readdir(emailsDir);
-//             console.log('Existing files in Emails dir:', files);
+            if (fileExists) {
+                const stats = fs.statSync(req.file.path);
+                console.log('File size on disk:', stats.size);
+            }
+        } catch (fileError) {
+            console.error('Error checking file existence:', fileError);
+        }
 
-//             for (const file of files) {
-//                 if (file !== req.file.filename) {
-//                     const filePath = path.join(emailsDir, file);
-//                     console.log('Deleting old file:', filePath);
-//                     await fs.promises.unlink(filePath);
-//                 }
-//             }
-//         } catch (deleteError) {
-//             console.error('Error deleting old files:', deleteError);
-//         }
-//         res.status(201).json({
-//             message: 'File uploaded successfully!',
-//             pdfPath: `/backend/uploads/Emails/${req.file.filename}`
-//         });
-//     } catch (error) {
-//         console.error('Error uploading email file:', {
-//             message: error.message,
-//             stack: error.stack,
-//             code: error.code
-//         });
-//         res.status(500).json({ error: 'Failed to upload email file' });
-//     }
-// });
+        // Delete any existing files in Emails directory
+        try {
+            const files = await fs.promises.readdir(emailsDir);
+            console.log('Existing files in Emails dir', files);
 
-// In your index.js - fix the QMS endpoint
-// app.post('/api/qms', upload.single('qms'), async (req, res) => {
-//     try {
-//         console.log('Received POST /api/qms at', new Date().toISOString());
-//         console.log('Upload request received', req.file);
+            for (const file of files) {
+                if (file !== req.file.filename) {
+                    const filePath = path.join(emailsDir, file);
+                    console.log('Deleting old file:', filePath);
+                    await fs.promises.unlink(filePath);
+                }
+            }
+        } catch (deleteError) {
+            console.error('Error deleting old files:', deleteError);
+        }
 
-//         if (!req.file) {
-//             console.log('No file uploaded');
-//             return res.status(400).json({ error: 'File is required.' });
-//         }
+        res.status(201).json({
+            message: 'File uploaded successfully!',
+            pdfPath: `/backend/uploads/Emails/${req.file.filename}`
+        });
+    } catch (error) {
+        console.error('Error uploading email file:', {
+            message: error.message,
+            stack: error.stack,
+            code: error.code
+        });
+        res.status(500).json({ error: 'Failed to upload email file' });
+    }
+});
 
-//         // Enhanced file validation
-//         const allowedTypes = [
-//             'application/pdf',
-//             'application/msword',
-//             'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-//             'text/plain'
-//         ];
-        
-//         if (!allowedTypes.includes(req.file.mimetype) && !req.file.mimetype.startsWith('image/')) {
-//             return res.status(400).json({ error: 'Invalid file type. Allowed: PDF, DOC, DOCX, TXT, images' });
-//         }
-
-//         // File details
-//         console.log('File details:', {
-//             filename: req.file.filename,
-//             originalname: req.file.originalname,
-//             mimetype: req.file.mimetype,
-//             path: req.file.path,
-//             size: req.file.size
-//         });
-
-//         // Check if file was saved
-//         try {
-//             const fileExists = fs.existsSync(req.file.path);
-//             console.log('File exists after upload:', fileExists);
-//             if (fileExists) {
-//                 const stats = fs.statSync(req.file.path);
-//                 console.log('File size on disk:', stats.size);
-//             }
-//         } catch (fileError) {
-//             console.error('Error checking file existence:', fileError);
-//             return res.status(500).json({ error: 'File save verification failed' });
-//         }
-
-//         // Delete old files in QMS directory
-//         try {
-//             const files = await fs.promises.readdir(qmsDir);
-//             console.log('Existing files in QMS dir:', files);
-
-//             for (const file of files) {
-//                 if (file !== req.file.filename) {
-//                     const filePath = path.join(qmsDir, file);
-//                     console.log('Deleting old file:', filePath);
-//                     await fs.promises.unlink(filePath);
-//                 }
-//             }
-//         } catch (deleteError) {
-//             console.error('Error deleting old files:', deleteError);
-//             // Don't fail the upload if cleanup fails
-//         }
-
-//         res.status(201).json({
-//             message: 'File uploaded successfully!',
-//             filePath: `/backend/uploads/QMS/${req.file.filename}`,
-//             filename: req.file.filename
-//         });
-
-//     } catch (error) {
-//         console.error('Error uploading QMS file:', {
-//             message: error.message,
-//             stack: error.stack,
-//             code: error.code
-//         });
-//         res.status(500).json({ error: 'Failed to upload QMS file: ' + error.message });
-//     }
-// });
-
-
-
-
-
-// Add this endpoint before the existing test endpoint
 
 
 

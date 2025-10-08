@@ -58,6 +58,7 @@ const Admin = () => {
     //status for add email list in communication
     const [uploadedEmailFile, setUploadedEmailFile] = useState(null);
     const [uploadEmailStatus, setUploadEmailStatus] = useState('');
+    const emailInputRef = useRef(null);
 
     //status for add QMS document in policies
 const [qmsFiles, setQmsFiles] = useState([]);
@@ -749,16 +750,16 @@ const [qmsFiles, setQmsFiles] = useState([]);
 // Inside the Admin component, add these handlers
 
 // Handler for email list file selection
-const handleEmailFileChange = (e) => {
-  const file = e.target.files[0];
-  if (file && file.type === 'application/pdf') {
-    setUploadedEmailFile(file);
-    setUploadEmailStatus(''); // Clear error message on valid file selection
-  } else {
-    setUploadedEmailFile(null);
-    setUploadEmailStatus('Please select a PDF file to upload.');
-  }
-};
+// const handleEmailFileChange = (e) => {
+//   const file = e.target.files[0];
+//   if (file && file.type === 'application/pdf') {
+//     setUploadedEmailFile(file);
+//     setUploadEmailStatus(''); // Clear error message on valid file selection
+//   } else {
+//     setUploadedEmailFile(null);
+//     setUploadEmailStatus('Please select a PDF file to upload.');
+//   }
+// };
 
 // Handler for extension file selection
 const handleExtensionFileChange = (e) => {
@@ -771,6 +772,20 @@ const handleExtensionFileChange = (e) => {
     setUploadStatus('Please select a PDF file to upload.');
   }
 };
+
+
+// Handler for email list file selection
+const handleEmailFileChange = (e) => {
+  const file = e.target.files[0];
+  if (file && file.type === 'application/pdf') {
+    setUploadedEmailFile(file);
+    setUploadEmailStatus(''); // Clear error message on valid file selection
+  } else {
+    setUploadedEmailFile(null);
+    setUploadEmailStatus('Please select a PDF file to upload.');
+  }
+};
+
 
 // Handler for email list upload
 const handleUploadEmail = async (e) => {
@@ -788,19 +803,57 @@ const handleUploadEmail = async (e) => {
       method: 'POST',
       body: formData,
     });
-    const data = await response.json();
-    if (response.ok) {
-      setUploadEmailStatus('File uploaded successfully!');
-      setUploadedEmailFile(null); // Reset after success
-      fileInputRef.current.value = ''; // Clear the file input
-    } else {
-      setUploadEmailStatus(`Error: ${data.error || 'Failed to upload file'}`);
+
+    if (!response.ok) {
+      const text = await response.text();
+      console.error('Non-OK response:', response.status, response.statusText, text.substring(0, 200));
+      setUploadEmailStatus(`Error: ${response.status} ${response.statusText}. Check console for details.`);
+      return;
     }
+
+    const data = await response.json();
+
+    setUploadEmailStatus('File uploaded successfully!');
+    setUploadedEmailFile(null);
+    emailInputRef.current.value = ''; // Use separate ref
   } catch (error) {
     console.error('Upload failed:', error);
     setUploadEmailStatus('Upload failed. Please check the server connection.');
   }
 };
+
+
+
+// const handleUploadEmail = async (e) => {
+//   e.preventDefault();
+//   if (!uploadedEmailFile) {
+//     setUploadEmailStatus('Please select a PDF file to upload.');
+//     return;
+//   }
+
+//   const formData = new FormData();
+//   formData.append('emails', uploadedEmailFile); // 'emails' field must match multer config
+
+//   try {
+//     const response = await fetch('http://localhost:3001/api/emailList', {
+//       method: 'POST',
+//       body: formData,
+//     });
+//     const data = await response.json();
+
+//     if (response.ok) {
+//       setUploadEmailStatus('File uploaded successfully!');
+//       setUploadedEmailFile(null); // Reset after success
+//       fileInputRef.current.value = ''; // Clear the file input
+//     } else {
+//       setUploadEmailStatus(`Error: ${data.error || 'Failed to upload file'}`);
+//     }
+//   } catch (error) {
+//     console.error('Upload failed:', error);
+//     setUploadEmailStatus('Upload failed. Please check the server connection.');
+//   }
+// };
+
 
 // Handler for extension upload (similar to email list)
 const handleUploadExtension = async (e) => {
@@ -1656,7 +1709,7 @@ const handleUploadExtension = async (e) => {
                                         </label>
                                         <input
                                         type="file"
-                                        ref={fileInputRef}
+                                        ref={emailInputRef}
                                         onChange={handleEmailFileChange}
                                         className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                                         />
@@ -1674,7 +1727,7 @@ const handleUploadExtension = async (e) => {
                                         onClick={() => {
                                         setUploadedEmailFile(null);
                                         setUploadEmailStatus('');
-                                        fileInputRef.current.value = '';
+                                        emailInputRef.current.value = '';
                                         }}
                                         className="ml-2 px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
                                     >
