@@ -82,11 +82,6 @@ const QMS = () => {
     setIsPreviewOpen(true);
   };
 
-  const handleDownload = (document) => {
-    const fullUrl = `http://localhost:3001${document.FilePath}`;
-    console.log('Downloading document:', fullUrl);
-    window.open(fullUrl, '_blank');
-  };
 
   const formatFileSize = (bytes) => {
     if (bytes === 0) return 'Unknown';
@@ -241,13 +236,6 @@ const QMS = () => {
                             <FiEye className="mr-1" />
                             Preview
                           </button>
-                          <button
-                            onClick={() => handleDownload(document)}
-                            className="text-green-600 hover:text-green-900 flex items-center"
-                          >
-                            <FiDownload className="mr-1" />
-                            Download
-                          </button>
                         </div>
                       </td>
                     </tr>
@@ -260,19 +248,14 @@ const QMS = () => {
 
         {/* Preview Modal */}
         {isPreviewOpen && selectedDocument && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg max-w-4xl max-h-full overflow-hidden flex flex-col">
+          <div className="fixed inset-0 bg-green-50 bg-opacity-50 flex items-center justify-center z-50 p-4">
+            {/* <div className="bg-white rounded-lg max-w-4xl max-h-full overflow-hidden flex flex-col"> */}
+            <div className="w-3/4 h-180 bg-white rounded-lg p-6 flex flex-col shadow-lg">
               <div className="flex justify-between items-center p-4 border-b">
                 <h3 className="text-lg font-semibold">
                   Preview: {selectedDocument.DocumentName}
                 </h3>
                 <div className="flex space-x-2">
-                  <button
-                    onClick={() => handleDownload(selectedDocument)}
-                    className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600"
-                  >
-                    Download
-                  </button>
                   <button
                     onClick={() => setIsPreviewOpen(false)}
                     className="px-3 py-1 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
