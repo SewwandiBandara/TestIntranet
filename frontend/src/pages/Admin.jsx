@@ -60,10 +60,10 @@ const Admin = () => {
     const [uploadEmailStatus, setUploadEmailStatus] = useState('');
 
     //status for add QMS document in policies
-    const [fileQms, setFileQms] = useState(null);
+const [qmsFiles, setQmsFiles] = useState([]);
+    const [qmsUploadedFiles, setQmsUploadedFiles] = useState([]);
     const [uploadQmsStatus, setUploadQmsStatus] = useState('');
-    const qmsInputRef = useRef(null);   
-
+    const qmsInputRef = useRef(null);
 
    
 
@@ -207,6 +207,21 @@ const Admin = () => {
         }
     };
 
+    // Function to fetch QMS files
+    const fetchQmsFiles = async () => {
+        try {
+            const response = await fetch('http://localhost:3001/api/qms');
+            if (!response.ok) {
+                throw new Error('Failed to fetch QMS files');
+            }
+            const data = await response.json();
+            setQmsUploadedFiles(data.files || []);
+        } catch (error) {
+            console.error('Error fetching QMS files:', error);
+            setQmsUploadedFiles([]);
+        }
+    };
+
     // Fetch active tab data whenever it changes
     useEffect(() => {
         if (activeTab === 'carousel') {
@@ -219,6 +234,8 @@ const Admin = () => {
             fetchCalendarImage();
         } else if (activeTab === 'achievements') {
             fetchAchievements();
+        } else if (activeTab === 'policies') {
+            fetchQmsFiles();
         }
     }, [activeTab]);
 
@@ -819,81 +836,133 @@ const handleUploadExtension = async (e) => {
 
     //////////========functions in uploading QMS document in policies==//////////
     // Handler for QMS file selection
-    const handleQmsFileChange = (e) => {
-        const file = e.target.files[0];
-        if (file && (
-            file.type === 'application/pdf' || 
-            file.type === 'application/msword' ||
-            file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
-            file.type === 'text/plain' ||
-            file.type.startsWith('image/')
-        )) {
-            setFileQms(file);
-            setUploadQmsStatus(''); // Clear error message on valid file selection
-        } else {
-            setFileQms(null);
-            setUploadQmsStatus('Please select a valid file (PDF, DOC, DOCX, TXT, or image).');
+        const handleQmsFilesChange = (e) => {
+            const selectedFiles = Array.from(e.target.files);
+            const validFiles = selectedFiles.filter(file => 
+                file.type === 'application/pdf' || 
+                file.type === 'application/msword' ||
+                file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+                file.type === 'text/plain' ||
+                file.type.startsWith('image/')
+            );
+            
+            if (validFiles.length !== selectedFiles.length) {
+                setUploadQmsStatus('Some files were skipped. Only PDF, DOC, DOCX, TXT, and image files are allowed.');
+            } else {
+                setUploadQmsStatus('');
+            }
+            
+            setQmsFiles(validFiles);
+        };
+
+    // Handler for QMS upload
+    // Enhanced frontend handler with form data logging
+    const handleUploadQms = async (e) => {
+        e.preventDefault();
+        if (!qmsFiles || qmsFiles.length === 0) {
+            setUploadQmsStatus('Please select at least one file to upload.');
+            return;
+        }
+
+        const formData = new FormData();
+        qmsFiles.forEach((file, index) => {
+    formData.append('qmsFiles', file);  
+    console.log(`Added file ${index + 1}:`, file.name, 'Field: qms');
+});
+
+        // Log form data entries (for debugging)
+        console.log('FormData entries:');
+        for (let pair of formData.entries()) {
+            console.log(pair[0] + ', ' + pair[1].name);
+        }
+
+        try {
+            console.log('Uploading to http://localhost:3001/api/qms');
+            
+            const response = await fetch('http://localhost:3001/api/qms', {
+                method: 'POST',
+                body: formData,
+            });
+            
+            console.log('Response status:', response.status);
+            
+            const responseText = await response.text();
+            console.log('Response:', responseText);
+            
+            let data;
+            try {
+                data = JSON.parse(responseText);
+            } catch (parseError) {
+                console.error('JSON parse error:', parseError);
+                throw new Error(`Server returned: ${responseText.substring(0, 200)}`);
+            }
+            
+            if (!response.ok) {
+                throw new Error(data.error || `Server error: ${response.status}`);
+            }
+            
+            setUploadQmsStatus(`Success! ${data.message}`);
+            setQmsFiles([]);
+            if (qmsInputRef.current) {
+                qmsInputRef.current.value = '';
+            }
+            fetchQmsFiles(); // Refresh the list after successful upload
+            
+            setTimeout(() => {
+                setUploadQmsStatus('');
+            }, 5000);
+            
+        } catch (error) {
+            console.error('Upload failed:', error);
+            setUploadQmsStatus(`Upload failed: ${error.message}`);
+            
+            setTimeout(() => {
+                setUploadQmsStatus('');
+            }, 5000);
         }
     };
 
-   // Handler for QMS upload
-const handleUploadQms = async (e) => {
-    e.preventDefault();
-    if (!fileQms) {
-        setUploadQmsStatus('Please select a file to upload.');
-        return;
-    }
-
-    const formData = new FormData();
-    formData.append('qms', fileQms);
-
-    try {
-        console.log('Uploading QMS file:', fileQms.name);
-        
-        const response = await fetch('http://localhost:3001/api/qms', {
-            method: 'POST',
-            body: formData,
-        });
-        
-        // Check if response is JSON
-        const contentType = response.headers.get('content-type');
-        if (!contentType || !contentType.includes('application/json')) {
-            // If not JSON, get the text to see what's wrong
-            const text = await response.text();
-            console.error('Non-JSON response:', text.substring(0, 200));
-            throw new Error('Server returned an error page. Please check if the backend is running.');
+    // Handler for removing a selected QMS file
+    const handleRemoveQmsFile = (index) => {
+        setQmsFiles(prev => prev.filter((_, i) => i !== index));
+        if (qmsFiles.length === 1) {
+            setUploadQmsStatus('');
         }
-        
-        const data = await response.json();
-        
-        if (!response.ok) {
-            throw new Error(data.error || `Server error: ${response.status}`);
-        }
-        
-        setUploadQmsStatus('File uploaded successfully!');
-        setFileQms(null);
+    };
+
+    // Handler for clearing all selected QMS files
+    const handleClearQmsFiles = () => {
+        setQmsFiles([]);
+        setUploadQmsStatus('');
         if (qmsInputRef.current) {
             qmsInputRef.current.value = '';
         }
-        
-        // Clear success message after 3 seconds
-        setTimeout(() => {
-            setUploadQmsStatus('');
-        }, 3000);
-        
-    } catch (error) {
-        console.error('Upload failed:', error);
-        setUploadQmsStatus(`Upload failed: ${error.message}`);
-        
-        // Clear error message after 5 seconds
-        setTimeout(() => {
-            setUploadQmsStatus('');
-        }, 5000);
-    }
-};
+    };
+
+    // Handler for deleting an uploaded QMS file
+    const handleDeleteQmsFile = async (filename) => {
+        const isConfirmed = window.confirm('Are you sure you want to delete this file?');
+        if (!isConfirmed) return;
+
+        try {
+            const response = await fetch(`http://localhost:3001/api/qms/${filename}`, {
+                method: 'DELETE',
+            });
+            if (response.ok) {
+                alert('File deleted successfully!');
+                fetchQmsFiles(); // Refresh the list
+            } else {
+                const errorData = await response.json();
+                alert(`Error: ${errorData.error || 'Failed to delete file'}`);
+            }
+        } catch (error) {
+            console.error('Delete failed:', error);
+            alert('Failed to delete file. Please check the server connection.');
+        }
+    };
 
 
-    // Handler for QMS cancel 
+
     const applications = [
         { id: 'hr', name: 'Human Resource Management', icon: <FiUsers /> },
         { id: 'medical', name: 'Medical', icon: <FiFileText /> },
@@ -1372,10 +1441,11 @@ const handleUploadQms = async (e) => {
                         <h2 className="text-2xl font-bold text-blue-900 mb-4">Policies & Procedures</h2>
                         
                         {/* QMS Quick Access */}
-                        {/* <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+                        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
                             <h3 className="text-xl font-semibold mb-4">Quality Management System (QMS)</h3>
                             <p className="text-gray-600 mb-4">
                                 Manage all your QMS documents including SOPs, ISO documentation, policies, and procedures.
+                                You can upload multiple files at once.
                             </p>
                             <button
                                 onClick={() => window.location.href = '/qms'}
@@ -1383,7 +1453,7 @@ const handleUploadQms = async (e) => {
                             >
                                 Go to QMS Documents
                             </button>
-                        </div> */}
+                        </div>
 
                         <div className="space-y-4">
                             {policies.map(policy => (
@@ -1399,44 +1469,104 @@ const handleUploadQms = async (e) => {
                                     </div>
                                     
                                     {/* File Upload Section - Only show for QMS */}
+                                    {/* File Upload Section - Only show for QMS */}
                                     {policy.category === 'QMS' && (
                                         <div className="mb-6 p-4 bg-indigo-100 rounded-lg shadow">
-                                            <h2 className="text-xl font-semibold mb-2">Upload QMS Document</h2>
+                                            <h2 className="text-xl font-semibold mb-2">Upload QMS Documents</h2>
+                                            <p className="text-sm text-gray-600 mb-4">
+                                                Select multiple files (PDF, DOC, DOCX, TXT, images) to upload
+                                            </p>
                                             <form onSubmit={handleUploadQms}>
                                                 <div className="mb-4">
                                                     <label className="block text-sm font-medium text-gray-700">
-                                                        Select PDF File
+                                                        Select Files (Multiple files allowed)
                                                     </label>
                                                     <input
                                                         type="file"
                                                         ref={qmsInputRef}
-                                                        onChange={handleQmsFileChange}
+                                                        onChange={handleQmsFilesChange}
                                                         accept=".pdf,.doc,.docx,.txt,image/*"
+                                                        multiple
                                                         className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                                                     />
                                                 </div>
-                                                <div className="text-red-500 text-sm mb-4">{uploadQmsStatus}</div>
-                                                <button
-                                                    type="submit"
-                                                    className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-700"
-                                                    disabled={!fileQms}
-                                                >
-                                                    Upload Document
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => {
-                                                        setFileQms(null);
-                                                        setUploadQmsStatus('');
-                                                        if (qmsInputRef.current) {
-                                                            qmsInputRef.current.value = '';
-                                                        }
-                                                    }}
-                                                    className="ml-2 px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
-                                                >
-                                                    Cancel
-                                                </button>
+                                                
+                                                {/* Selected Files List */}
+                                                {qmsFiles.length > 0 && (
+                                                    <div className="mb-4 p-3 bg-white rounded border">
+                                                        <h4 className="font-medium mb-2">Selected Files ({qmsFiles.length}):</h4>
+                                                        <ul className="space-y-1 max-h-32 overflow-y-auto">
+                                                            {qmsFiles.map((file, index) => (
+                                                                <li key={index} className="flex justify-between items-center text-sm">
+                                                                    <span className="truncate flex-1">{file.name}</span>
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={() => handleRemoveQmsFile(index)}
+                                                                        className="ml-2 text-red-500 hover:text-red-700"
+                                                                    >
+                                                                        Remove
+                                                                    </button>
+                                                                </li>
+                                                            ))}
+                                                        </ul>
+                                                    </div>
+                                                )}
+                                                
+                                                <div className={uploadQmsStatus.includes('Success') ? 'text-green-500' : 'text-red-500'}>{uploadQmsStatus}</div>
+                                                <div className="flex space-x-2">
+                                                    <button
+                                                        type="submit"
+                                                        className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400"
+                                                        disabled={qmsFiles.length === 0}
+                                                    >
+                                                        Upload {qmsFiles.length > 0 ? `(${qmsFiles.length})` : ''} Files
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        onClick={handleClearQmsFiles}
+                                                        className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
+                                                    >
+                                                        Clear All
+                                                    </button>
+                                                </div>
                                             </form>
+
+                                            {/* Uploaded Files List */}
+                                            <div className="mt-8">
+                                                <h3 className="text-lg font-semibold mb-4">Uploaded QMS Documents ({qmsUploadedFiles.length})</h3>
+                                                {qmsUploadedFiles.length > 0 ? (
+                                                    <div className="space-y-3">
+                                                        {qmsUploadedFiles.map((file) => (
+                                                            <div key={file.filename} className="flex justify-between items-center p-3 bg-white rounded border">
+                                                                <div className="flex-1">
+                                                                    <p className="font-medium truncate">{file.filename}</p>
+                                                                    <p className="text-sm text-gray-500">
+                                                                        Uploaded: {new Date(file.uploadDate).toLocaleDateString()}
+                                                                    </p>
+                                                                </div>
+                                                                <div className="flex space-x-2">
+                                                                    <a
+                                                                        href={`http://localhost:3001${file.filePath}`}
+                                                                        target="_blank"
+                                                                        rel="noopener noreferrer"
+                                                                        className="px-3 py-1 bg-green-500 text-white rounded text-sm hover:bg-green-600"
+                                                                    >
+                                                                        Download
+                                                                    </a>
+                                                                    <button
+                                                                        onClick={() => handleDeleteQmsFile(file.filename)}
+                                                                        className="px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600"
+                                                                    >
+                                                                        Delete
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                ) : (
+                                                    <p className="text-gray-500 text-center py-4">No QMS documents uploaded yet.</p>
+                                                )}
+                                            </div>
                                         </div>
                                     )}
                                 </div>

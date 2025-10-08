@@ -28,6 +28,117 @@ const qmsDir = path.join(baseUploadsDir, 'QMS');
 
 
 /// Multer configuration for file uploads
+// const storage = multer.diskStorage({
+//     destination: (req, file, cb) => {
+//         let uploadPath;
+//         console.log(`Request path: ${req.path}`);
+//         if (req.path.includes('/api/carousel')) {
+//             uploadPath = carouselDir;
+//         } else if (req.path.includes('/api/monthly-plan')) {
+//             uploadPath = calendarDir;
+//         } else if (req.path.includes('/api/achievements')) {
+//             uploadPath = achievementsDir;
+//         } else if (req.path.includes('/api/calendar-image')) {
+//             uploadPath = monthDir;
+//         } else if (req.path.includes('/api/extension')) {
+//             uploadPath = extensionsDir;    
+//         } else if (req.path.includes('/api/emailList')) {
+//             uploadPath = emailsDir; 
+//         } else if (req.path.includes('/api/qms')) {
+//             uploadPath = qmsDir;
+//         } else {
+//             uploadPath = baseUploadsDir;
+//         }
+//         console.log(`Saving to: ${uploadPath}`);
+//         cb(null, uploadPath);
+//     },
+//     filename: (req, file, cb) => {
+//         // const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+//         // let prefix = '';
+//         // if (req.path.includes('/api/carousel')) {
+//         //     prefix = 'carousel-';
+//         // } else if (req.path.includes('/api/monthly-plan')) {
+//         //     prefix = 'monthly-plan-';
+//         // } else if (req.path.includes('/api/achievements')) {
+//         //     prefix = 'achievement-';
+//         // } else if (req.path.includes('/api/calendar-image')) {
+//         //     prefix = 'calendar-';
+//         // } else if (req.path.includes('/api/extension')) {
+//         //     prefix = 'extension-';    
+//         // } else if (req.path.includes('/api/emailList')) {
+//         //     prefix = 'email-';
+//         //  } 
+//         // else if (req.path.includes('/api/qms')) {
+//         //      prefix = 'qms-';
+//         //  } 
+//         // else {
+//         //     prefix = 'upload-';
+//         // }
+//         // cb(null, prefix + uniqueSuffix + path.extname(file.originalname));
+//         cb(null, file.originalname);
+       
+//     }
+// });
+
+
+
+
+
+// const upload = multer({
+//     storage: storage,
+//     fileFilter: (req, file, cb) => {
+//         if (req.path.includes('/api/extension') || req.path.includes('/api/emailList') ) {
+//             if (file.mimetype === 'application/pdf' || 
+//                 file.mimetype === 'application/msword' || 
+//                 file.mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+//                 file.mimetype === 'text/plain' ||
+//                 file.mimetype.startsWith('image/')) {
+//                 cb(null, true);
+//             } else {
+//                 cb(new Error('Only PDF, DOC, DOCX, TXT, and image files are allowed'), false);
+//             }
+//         } else {
+//             const filetypes = /jpeg|jpg|png/;
+//             const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+//             const mimetype = filetypes.test(file.mimetype);
+//             if (extname && mimetype) {
+//                 cb(null, true);
+//             } else {
+//                 cb(new Error('Only JPEG/PNG images are allowed'), false);
+//             }
+//         }
+//     },
+//     limits: { fileSize: 50 * 1024 * 1024 } // 50MB limit for QMS documents
+// });
+
+// // Update the multer configuration for multiple files
+// const uploadMultiple = multer({
+//     storage: storage,
+//     fileFilter: (req, file, cb) => {
+//         if (req.path.includes('/api/qms')) {
+//             if (file.mimetype === 'application/pdf' || 
+//                 file.mimetype === 'application/msword' || 
+//                 file.mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+//                 file.mimetype === 'text/plain' ||
+//                 file.mimetype.startsWith('image/')) {
+//                 cb(null, true);
+//             } else {
+//                 cb(new Error('Only PDF, DOC, DOCX, TXT, and image files are allowed'), false);
+//             }
+//         } else {
+//             const filetypes = /jpeg|jpg|png/;
+//             const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+//             const mimetype = filetypes.test(file.mimetype);
+//             if (extname && mimetype) {
+//                 cb(null, true);
+//             } else {
+//                 cb(new Error('Only JPEG/PNG images are allowed'), false);
+//             }
+//         }
+//     },
+//     limits: { fileSize: 50 * 1024 * 1024 } // 50MB limit per file
+// });
+
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         let uploadPath;
@@ -41,7 +152,7 @@ const storage = multer.diskStorage({
         } else if (req.path.includes('/api/calendar-image')) {
             uploadPath = monthDir;
         } else if (req.path.includes('/api/extension')) {
-            uploadPath = extensionsDir;    
+            uploadPath = extensionsDir;    
         } else if (req.path.includes('/api/emailList')) {
             uploadPath = emailsDir; 
         } else if (req.path.includes('/api/qms')) {
@@ -53,35 +164,42 @@ const storage = multer.diskStorage({
         cb(null, uploadPath);
     },
     filename: (req, file, cb) => {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        let prefix = '';
-        if (req.path.includes('/api/carousel')) {
-            prefix = 'carousel-';
-        } else if (req.path.includes('/api/monthly-plan')) {
-            prefix = 'monthly-plan-';
-        } else if (req.path.includes('/api/achievements')) {
-            prefix = 'achievement-';
-        } else if (req.path.includes('/api/calendar-image')) {
-            prefix = 'calendar-';
-        } else if (req.path.includes('/api/extension')) {
-            prefix = 'extension-';    
-        } else if (req.path.includes('/api/emailList')) {
-            prefix = 'email-';
-        } else if (req.path.includes('/api/qms')) {
-            prefix = 'qms-';
+        // Check if the path is related to documents where original name is usually preferred.
+        const isDocumentPath = req.path.includes('/api/extension') || 
+                               req.path.includes('/api/emailList') || 
+                               req.path.includes('/api/qms');
+
+        if (isDocumentPath) {
+            // Save files in document-related paths (like /api/qms) with their original name.
+            // WARNING: This can cause file name collisions (overwriting) if two files share the same name.
+            cb(null, file.originalname);
         } else {
-            prefix = 'upload-';
+            // For other paths (like image carousels), use a unique, prefixed name to prevent collisions.
+            const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+            let prefix = '';
+
+            if (req.path.includes('/api/carousel')) {
+                prefix = 'carousel-';
+            } else if (req.path.includes('/api/monthly-plan')) {
+                prefix = 'monthly-plan-';
+            } else if (req.path.includes('/api/achievements')) {
+                prefix = 'achievement-';
+            } else if (req.path.includes('/api/calendar-image')) {
+                prefix = 'calendar-';
+            } else {
+                prefix = 'upload-';
+            }
+
+            cb(null, prefix + uniqueSuffix + path.extname(file.originalname));
         }
-        cb(null, prefix + uniqueSuffix + path.extname(file.originalname));
     }
 });
-
 
 
 const upload = multer({
     storage: storage,
     fileFilter: (req, file, cb) => {
-        if (req.path.includes('/api/extension') || req.path.includes('/api/emailList') || req.path.includes('/api/qms')) {
+        if (req.path.includes('/api/extension') || req.path.includes('/api/emailList') ) {
             if (file.mimetype === 'application/pdf' || 
                 file.mimetype === 'application/msword' || 
                 file.mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
@@ -104,6 +222,35 @@ const upload = multer({
     },
     limits: { fileSize: 50 * 1024 * 1024 } // 50MB limit for QMS documents
 });
+
+// Update the multer configuration for multiple files
+const uploadMultiple = multer({
+    storage: storage,
+    fileFilter: (req, file, cb) => {
+        if (req.path.includes('/api/qms')) {
+            if (file.mimetype === 'application/pdf' || 
+                file.mimetype === 'application/msword' || 
+                file.mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+                file.mimetype === 'text/plain' ||
+                file.mimetype.startsWith('image/')) {
+                cb(null, true);
+            } else {
+                cb(new Error('Only PDF, DOC, DOCX, TXT, and image files are allowed'), false);
+            }
+        } else {
+            const filetypes = /jpeg|jpg|png/;
+            const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+            const mimetype = filetypes.test(file.mimetype);
+            if (extname && mimetype) {
+                cb(null, true);
+            } else {
+                cb(new Error('Only JPEG/PNG images are allowed'), false);
+            }
+        }
+    },
+    limits: { fileSize: 50 * 1024 * 1024 } // 50MB limit per file
+});
+
 
 // Middleware
 app.use(cors());
@@ -973,85 +1120,91 @@ app.get('/api/emailList', async (req, res) => {
 // });
 
 // In your index.js - fix the QMS endpoint
-app.post('/api/qms', upload.single('qms'), async (req, res) => {
-    try {
-        console.log('Received POST /api/qms at', new Date().toISOString());
-        console.log('Upload request received', req.file);
+// app.post('/api/qms', upload.single('qms'), async (req, res) => {
+//     try {
+//         console.log('Received POST /api/qms at', new Date().toISOString());
+//         console.log('Upload request received', req.file);
 
-        if (!req.file) {
-            console.log('No file uploaded');
-            return res.status(400).json({ error: 'File is required.' });
-        }
+//         if (!req.file) {
+//             console.log('No file uploaded');
+//             return res.status(400).json({ error: 'File is required.' });
+//         }
 
-        // Enhanced file validation
-        const allowedTypes = [
-            'application/pdf',
-            'application/msword',
-            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-            'text/plain'
-        ];
+//         // Enhanced file validation
+//         const allowedTypes = [
+//             'application/pdf',
+//             'application/msword',
+//             'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+//             'text/plain'
+//         ];
         
-        if (!allowedTypes.includes(req.file.mimetype) && !req.file.mimetype.startsWith('image/')) {
-            return res.status(400).json({ error: 'Invalid file type. Allowed: PDF, DOC, DOCX, TXT, images' });
-        }
+//         if (!allowedTypes.includes(req.file.mimetype) && !req.file.mimetype.startsWith('image/')) {
+//             return res.status(400).json({ error: 'Invalid file type. Allowed: PDF, DOC, DOCX, TXT, images' });
+//         }
 
-        // File details
-        console.log('File details:', {
-            filename: req.file.filename,
-            originalname: req.file.originalname,
-            mimetype: req.file.mimetype,
-            path: req.file.path,
-            size: req.file.size
-        });
+//         // File details
+//         console.log('File details:', {
+//             filename: req.file.filename,
+//             originalname: req.file.originalname,
+//             mimetype: req.file.mimetype,
+//             path: req.file.path,
+//             size: req.file.size
+//         });
 
-        // Check if file was saved
-        try {
-            const fileExists = fs.existsSync(req.file.path);
-            console.log('File exists after upload:', fileExists);
-            if (fileExists) {
-                const stats = fs.statSync(req.file.path);
-                console.log('File size on disk:', stats.size);
-            }
-        } catch (fileError) {
-            console.error('Error checking file existence:', fileError);
-            return res.status(500).json({ error: 'File save verification failed' });
-        }
+//         // Check if file was saved
+//         try {
+//             const fileExists = fs.existsSync(req.file.path);
+//             console.log('File exists after upload:', fileExists);
+//             if (fileExists) {
+//                 const stats = fs.statSync(req.file.path);
+//                 console.log('File size on disk:', stats.size);
+//             }
+//         } catch (fileError) {
+//             console.error('Error checking file existence:', fileError);
+//             return res.status(500).json({ error: 'File save verification failed' });
+//         }
 
-        // Delete old files in QMS directory
-        try {
-            const files = await fs.promises.readdir(qmsDir);
-            console.log('Existing files in QMS dir:', files);
+//         // Delete old files in QMS directory
+//         try {
+//             const files = await fs.promises.readdir(qmsDir);
+//             console.log('Existing files in QMS dir:', files);
 
-            for (const file of files) {
-                if (file !== req.file.filename) {
-                    const filePath = path.join(qmsDir, file);
-                    console.log('Deleting old file:', filePath);
-                    await fs.promises.unlink(filePath);
-                }
-            }
-        } catch (deleteError) {
-            console.error('Error deleting old files:', deleteError);
-            // Don't fail the upload if cleanup fails
-        }
+//             for (const file of files) {
+//                 if (file !== req.file.filename) {
+//                     const filePath = path.join(qmsDir, file);
+//                     console.log('Deleting old file:', filePath);
+//                     await fs.promises.unlink(filePath);
+//                 }
+//             }
+//         } catch (deleteError) {
+//             console.error('Error deleting old files:', deleteError);
+//             // Don't fail the upload if cleanup fails
+//         }
 
-        res.status(201).json({
-            message: 'File uploaded successfully!',
-            filePath: `/backend/uploads/QMS/${req.file.filename}`,
-            filename: req.file.filename
-        });
+//         res.status(201).json({
+//             message: 'File uploaded successfully!',
+//             filePath: `/backend/uploads/QMS/${req.file.filename}`,
+//             filename: req.file.filename
+//         });
 
-    } catch (error) {
-        console.error('Error uploading QMS file:', {
-            message: error.message,
-            stack: error.stack,
-            code: error.code
-        });
-        res.status(500).json({ error: 'Failed to upload QMS file: ' + error.message });
-    }
-});
+//     } catch (error) {
+//         console.error('Error uploading QMS file:', {
+//             message: error.message,
+//             stack: error.stack,
+//             code: error.code
+//         });
+//         res.status(500).json({ error: 'Failed to upload QMS file: ' + error.message });
+//     }
+// });
+
+
+
 
 
 // Add this endpoint before the existing test endpoint
+
+
+
 app.get('/api/qms/test', (req, res) => {
     res.json({ message: 'QMS API endpoint working' });
 });
@@ -1066,9 +1219,16 @@ app.get('/api/test', (req, res) => {
 app.get('/api/qms', async (req, res) => {
     try{
         const files = await fs.promises.readdir(qmsDir);
-        const latestFile = files.sort((a,b) => b.localeCompare(a)) [0];
+        // Return all files, not just the latest one
+        const qmsFiles = files.map(filename => ({
+            filename: filename,
+            filePath: `/backend/uploads/QMS/${filename}`,
+            uploadDate: fs.statSync(path.join(qmsDir, filename)).mtime
+        })).sort((a, b) => new Date(b.uploadDate) - new Date(a.uploadDate)); // Sort by most recent first
+        
         res.json({
-            imagePath: latestFile ? `/backend/uploads/QMS/${latestFile}` : null
+            files: qmsFiles,
+            count: qmsFiles.length
         });
     }
     catch(err) {
@@ -1077,17 +1237,20 @@ app.get('/api/qms', async (req, res) => {
     }
 });
 
-app.post('/api/qms', upload.single('qms'), async (req, res) => {
+
+// Upload multiple files for QMS
+app.post('/api/qms', uploadMultiple.array('qmsFiles', 100), async (req, res) => {
     try {
         console.log('Received POST /api/qms at', new Date().toISOString());
-        console.log('Upload request received', req.file);
+        console.log('Upload request received - Files:', req.files);
+        console.log('Request body fields:', req.body);
 
-        if (!req.file) {
-            console.log('No file uploaded');
-            return res.status(400).json({ error: 'File is required.' });
+        if (!req.files || req.files.length === 0) {
+            console.log('No files uploaded');
+            return res.status(400).json({ error: 'At least one file is required.' });
         }
 
-        // Enhanced file validation
+        // Enhanced file validation for each file
         const allowedTypes = [
             'application/pdf',
             'application/msword',
@@ -1095,62 +1258,145 @@ app.post('/api/qms', upload.single('qms'), async (req, res) => {
             'text/plain'
         ];
         
-        if (!allowedTypes.includes(req.file.mimetype) && !req.file.mimetype.startsWith('image/')) {
-            return res.status(400).json({ error: 'Invalid file type. Allowed: PDF, DOC, DOCX, TXT, images' });
+        const invalidFiles = req.files.filter(file => 
+            !allowedTypes.includes(file.mimetype) && !file.mimetype.startsWith('image/')
+        );
+
+        if (invalidFiles.length > 0) {
+            return res.status(400).json({ 
+                error: 'Invalid file types. Allowed: PDF, DOC, DOCX, TXT, images',
+                invalidFiles: invalidFiles.map(f => f.originalname)
+            });
         }
 
-        // File details
-        console.log('File details:', {
-            filename: req.file.filename,
-            originalname: req.file.originalname,
-            mimetype: req.file.mimetype,
-            path: req.file.path,
-            size: req.file.size
-        });
+        // Process each file
+        const uploadedFiles = [];
+        for (const file of req.files) {
+            console.log('File details:', {
+                filename: file.filename,
+                originalname: file.originalname,
+                mimetype: file.mimetype,
+                path: file.path,
+                size: file.size
+            });
 
-        // Check if file was saved
-        try {
-            const fileExists = fs.existsSync(req.file.path);
-            console.log('File exists after upload:', fileExists);
-            if (fileExists) {
-                const stats = fs.statSync(req.file.path);
-                console.log('File size on disk:', stats.size);
-            }
-        } catch (fileError) {
-            console.error('Error checking file existence:', fileError);
-            return res.status(500).json({ error: 'File save verification failed' });
-        }
-
-        // Delete old files in QMS directory
-        try {
-            const files = await fs.promises.readdir(qmsDir);
-            console.log('Existing files in QMS dir:', files);
-
-            for (const file of files) {
-                if (file !== req.file.filename) {
-                    const filePath = path.join(qmsDir, file);
-                    console.log('Deleting old file:', filePath);
-                    await fs.promises.unlink(filePath);
+            // Check if file was saved
+            try {
+                const fileExists = fs.existsSync(file.path);
+                console.log('File exists after upload:', fileExists);
+                if (fileExists) {
+                    const stats = fs.statSync(file.path);
+                    console.log('File size on disk:', stats.size);
                 }
+            } catch (fileError) {
+                console.error('Error checking file existence:', fileError);
+                // Continue with other files even if one fails verification
             }
-        } catch (deleteError) {
-            console.error('Error deleting old files:', deleteError);
-            // Don't fail the upload if cleanup fails
+
+            uploadedFiles.push({
+                originalName: file.originalname,
+                savedName: file.filename,
+                filePath: `/backend/uploads/QMS/${file.filename}`,
+                size: file.size,
+                mimetype: file.mimetype
+            });
         }
 
         res.status(201).json({
-            message: 'File uploaded successfully!',
-            filePath: `/backend/uploads/QMS/${req.file.filename}`,
-            filename: req.file.filename
+            message: `${uploadedFiles.length} file(s) uploaded successfully!`,
+            files: uploadedFiles,
+            totalCount: uploadedFiles.length
         });
 
     } catch (error) {
-        console.error('Error uploading QMS file:', {
+        console.error('Error uploading QMS files:', {
             message: error.message,
             stack: error.stack,
             code: error.code
         });
-        res.status(500).json({ error: 'Failed to upload QMS file: ' + error.message });
+        res.status(500).json({ error: 'Failed to upload QMS files: ' + error.message });
+    }
+});
+
+// Delete individual QMS file
+app.delete('/api/qms/:filename', async (req, res) => {
+    try {
+        const { filename } = req.params;
+        const filePath = path.join(qmsDir, filename);
+        
+        if (fs.existsSync(filePath)) {
+            await fs.promises.unlink(filePath);
+            res.status(200).json({ message: 'File deleted successfully!' });
+        } else {
+            res.status(404).json({ error: 'File not found' });
+        }
+    } catch (err) {
+        console.error('Error deleting QMS file:', err);
+        res.status(500).json({ error: 'Failed to delete file' });
+    }
+});
+
+// Delete all QMS files
+app.delete('/api/qms', async (req, res) => {
+    try {
+        const files = await fs.promises.readdir(qmsDir);
+        let deletedCount = 0;
+        
+        for (const file of files) {
+            const filePath = path.join(qmsDir, file);
+            await fs.promises.unlink(filePath);
+            deletedCount++;
+        }
+        
+        res.status(200).json({ 
+            message: `All ${deletedCount} files deleted successfully!` 
+        });
+    } catch (err) {
+        console.error('Error deleting all QMS files:', err);
+        res.status(500).json({ error: 'Failed to delete files' });
+    }
+});
+
+// QMS Health check endpoint
+app.get('/api/qms/health', (req, res) => {
+    res.json({ 
+        status: 'OK', 
+        message: 'QMS endpoint is working',
+        timestamp: new Date().toISOString(),
+        directory: qmsDir
+    });
+});
+
+// Get QMS directory info
+app.get('/api/qms/info', async (req, res) => {
+    try {
+        const files = await fs.promises.readdir(qmsDir);
+        const stats = await fs.promises.stat(qmsDir);
+        
+        const fileDetails = await Promise.all(
+            files.map(async (filename) => {
+                const filePath = path.join(qmsDir, filename);
+                const fileStat = await fs.promises.stat(filePath);
+                return {
+                    filename,
+                    size: fileStat.size,
+                    modified: fileStat.mtime,
+                    isDirectory: fileStat.isDirectory()
+                };
+            })
+        );
+        
+        res.json({
+            directory: qmsDir,
+            totalFiles: files.length,
+            exists: true,
+            files: fileDetails
+        });
+    } catch (error) {
+        res.status(500).json({ 
+            error: 'Failed to get QMS directory info',
+            details: error.message 
+        });
     }
 });
 
