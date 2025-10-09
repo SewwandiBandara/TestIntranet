@@ -26,7 +26,7 @@ const Achievements = () => {
           id: achievement.Id,
           title: achievement.Title,
           description: achievement.Description,
-          date: achievement.AchievementDate,
+          // date: achievement.AchievementDate,
           image: `http://localhost:3001${achievement.ImagePath}`
         }));
         setAchievements(mappedAchievements);
@@ -93,7 +93,7 @@ const Achievements = () => {
                           {award.description}
                         </p>)}
                       <div className="text-sm text-amber-600 font-medium text-center">
-                        Awarded: {award.date}
+                        {/* Awarded: {award.date} */}
                       </div>
                     </div>
                   </div>

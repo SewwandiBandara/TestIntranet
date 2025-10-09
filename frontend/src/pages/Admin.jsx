@@ -853,27 +853,27 @@ const handleUploadEmail = async (e) => {
   }
 };
 
-const handleDeleteEmail = async () => {
-  if (!currentEmailFile) return;
-  if (!window.confirm('Are you sure you want to delete the current email list?')) {
-    return;
-  }
-  try {
-    const response = await fetch('http://localhost:3001/api/emailList', {
-      method: 'DELETE',
-    });
-    if (response.ok) {
-      setCurrentEmailFile(null);
-      setUploadEmailStatus('Email list deleted successfully.');
-    } else {
-      const errorData = await response.json();
-      setUploadEmailStatus(`Error: ${errorData.error || 'Failed to delete'}`);
-    }
-  } catch (error) {
-    console.error('Delete failed:', error);
-    setUploadEmailStatus('Failed to delete. Please check the server connection.');
-  }
-};
+// const handleDeleteEmail = async () => {
+//   if (!currentEmailFile) return;
+//   if (!window.confirm('Are you sure you want to delete the current email list?')) {
+//     return;
+//   }
+//   try {
+//     const response = await fetch('http://localhost:3001/api/emailList', {
+//       method: 'DELETE',
+//     });
+//     if (response.ok) {
+//       setCurrentEmailFile(null);
+//       setUploadEmailStatus('Email list deleted successfully.');
+//     } else {
+//       const errorData = await response.json();
+//       setUploadEmailStatus(`Error: ${errorData.error || 'Failed to delete'}`);
+//     }
+//   } catch (error) {
+//     console.error('Delete failed:', error);
+//     setUploadEmailStatus('Failed to delete. Please check the server connection.');
+//   }
+// };
 
 
 // const handleUploadEmail = async (e) => {
@@ -1802,12 +1802,12 @@ const handleUploadExtension = async (e) => {
                                         >
                                         📄 {currentEmailFile.split('/').pop()}
                                         </a>
-                                        <button
+                                        {/* <button
                                         onClick={handleDeleteEmail}
                                         className="ml-4 px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 text-sm"
                                         >
                                         Delete
-                                        </button>
+                                        </button> */}
                                     </div>
                                     </div>
                                 )}
