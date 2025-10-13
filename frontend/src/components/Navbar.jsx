@@ -174,7 +174,7 @@ const Navbar = () => {
               <ul className="py-1">
                 {/* HR Section */}
                 <li className="relative px-4 py-2 hover:bg-yellow-400 hover:text-black group/hr">
-                  <Link to="http://192.168.178.12/hris/login.aspx?ReturnUrl=%2fhris%2fdefault.aspx" onClick={() => setIsOpen(false)}>
+                  <Link to="#" onClick={() => setIsOpen(false)}>
                     HR
                   </Link>
                   <div className="absolute hidden group-hover/hr:block left-full top-0 ml-1 bg-blue-400 min-w-[150px] rounded-md shadow-lg z-20 lg:left-auto lg:right-full lg:mr-1 transition-opacity duration-200 opacity-0 group-hover/hr:opacity-100">
@@ -204,6 +204,15 @@ const Navbar = () => {
                           onClick={() => setIsOpen(false)}
                         >
                           KPI
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          to="http://192.168.178.12/hris/login.aspx?ReturnUrl=%2fhris%2fdefault.aspx"
+                          className="block px-4 py-2 hover:bg-yellow-200 hover:text-black"
+                          onClick={() => setIsOpen(false)}
+                        >
+                         Attendance
                         </Link>
                       </li>
                     </ul>

@@ -3,13 +3,17 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "homepage": "https://SewwandiBandara.github.io/Intranet_application",
   "scripts": {
+    "start": "react-scripts start",
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "proxy": "http://localhost:3001"
-  },
+    "proxy": "http://localhost:3001",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
+  }, 
   "dependencies": {
     "@tailwindcss/vite": "^4.0.14",
     "date-fns": "^4.1.0",
