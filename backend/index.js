@@ -28,117 +28,6 @@ const qmsDir = path.join(baseUploadsDir, 'QMS');
 
 
 /// Multer configuration for file uploads
-// const storage = multer.diskStorage({
-//     destination: (req, file, cb) => {
-//         let uploadPath;
-//         console.log(`Request path: ${req.path}`);
-//         if (req.path.includes('/api/carousel')) {
-//             uploadPath = carouselDir;
-//         } else if (req.path.includes('/api/monthly-plan')) {
-//             uploadPath = calendarDir;
-//         } else if (req.path.includes('/api/achievements')) {
-//             uploadPath = achievementsDir;
-//         } else if (req.path.includes('/api/calendar-image')) {
-//             uploadPath = monthDir;
-//         } else if (req.path.includes('/api/extension')) {
-//             uploadPath = extensionsDir;    
-//         } else if (req.path.includes('/api/emailList')) {
-//             uploadPath = emailsDir; 
-//         } else if (req.path.includes('/api/qms')) {
-//             uploadPath = qmsDir;
-//         } else {
-//             uploadPath = baseUploadsDir;
-//         }
-//         console.log(`Saving to: ${uploadPath}`);
-//         cb(null, uploadPath);
-//     },
-//     filename: (req, file, cb) => {
-//         // const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-//         // let prefix = '';
-//         // if (req.path.includes('/api/carousel')) {
-//         //     prefix = 'carousel-';
-//         // } else if (req.path.includes('/api/monthly-plan')) {
-//         //     prefix = 'monthly-plan-';
-//         // } else if (req.path.includes('/api/achievements')) {
-//         //     prefix = 'achievement-';
-//         // } else if (req.path.includes('/api/calendar-image')) {
-//         //     prefix = 'calendar-';
-//         // } else if (req.path.includes('/api/extension')) {
-//         //     prefix = 'extension-';    
-//         // } else if (req.path.includes('/api/emailList')) {
-//         //     prefix = 'email-';
-//         //  } 
-//         // else if (req.path.includes('/api/qms')) {
-//         //      prefix = 'qms-';
-//         //  } 
-//         // else {
-//         //     prefix = 'upload-';
-//         // }
-//         // cb(null, prefix + uniqueSuffix + path.extname(file.originalname));
-//         cb(null, file.originalname);
-       
-//     }
-// });
-
-
-
-
-
-// const upload = multer({
-//     storage: storage,
-//     fileFilter: (req, file, cb) => {
-//         if (req.path.includes('/api/extension') || req.path.includes('/api/emailList') ) {
-//             if (file.mimetype === 'application/pdf' || 
-//                 file.mimetype === 'application/msword' || 
-//                 file.mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
-//                 file.mimetype === 'text/plain' ||
-//                 file.mimetype.startsWith('image/')) {
-//                 cb(null, true);
-//             } else {
-//                 cb(new Error('Only PDF, DOC, DOCX, TXT, and image files are allowed'), false);
-//             }
-//         } else {
-//             const filetypes = /jpeg|jpg|png/;
-//             const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-//             const mimetype = filetypes.test(file.mimetype);
-//             if (extname && mimetype) {
-//                 cb(null, true);
-//             } else {
-//                 cb(new Error('Only JPEG/PNG images are allowed'), false);
-//             }
-//         }
-//     },
-//     limits: { fileSize: 50 * 1024 * 1024 } // 50MB limit for QMS documents
-// });
-
-// // Update the multer configuration for multiple files
-// const uploadMultiple = multer({
-//     storage: storage,
-//     fileFilter: (req, file, cb) => {
-//         if (req.path.includes('/api/qms')) {
-//             if (file.mimetype === 'application/pdf' || 
-//                 file.mimetype === 'application/msword' || 
-//                 file.mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
-//                 file.mimetype === 'text/plain' ||
-//                 file.mimetype.startsWith('image/')) {
-//                 cb(null, true);
-//             } else {
-//                 cb(new Error('Only PDF, DOC, DOCX, TXT, and image files are allowed'), false);
-//             }
-//         } else {
-//             const filetypes = /jpeg|jpg|png/;
-//             const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-//             const mimetype = filetypes.test(file.mimetype);
-//             if (extname && mimetype) {
-//                 cb(null, true);
-//             } else {
-//                 cb(new Error('Only JPEG/PNG images are allowed'), false);
-//             }
-//         }
-//     },
-//     limits: { fileSize: 50 * 1024 * 1024 } // 50MB limit per file
-// });
-
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         let uploadPath;
@@ -152,7 +41,7 @@ const storage = multer.diskStorage({
         } else if (req.path.includes('/api/calendar-image')) {
             uploadPath = monthDir;
         } else if (req.path.includes('/api/extension')) {
-            uploadPath = extensionsDir;    
+            uploadPath = extensionsDir; 
         } else if (req.path.includes('/api/emailList')) {
             uploadPath = emailsDir; 
         } else if (req.path.includes('/api/qms')) {
@@ -254,15 +143,7 @@ const uploadMultiple = multer({
 
 // Middleware
  app.use(cors());
-
-// app.use(cors({
-//   origin: 'http://localhost:3000', // Adjust to your frontend port, e.g., 3000
-//   credentials: true,
-//   methods: ['GET', 'POST', 'OPTIONS'],
-//   allowedHeaders: ['Content-Type', 'Authorization']
-// }));
-
-app.use(bodyParser.json());
+ app.use(bodyParser.json());
 
 
 // Add this debug middleware
@@ -284,8 +165,10 @@ app.use((err, req, res, next) => {
     res.status(500).json({ error: `Internal server error: ${err.message}` });
 });
 
+
 // Serve static images from the uploads directory
 app.use('/backend/uploads', express.static(baseUploadsDir));
+
 
 // Database connection
 const dbConfig = {
@@ -308,7 +191,8 @@ sql.connect(dbConfig, (err) => {
     }
 });
 
-//Login API
+
+//Login API for admin
 app.post('/api/login', async (req, res) => {
     console.log('Login attempt:', { username: req.body.username, timestamp: new Date().toISOString() });
     const {username, password} = req.body;
@@ -320,6 +204,7 @@ app.post('/api/login', async (req, res) => {
         res.status(401).json({success: false, error: 'Invalid credentials'});
     }
 });
+
 
 /// Image carousel to manage campany carousel
 app.get('/api/carousel', async (req, res) => {
@@ -415,12 +300,15 @@ app.post('/api/news', async (req, res) => {
 //         if (result.rowsAffected[0] === 0) {
 //             return res.status(404).json({ error: 'News item not found' });
 //         }
+//
 //         res.status(200).json({ message: 'News item updated successfully!' });
 //     } catch (err) {
 //         console.error('Error updating news item:', err);
 //         res.status(500).json({ error: 'Failed to update news item' });
 //     }
 // });
+
+
 
 app.put('/api/news/:id', async (req, res) => {
     try {
