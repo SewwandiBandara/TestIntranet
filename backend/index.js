@@ -1047,7 +1047,7 @@ app.get('/api/qms', async (req, res) => {
             filename: filename,
             filePath: `/backend/uploads/QMS/${filename}`,
             uploadDate: fs.statSync(path.join(qmsDir, filename)).mtime
-        })).sort((a, b) => new Date(b.uploadDate) - new Date(a.uploadDate)); // Sort by most recent first
+        })).sort((a, b) => new Date(b.uploadDate) - new Date(a.uploadDate)); 
         
         res.json({
             files: qmsFiles,
@@ -1059,7 +1059,6 @@ app.get('/api/qms', async (req, res) => {
         res.status(500).json({error: 'Failed to fetch QMS document lists'});
     }
 });
-
 
 // Upload multiple files for QMS
 app.post('/api/qms', uploadMultiple.array('qmsFiles', 100), async (req, res) => {
@@ -1179,6 +1178,14 @@ app.delete('/api/qms', async (req, res) => {
         res.status(500).json({ error: 'Failed to delete files' });
     }
 });
+
+
+///// Policies and procedures - fetch documents(EMS)////////////
+
+
+
+
+/////////////////////////////////
 
 // QMS Health check endpoint
 app.get('/api/qms/health', (req, res) => {

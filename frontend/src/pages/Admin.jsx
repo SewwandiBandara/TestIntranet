@@ -68,6 +68,12 @@ const Admin = () => {
     const [uploadQmsStatus, setUploadQmsStatus] = useState('');
     const qmsInputRef = useRef(null);
 
+    //status for add EMS documents in policies
+    const [emsFiles, setEmsFiles] = useState([]);
+    const [emsUploadedFiles, setEmsUploadedFiles] = useState([]);
+    const [uploadEmsStatus, setUploadEmsStatus] = useState('');
+    const emsInputRef = useRef(null);
+
    
 
     // Check login state on mount
@@ -241,6 +247,22 @@ const Admin = () => {
         }
     };
 
+    //Function to fetch EMS files
+    const fetchEmsFiles = async () => {
+        try {
+            const response = await fetch('http://localhost:3001/api/ems');
+            if (!response.ok) {
+                throw new Error('Failed to fetch EMS files');
+            }
+            const data = await response.json();
+            setEmsUploadedFiles(data.files || []);
+        }
+        catch (error) {
+            console.error('Error fetching EMS files:', error);
+            setEmsUploadedFiles([]);
+        }
+    };
+
     // Fetch active tab data whenever it changes
     useEffect(() => {
         if (activeTab === 'carousel') {
@@ -255,6 +277,7 @@ const Admin = () => {
             fetchAchievements();
         } else if (activeTab === 'policies') {
             fetchQmsFiles();
+            fetchEmsFiles();
         } else if (activeTab === 'communication') {
             fetchEmailList();
         }
@@ -663,281 +686,94 @@ const Admin = () => {
     };
 
     ////////========functions in add extensions/contacts in communication====//////
-    //  const handleFileUpload = async (e) => {
-    //     const file = e.target.files[0];
-    //     if (file && file.type === 'application/pdf') {
-    //         setUploadedFile(file);
-    //         setUploadStatus('Uploading...');
-    //         const formData = new FormData();
-    //         formData.append('extensionList', file);
-    //         try {
-    //             const response = await fetch('http://localhost:3001/api/extension', {
-    //                 method: 'POST',
-    //                 body: formData,
-    //             });
-    //             if (response.ok) {
-    //                 setUploadStatus('File uploaded successfully!');
-    //             } else {
-    //                 const errorData = await response.json();
-    //                 setUploadStatus(`Upload failed: ${errorData.message || 'Unknown error'}`);
-    //             }
-    //         } catch (error) {
-    //             setUploadStatus(`Upload error: ${error.message}`);
-    //         }
-    //     } else {
-    //         setUploadStatus('Please upload a valid PDF file');
-    //     }
-    // };
 
-    //handle cancel
-    // const handleExtCancel = () => {
-    //     setUploadedFile(null);
-    //     setUploadStatus('');
-    //     if (fileInputRef.current) {
-    //         fileInputRef.current.value = '';
-    //     }
-    // };
-
-
-    ////////========functions in uploading email list in communication==//////////
-//     const handleEmailUpload = async (e) => {
-//         e.preventDefault();
-//     if (!uploadedEmailFile) {
-//         setUploadEmailStatus('Please select a PDF file to upload.');
-//         return;
-//     }
-//     const formData = new FormData();
-//     formData.append('emails', uploadedEmailFile);
-//     try {
-//         const response = await fetch('/api/emailList', {  // Changed to relative URL
-//             method: 'POST',
-//             body: formData,
-//         });
-//         if (!response.ok) {
-//             const text = await response.text();  // Log raw response for debugging
-//             console.error('Raw response (not JSON):', text);  // Will show <!DOCTYPE if hitting frontend HTML
-//             setUploadEmailStatus(`Upload failed: ${text.substring(0, 100)}... Check console for details.`);
-//             return;
-//         }
-//         const data = await response.json();
-//         if (response.ok) {
-//             setUploadEmailStatus('File uploaded successfully!');
-//             setUploadedEmailFile(null);
-//             if (fileInputRef.current) fileInputRef.current.value = '';
-//         } else {
-//             setUploadEmailStatus(`Upload failed: ${data.error || 'Unknown error'}`);
-//         }
-//     } catch (error) {
-//         console.error('Upload error:', error);
-//         setUploadEmailStatus('Upload failed. Please check if the backend is running and try again.');
-//     }
-// };
-
-//        const handleEmailUpload = async (e) => {
-//         e.preventDefault();
-//         if (!uploadedEmailFile) {
-//             setUploadEmailStatus('Please select a PDF file to upload.');
-//             return;
-//         }
-//         const formData = new FormData();
-//         formData.append('emails', uploadedEmailFile);
-//         try {
-//             const response = await fetch('/api/emailList', {
-//                 method: 'POST',
-//                 body: formData,
-//             });
-//             if (!response.ok) {
-//                 const text = await response.text();
-//                 console.error('Raw response:', text); // Log HTML if present
-//                 setUploadEmailStatus(`Upload failed: ${text.substring(0, 100)}... Check console.`);
-//                 return;
-//             }
-//             const data = await response.json();
-//             if (response.ok) {
-//                 setUploadEmailStatus('File uploaded successfully!');
-//                 setUploadedEmailFile(null);
-//                 if (fileInputRef.current) fileInputRef.current.value = '';
-//             } else {
-//                 setUploadEmailStatus(`Upload failed: ${data.error || 'Unknown error'}`);
-//             }
-//         } catch (error) {
-//             console.error('Upload error:', error);
-//             setUploadEmailStatus('Upload failed. Please check if the backend is running.');
-//         }
-// };
-
-
-// Inside the Admin component, add these handlers
-
-// Handler for email list file selection
-// const handleEmailFileChange = (e) => {
-//   const file = e.target.files[0];
-//   if (file && file.type === 'application/pdf') {
-//     setUploadedEmailFile(file);
-//     setUploadEmailStatus(''); // Clear error message on valid file selection
-//   } else {
-//     setUploadedEmailFile(null);
-//     setUploadEmailStatus('Please select a PDF file to upload.');
-//   }
-// };
-
-// Handler for extension file selection
-const handleExtensionFileChange = (e) => {
-  const file = e.target.files[0];
-  if (file && file.type === 'application/pdf') {
-    setUploadedFile(file);
-    setUploadStatus(''); // Clear error message on valid file selection
-  } else {
-    setUploadedFile(null);
-    setUploadStatus('Please select a PDF file to upload.');
-  }
-};
-
-
-// Handler for email list file selection
-// const handleEmailFileChange = (e) => {
-//   const file = e.target.files[0];
-//   if (file && file.type === 'application/pdf') {
-//     setUploadedEmailFile(file);
-//     setUploadEmailStatus(''); // Clear error message on valid file selection
-//   } else {
-//     setUploadedEmailFile(null);
-//     setUploadEmailStatus('Please select a PDF file to upload.');
-//   }
-// };
-
-const handleEmailFileChange = (e) => {
-  const file = e.target.files[0];
-  if (file && file.type === 'application/pdf') {
-    setUploadedEmailFile(file);
-    setUploadEmailStatus(''); // Clear error message on valid file selection
-  } else {
-    setUploadedEmailFile(null);
-    setUploadEmailStatus('Please select a PDF file to upload.');
-  }
-};
-
-
-// Handler for email list upload
-const handleUploadEmail = async (e) => {
-  e.preventDefault();
-  if (!uploadedEmailFile) {
-    setUploadEmailStatus('Please select a PDF file to upload.');
-    return;
-  }
-
-  const formData = new FormData();
-  formData.append('emails', uploadedEmailFile);
-
-  try {
-    const response = await fetch('http://localhost:3001/api/emailList', {
-      method: 'POST',
-      body: formData,
-    });
-
-    if (!response.ok) {
-      const text = await response.text();
-      console.error('Non-OK response:', response.status, response.statusText, text.substring(0, 200));
-      setUploadEmailStatus(`Error: ${response.status} ${response.statusText}. Check console for details.`);
-      return;
-    }
-
-    const data = await response.json();
-
-    setUploadEmailStatus('File uploaded successfully!');
-    setUploadedEmailFile(null);
-    emailInputRef.current.value = ''; // Use separate ref
-  } catch (error) {
-    console.error('Upload failed:', error);
-    setUploadEmailStatus('Upload failed. Please check the server connection.');
-  }
-};
-
-// const handleDeleteEmail = async () => {
-//   if (!currentEmailFile) return;
-//   if (!window.confirm('Are you sure you want to delete the current email list?')) {
-//     return;
-//   }
-//   try {
-//     const response = await fetch('http://localhost:3001/api/emailList', {
-//       method: 'DELETE',
-//     });
-//     if (response.ok) {
-//       setCurrentEmailFile(null);
-//       setUploadEmailStatus('Email list deleted successfully.');
-//     } else {
-//       const errorData = await response.json();
-//       setUploadEmailStatus(`Error: ${errorData.error || 'Failed to delete'}`);
-//     }
-//   } catch (error) {
-//     console.error('Delete failed:', error);
-//     setUploadEmailStatus('Failed to delete. Please check the server connection.');
-//   }
-// };
-
-
-// const handleUploadEmail = async (e) => {
-//   e.preventDefault();
-//   if (!uploadedEmailFile) {
-//     setUploadEmailStatus('Please select a PDF file to upload.');
-//     return;
-//   }
-
-//   const formData = new FormData();
-//   formData.append('emails', uploadedEmailFile); // 'emails' field must match multer config
-
-//   try {
-//     const response = await fetch('http://localhost:3001/api/emailList', {
-//       method: 'POST',
-//       body: formData,
-//     });
-//     const data = await response.json();
-
-//     if (response.ok) {
-//       setUploadEmailStatus('File uploaded successfully!');
-//       setUploadedEmailFile(null); // Reset after success
-//       fileInputRef.current.value = ''; // Clear the file input
-//     } else {
-//       setUploadEmailStatus(`Error: ${data.error || 'Failed to upload file'}`);
-//     }
-//   } catch (error) {
-//     console.error('Upload failed:', error);
-//     setUploadEmailStatus('Upload failed. Please check the server connection.');
-//   }
-// };
-
-
-// Handler for extension upload (similar to email list)
-const handleUploadExtension = async (e) => {
-  e.preventDefault();
-  if (!uploadedFile) {
-    setUploadStatus('Please select a PDF file to upload.');
-    return;
-  }
-
-  const formData = new FormData();
-  formData.append('extensionList', uploadedFile);
-
-  try {
-    const response = await fetch('http://localhost:3001/api/extension', {
-      method: 'POST',
-      body: formData,
-    });
-    const data = await response.json();
-    if (response.ok) {
-      setUploadStatus('File uploaded successfully!');
-      setUploadedFile(null); // Reset after success
-      fileInputRef.current.value = ''; // Clear the file input
+    // Handler for extension file selection
+    const handleExtensionFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file && file.type === 'application/pdf') {
+        setUploadedFile(file);
+        setUploadStatus(''); // Clear error message on valid file selection
     } else {
-      setUploadStatus(`Error: ${data.error || 'Failed to upload file'}`);
+        setUploadedFile(null);
+        setUploadStatus('Please select a PDF file to upload.');
     }
-  } catch (error) {
-    console.error('Upload failed:', error);
-    setUploadStatus('Upload failed. Please check the server connection.');
-  }
-};
+    };
 
-  
+     const handleUploadExtension = async (e) => {
+    e.preventDefault();
+    if (!uploadedFile) {
+        setUploadStatus('Please select a PDF file to upload.');
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('extensionList', uploadedFile);
+
+    try {
+        const response = await fetch('http://localhost:3001/api/extension', {
+        method: 'POST',
+        body: formData,
+        });
+        const data = await response.json();
+        if (response.ok) {
+        setUploadStatus('File uploaded successfully!');
+        setUploadedFile(null); // Reset after success
+        fileInputRef.current.value = ''; // Clear the file input
+        } else {
+        setUploadStatus(`Error: ${data.error || 'Failed to upload file'}`);
+        }
+    } catch (error) {
+        console.error('Upload failed:', error);
+        setUploadStatus('Upload failed. Please check the server connection.');
+    }
+    };
+
+    // Handler for email list upload
+    const handleEmailFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file && file.type === 'application/pdf') {
+        setUploadedEmailFile(file);
+        setUploadEmailStatus(''); // Clear error message on valid file selection
+    } else {
+        setUploadedEmailFile(null);
+        setUploadEmailStatus('Please select a PDF file to upload.');
+    }
+    };
+ 
+    const handleUploadEmail = async (e) => {
+    e.preventDefault();
+    if (!uploadedEmailFile) {
+        setUploadEmailStatus('Please select a PDF file to upload.');
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('emails', uploadedEmailFile);
+
+    try {
+        const response = await fetch('http://localhost:3001/api/emailList', {
+        method: 'POST',
+        body: formData,
+        });
+
+        if (!response.ok) {
+        const text = await response.text();
+        console.error('Non-OK response:', response.status, response.statusText, text.substring(0, 200));
+        setUploadEmailStatus(`Error: ${response.status} ${response.statusText}. Check console for details.`);
+        return;
+        }
+
+        const data = await response.json();
+
+        setUploadEmailStatus('File uploaded successfully!');
+        setUploadedEmailFile(null);
+        emailInputRef.current.value = ''; // Use separate ref
+    } catch (error) {
+        console.error('Upload failed:', error);
+        setUploadEmailStatus('Upload failed. Please check the server connection.');
+    }
+    };
+
 
     //////////========functions in uploading QMS document in policies==//////////
     // Handler for QMS file selection
@@ -961,7 +797,6 @@ const handleUploadExtension = async (e) => {
         };
 
     // Handler for QMS upload
-    // Enhanced frontend handler with form data logging
     const handleUploadQms = async (e) => {
         e.preventDefault();
         if (!qmsFiles || qmsFiles.length === 0) {
@@ -971,9 +806,9 @@ const handleUploadExtension = async (e) => {
 
         const formData = new FormData();
         qmsFiles.forEach((file, index) => {
-    formData.append('qmsFiles', file);  
-    console.log(`Added file ${index + 1}:`, file.name, 'Field: qms');
-});
+        formData.append('qmsFiles', file);  
+        console.log(`Added file ${index + 1}:`, file.name, 'Field: qms');
+    });
 
         // Log form data entries (for debugging)
         console.log('FormData entries:');
@@ -1066,6 +901,131 @@ const handleUploadExtension = async (e) => {
         }
     };
 
+
+    //////////========functions in uploading EMS document in policies==//////////
+    //Handler for EMS file selection
+    const handleEmsFileChange = (e) => {
+        const selectedFiles = Array.from(e.target.files);
+        const validFiles = selectedFiles.filter(file => 
+            file.type === 'application/pdf' ||
+            file.type === 'application/msword' ||
+            file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+            file.type === 'text/plain' ||
+            file.type.startsWith('image/')
+        );
+
+        if (validFiles.length !== selectedFiles.length) {
+            setUploadEmsStatus('Some files were skipped. Only PDF, DOC, DOCX, TXT, and image files are allowed.');
+        } else {
+            setUploadEmsStatus('');
+        }
+        setEmsFiles(validFiles);
+    };
+
+    //Handler for EMS upload
+    const handleUploadEms = async (e) => {
+         e.preventDefault();
+        if (!emsFiles || emsFiles.length === 0) {
+            setUploadEmsStatus('Please select at least one file to upload.');
+            return;
+        }
+
+        const formData = new FormData();
+        emsFiles.forEach((file, index) => {
+        formData.append('emsFiles', file);  
+        console.log(`Added file ${index + 1}:`, file.name, 'Field: ems');
+    });
+
+        // Log form data entries (for debugging)
+        console.log('FormData entries:');
+        for (let pair of formData.entries()) {
+            console.log(pair[0] + ', ' + pair[1].name);
+        }
+
+        try {
+            console.log('Uploading to http://localhost:3001/api/ems');
+            
+            const response = await fetch('http://localhost:3001/api/ems', {
+                method: 'POST',
+                body: formData,
+            });
+            
+            console.log('Response status:', response.status);
+            
+            const responseText = await response.text();
+            console.log('Response:', responseText);
+            
+            let data;
+            try {
+                data = JSON.parse(responseText);
+            } catch (parseError) {
+                console.error('JSON parse error:', parseError);
+                throw new Error(`Server returned: ${responseText.substring(0, 200)}`);
+            }
+            
+            if (!response.ok) {
+                throw new Error(data.error || `Server error: ${response.status}`);
+            }
+            
+            setUploadEmsStatus(`Success! ${data.message}`);
+            setEmsFiles([]);
+            if (emsInputRef.current) {
+                emsInputRef.current.value = '';
+            }
+            fetchEmsFiles(); // Refresh the list after successful upload
+            
+            setTimeout(() => {
+                setUploadEmsStatus('');
+            }, 5000);
+            
+        } catch (error) {
+            console.error('Upload failed:', error);
+            setUploadEmsStatus(`Upload failed: ${error.message}`);
+            
+            setTimeout(() => {
+                setUploadEmsStatus('');
+            }, 5000);
+        }
+    };
+
+    //Handler for removing a selected EMS file
+    const handleRemoveEmsFile = (index) => {
+        setEmsFiles(prev => prev.filter((_, i) => i !== index));
+        if (emsFiles.length === 1) {
+            setUploadEmsStatus('');
+        }
+    };
+
+    //Handler for clearing EMS files
+    const handleClearEmsFiles = () => {
+        setEmsFiles([]);
+        setUploadEmsStatus('');
+        if (emsInputRef.current) {
+            emsInputRef.current.value = '';
+        }
+    };
+
+    //Handler for deleting EMS files
+    const handleDeleteEmsFiles = async (filename) => {
+        const isConfirmed = window.confirm('Are you sure you want to delete this file?');
+        if (!isConfirmed) return;
+
+        try {
+            const response = await fetch(`http://localhost:3001/api/ems/${filename}`, {
+                method: 'DELETE',
+            });
+            if (response.ok) {
+                alert('File deleted successfully!');
+                fetchEmsFiles(); // Refresh the list
+            } else {
+                const errorData = await response.json();
+                alert(`Error: ${errorData.error || 'Failed to delete file'}`);
+            }
+        } catch (error) {
+            console.error('Delete failed:', error);
+            alert('Failed to delete file. Please check the server connection.');
+        }
+    }
 
 
     const applications = [
@@ -1684,7 +1644,7 @@ const handleUploadExtension = async (e) => {
                                                 Select multiple files (PDF, DOC, DOCX, TXT, images) to upload
                                             </p>
                                             <form 
-                                            // onSubmit={handleUploadQms}
+                                             onSubmit={handleUploadEms}
                                             >
                                                 <div className="mb-4">
                                                     <label className="block text-sm font-medium text-gray-700">
@@ -1692,8 +1652,8 @@ const handleUploadExtension = async (e) => {
                                                     </label>
                                                     <input
                                                         type="file"
-                                                        // ref={qmsInputRef}
-                                                        // onChange={handleQmsFilesChange}
+                                                        ref={emsInputRef}
+                                                        onChange={handleEmsFileChange}
                                                         accept=".pdf,.doc,.docx,.txt,image/*"
                                                         multiple
                                                         className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
@@ -1701,16 +1661,16 @@ const handleUploadExtension = async (e) => {
                                                 </div>
                                                 
                                                 {/* Selected Files List */}
-                                                {qmsFiles.length > 0 && (
+                                                {emsFiles.length > 0 && (
                                                     <div className="mb-4 p-3 bg-white rounded border">
-                                                        <h4 className="font-medium mb-2">Selected Files ({qmsFiles.length}):</h4>
+                                                        <h4 className="font-medium mb-2">Selected Files ({emsFiles.length}):</h4>
                                                         <ul className="space-y-1 max-h-32 overflow-y-auto">
-                                                            {qmsFiles.map((file, index) => (
+                                                            {emsFiles.map((file, index) => (
                                                                 <li key={index} className="flex justify-between items-center text-sm">
                                                                     <span className="truncate flex-1">{file.name}</span>
                                                                     <button
                                                                         type="button"
-                                                                        // onClick={() => handleRemoveQmsFile(index)}
+                                                                        onClick={() => handleRemoveEmsFile(index)}
                                                                         className="ml-2 text-red-500 hover:text-red-700"
                                                                     >
                                                                         Remove
@@ -1721,18 +1681,18 @@ const handleUploadExtension = async (e) => {
                                                     </div>
                                                 )}
                                                 
-                                                <div className={uploadQmsStatus.includes('Success') ? 'text-green-500' : 'text-red-500'}>{uploadQmsStatus}</div>
+                                                <div className={uploadEmsStatus.includes('Success') ? 'text-green-500' : 'text-red-500'}>{uploadEmsStatus}</div>
                                                 <div className="flex space-x-2">
                                                     <button
                                                         type="submit"
                                                         className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400"
-                                                        disabled={qmsFiles.length === 0}
+                                                        disabled={emsFiles.length === 0}
                                                     >
-                                                        Upload {qmsFiles.length > 0 ? `(${qmsFiles.length})` : ''} Files
+                                                        Upload {emsFiles.length > 0 ? `(${emsFiles.length})` : ''} Files
                                                     </button>
                                                     <button
                                                         type="button"
-                                                        onClick={handleClearQmsFiles}
+                                                        onClick={handleClearEmsFiles}
                                                         className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
                                                     >
                                                         Clear All
@@ -1741,11 +1701,11 @@ const handleUploadExtension = async (e) => {
                                             </form>
 
                                             {/* Uploaded Files List */}
-                                            {/* <div className="mt-8">
-                                                <h3 className="text-lg font-semibold mb-4">Uploaded QMS Documents ({qmsUploadedFiles.length})</h3>
-                                                {qmsUploadedFiles.length > 0 ? (
+                                            <div className="mt-8">
+                                                <h3 className="text-lg font-semibold mb-4">Uploaded Ems Documents ({emsUploadedFiles.length})</h3>
+                                                {emsUploadedFiles.length > 0 ? (
                                                     <div className="space-y-3">
-                                                        {qmsUploadedFiles.map((file) => (
+                                                        {emsUploadedFiles.map((file) => (
                                                             <div key={file.filename} className="flex justify-between items-center p-3 bg-white rounded border">
                                                                 <div className="flex-1">
                                                                     <p className="font-medium truncate">{file.filename}</p>
@@ -1763,7 +1723,7 @@ const handleUploadExtension = async (e) => {
                                                                         Download
                                                                     </a>
                                                                     <button
-                                                                        onClick={() => handleDeleteQmsFile(file.filename)}
+                                                                        onClick={() => handleDeleteEmsFiles(file.filename)}
                                                                         className="px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600"
                                                                     >
                                                                         Delete
@@ -1773,9 +1733,9 @@ const handleUploadExtension = async (e) => {
                                                         ))}
                                                     </div>
                                                 ) : (
-                                                    <p className="text-gray-500 text-center py-4">No QMS documents uploaded yet.</p>
+                                                    <p className="text-gray-500 text-center py-4">No EMS documents uploaded yet.</p>
                                                 )}
-                                            </div> */}
+                                            </div>
                                         </div>
                                     )}   
 
