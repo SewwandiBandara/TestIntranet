@@ -19,8 +19,10 @@ const achievementsDir = path.join(baseUploadsDir, 'Achievements');
 const extensionsDir = path.join(baseUploadsDir, 'Contacts');
 const emailsDir = path.join(baseUploadsDir, 'Emails');
 const qmsDir = path.join(baseUploadsDir, 'QMS');
+const emsDir = path.join(baseUploadsDir, 'EMS');
 
-[baseUploadsDir, carouselDir, calendarDir, achievementsDir, monthDir, extensionsDir, emailsDir, qmsDir].forEach(dir => {
+
+[baseUploadsDir, carouselDir, calendarDir, achievementsDir, monthDir, extensionsDir, emailsDir, qmsDir, emsDir].forEach(dir => {
     if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir, { recursive: true });
     }
@@ -46,6 +48,8 @@ const storage = multer.diskStorage({
             uploadPath = emailsDir; 
         } else if (req.path.includes('/api/qms')) {
             uploadPath = qmsDir;
+        } else if (req.path.includes('/api/ems')) {
+            uploadPath = emsDir;
         } else {
             uploadPath = baseUploadsDir;
         }
@@ -56,7 +60,8 @@ const storage = multer.diskStorage({
         // Check if the path is related to documents where original name is usually preferred.
         const isDocumentPath = req.path.includes('/api/extension') || 
                                req.path.includes('/api/emailList') || 
-                               req.path.includes('/api/qms');
+                               req.path.includes('/api/qms') ||
+                               req.path.includes('/api/ems');
 
         if (isDocumentPath) {
             // Save files in document-related paths (like /api/qms) with their original name.
@@ -116,7 +121,7 @@ const upload = multer({
 const uploadMultiple = multer({
     storage: storage,
     fileFilter: (req, file, cb) => {
-        if (req.path.includes('/api/qms')) {
+        if (req.path.includes('/api/qms') || req.path.includes('/api/ems') ) {
             if (file.mimetype === 'application/pdf' || 
                 file.mimetype === 'application/msword' || 
                 file.mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
@@ -286,29 +291,6 @@ app.post('/api/news', async (req, res) => {
         res.status(500).json({ error: 'Failed to add news item' });
     }
 });
-
-// app.put('/api/news/:id', async (req, res) => {
-//     try {
-//         const { id } = req.params;
-//         const { title, content } = req.body;
-//         const pool = await sql.connect(dbConfig);
-//         const result = await pool.request()
-//             .input('Id', sql.Int, id)
-//             .input('Title', sql.NVarChar, title)
-//             .input('Content', sql.NVarChar, content)
-//             .query('UPDATE NewsAndAnnouncements SET Title = @Title, Content = @Content WHERE Id = @Id');
-//         if (result.rowsAffected[0] === 0) {
-//             return res.status(404).json({ error: 'News item not found' });
-//         }
-//
-//         res.status(200).json({ message: 'News item updated successfully!' });
-//     } catch (err) {
-//         console.error('Error updating news item:', err);
-//         res.status(500).json({ error: 'Failed to update news item' });
-//     }
-// });
-
-
 
 app.put('/api/news/:id', async (req, res) => {
     try {
@@ -1038,7 +1020,7 @@ app.get('/api/test', (req, res) => {
 });
 
 
-///// Policies and procedures - fetch documents(QMS)////////////
+///// Policies and procedures - QMS documents
 app.get('/api/qms', async (req, res) => {
     try{
         const files = await fs.promises.readdir(qmsDir);
@@ -1060,7 +1042,6 @@ app.get('/api/qms', async (req, res) => {
     }
 });
 
-// Upload multiple files for QMS
 app.post('/api/qms', uploadMultiple.array('qmsFiles', 100), async (req, res) => {
     try {
         console.log('Received POST /api/qms at', new Date().toISOString());
@@ -1140,7 +1121,6 @@ app.post('/api/qms', uploadMultiple.array('qmsFiles', 100), async (req, res) => 
     }
 });
 
-// Delete individual QMS file
 app.delete('/api/qms/:filename', async (req, res) => {
     try {
         const { filename } = req.params;
@@ -1158,7 +1138,6 @@ app.delete('/api/qms/:filename', async (req, res) => {
     }
 });
 
-// Delete all QMS files
 app.delete('/api/qms', async (req, res) => {
     try {
         const files = await fs.promises.readdir(qmsDir);
@@ -1180,12 +1159,115 @@ app.delete('/api/qms', async (req, res) => {
 });
 
 
-///// Policies and procedures - fetch documents(EMS)////////////
+///// Policies and procedures - EMS documents
+app.get('/api/ems', async (req, res) => {
+    try{
+        const files = await fs.promises.readdir(emsDir);
+        // Return all files, not just the latest one
+        const emsFiles = files.map(filename => ({
+            filename: filename,
+            filePath: `/backend/uploads/EMS/${filename}`,
+            uploadDate: fs.statSync(path.join(emsDir, filename)).mtime
+        })).sort((a, b) => new Date(b.uploadDate) - new Date(a.uploadDate)); 
+        
+        res.json({
+            files: emsFiles,
+            count: emsFiles.length
+        });
+    }
+    catch(err) {
+        console.error('Error fetching EMS documents lists:', err);
+        res.status(500).json({error: 'Failed to fetch EMS document lists'});
+    }
+});
+
+app.post('/api/ems', uploadMultiple.array('emsFiles', 100), async (req, res) => {
+    console.log('EMS POST route hit');  // Add this to confirm the handler is reached
+    try {
+        console.log('Received POST /api/ems at', new Date().toISOString());
+        console.log('Upload request received - Files:', req.files);
+        console.log('Request body fields:', req.body);
+
+        if (!req.files || req.files.length === 0) {
+            console.log('No files uploaded');
+            return res.status(400).json({ error: 'At least one file is required.' });
+        }
+
+        // Enhanced file validation for each file
+        const allowedTypes = [
+            'application/pdf',
+            'application/msword',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'text/plain'
+        ];
+        
+        const invalidFiles = req.files.filter(file => 
+            !allowedTypes.includes(file.mimetype) && !file.mimetype.startsWith('image/')
+        );
+
+        if (invalidFiles.length > 0) {
+            return res.status(400).json({ 
+                error: 'Invalid file types. Allowed: PDF, DOC, DOCX, TXT, images',
+                invalidFiles: invalidFiles.map(f => f.originalname)
+            });
+        }
+
+        // Process each file
+        const uploadedFiles = [];
+        for (const file of req.files) {
+            console.log('File details:', {
+                filename: file.filename,
+                originalname: file.originalname,
+                mimetype: file.mimetype,
+                path: file.path,
+                size: file.size
+            });
+
+            // Check if file was saved
+            try {
+                const fileExists = fs.existsSync(file.path);
+                console.log('File exists after upload:', fileExists);
+                if (fileExists) {
+                    const stats = fs.statSync(file.path);
+                    console.log('File size on disk:', stats.size);
+                }
+            } catch (fileError) {
+                console.error('Error checking file existence:', fileError);
+                // Continue with other files even if one fails verification
+            }
+
+            uploadedFiles.push({
+                originalName: file.originalname,
+                savedName: file.filename,
+                filePath: `/backend/uploads/EMS/${file.filename}`,
+                size: file.size,
+                mimetype: file.mimetype
+            });
+        }
+
+        res.status(201).json({
+            message: `${uploadedFiles.length} file(s) uploaded successfully!`,
+            files: uploadedFiles,
+            totalCount: uploadedFiles.length
+        });
+
+    } catch (error) {
+        console.error('Error uploading EMS files:', {
+            message: error.message,
+            stack: error.stack,
+            code: error.code
+        });
+        res.status(500).json({ error: 'Failed to upload EMS files: ' + error.message });
+    }
+});
+
+console.log('EMS POST route registered successfully');  // Confirm registration
 
 
 
 
-/////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////////////////
 
 // QMS Health check endpoint
 app.get('/api/qms/health', (req, res) => {
