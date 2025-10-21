@@ -20,9 +20,10 @@ const extensionsDir = path.join(baseUploadsDir, 'Contacts');
 const emailsDir = path.join(baseUploadsDir, 'Emails');
 const qmsDir = path.join(baseUploadsDir, 'QMS');
 const emsDir = path.join(baseUploadsDir, 'EMS');
+const hwDir = path.join(baseUploadsDir, 'HW');
 
 
-[baseUploadsDir, carouselDir, calendarDir, achievementsDir, monthDir, extensionsDir, emailsDir, qmsDir, emsDir].forEach(dir => {
+[baseUploadsDir, carouselDir, calendarDir, achievementsDir, monthDir, extensionsDir, emailsDir, qmsDir, emsDir, hwDir].forEach(dir => {
     if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir, { recursive: true });
     }
@@ -50,6 +51,8 @@ const storage = multer.diskStorage({
             uploadPath = qmsDir;
         } else if (req.path.includes('/api/ems')) {
             uploadPath = emsDir;
+        } else if (req.path.includes('/api/hw')) {
+            uploadPath = hwDir; 
         } else {
             uploadPath = baseUploadsDir;
         }
@@ -61,7 +64,8 @@ const storage = multer.diskStorage({
         const isDocumentPath = req.path.includes('/api/extension') || 
                                req.path.includes('/api/emailList') || 
                                req.path.includes('/api/qms') ||
-                               req.path.includes('/api/ems');
+                               req.path.includes('/api/ems') ||
+                               req.path.includes('/api/hw');
 
         if (isDocumentPath) {
             // Save files in document-related paths (like /api/qms) with their original name.
@@ -121,7 +125,7 @@ const upload = multer({
 const uploadMultiple = multer({
     storage: storage,
     fileFilter: (req, file, cb) => {
-        if (req.path.includes('/api/qms') || req.path.includes('/api/ems') ) {
+        if (req.path.includes('/api/qms') || req.path.includes('/api/ems') || req.path.includes('/api/hw') ) {
             if (file.mimetype === 'application/pdf' || 
                 file.mimetype === 'application/msword' || 
                 file.mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
@@ -1010,14 +1014,6 @@ app.delete('/api/emailList', async (req, res) => {
 });
 
 
-app.get('/api/qms/test', (req, res) => {
-    res.json({ message: 'QMS API endpoint working' });
-});
-
-// Keep your existing test endpoint
-app.get('/api/test', (req, res) => {
-    res.json({ message: 'Test endpoint working' });
-});
 
 
 ///// Policies and procedures - QMS documents
@@ -1298,6 +1294,156 @@ app.delete('/api/ems/:filename', async (req, res) => {
     }
 });
 
+
+///// Policies and procedures - H&W documents
+///// Policies and procedures - H&W documents
+app.get('/api/hw', async (req, res) => {
+    try {
+        const files = await fs.promises.readdir(hwDir);
+        // Return all files, not just the latest one
+        const hwFiles = files.map(filename => ({
+            filename: filename,
+            filePath: `/backend/uploads/HW/${filename}`,
+            uploadDate: fs.statSync(path.join(hwDir, filename)).mtime
+        })).sort((a, b) => new Date(b.uploadDate) - new Date(a.uploadDate));
+
+        res.json({
+            files: hwFiles,
+            count: hwFiles.length
+        });
+    } catch (error) {
+        console.error('Error fetching H&W document lists:', error);
+        res.status(500).json({ error: 'Failed to fetch H&W document lists' });
+    }
+});
+
+app.post('/api/hw', uploadMultiple.array('hwFiles', 100), async (req, res) => {
+    console.log('H&W POST route hit');
+    try {
+        console.log('Received POST /api/hw at', new Date().toISOString());
+        console.log('Upload request received - Files:', req.files);
+        console.log('Request body fields:', req.body);
+
+        if (!req.files || req.files.length === 0) {
+            console.log('No files uploaded');
+            return res.status(400).json({ error: 'At least one file is required.' });
+        }
+
+        // Enhanced file validation for each file
+        const allowedTypes = [
+            'application/pdf',
+            'application/msword',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'text/plain'
+        ];
+        
+        const invalidFiles = req.files.filter(file => 
+            !allowedTypes.includes(file.mimetype) && !file.mimetype.startsWith('image/')
+        );
+
+        if (invalidFiles.length > 0) {
+            return res.status(400).json({ 
+                error: 'Invalid file types. Allowed: PDF, DOC, DOCX, TXT, images',
+                invalidFiles: invalidFiles.map(f => f.originalname)
+            });
+        }
+
+        // Process each file
+        const uploadedFiles = [];
+        for (const file of req.files) {
+            console.log('File details:', {
+                filename: file.filename,
+                originalname: file.originalname,
+                mimetype: file.mimetype,
+                path: file.path,
+                size: file.size
+            });
+
+            // Check if file was saved
+            try {
+                const fileExists = fs.existsSync(file.path);
+                console.log('File exists after upload:', fileExists);
+                if (fileExists) {
+                    const stats = fs.statSync(file.path);
+                    console.log('File size on disk:', stats.size);
+                }
+            } catch (fileError) {
+                console.error('Error checking file existence:', fileError);
+                // Continue with other files even if one fails verification
+            }
+
+            uploadedFiles.push({
+                originalName: file.originalname,
+                savedName: file.filename,
+                filePath: `/backend/uploads/HW/${file.filename}`,
+                size: file.size,
+                mimetype: file.mimetype
+            });
+        }
+
+        res.status(201).json({
+            message: `${uploadedFiles.length} file(s) uploaded successfully!`,
+            files: uploadedFiles,
+            totalCount: uploadedFiles.length
+        });
+
+    } catch (error) {
+        console.error('Error uploading H&W files:', {
+            message: error.message,
+            stack: error.stack,
+            code: error.code
+        });
+        res.status(500).json({ error: 'Failed to upload H&W files: ' + error.message });
+    }
+});
+
+app.delete('/api/hw/:filename', async (req, res) => {
+    console.log('H&W single DELETE route hit - filename:', req.params.filename);
+    try {
+        const { filename } = req.params;
+        
+        // Decode the filename in case it contains URL-encoded characters like spaces
+        const decodedFilename = decodeURIComponent(filename);
+        console.log('Decoded filename:', decodedFilename);
+        
+        const filePath = path.join(hwDir, decodedFilename);
+        console.log('Full file path:', filePath);
+        
+        if (fs.existsSync(filePath)) {
+            await fs.promises.unlink(filePath);
+            console.log('H&W file deleted successfully:', decodedFilename);
+            res.status(200).json({ message: 'File deleted successfully!' });
+        } else {
+            console.log('H&W file not found at path:', filePath);
+            
+            // List available files for debugging
+            const availableFiles = await fs.promises.readdir(hwDir);
+            console.log('Available H&W files:', availableFiles);
+            
+            res.status(404).json({ 
+                error: 'File not found',
+                availableFiles: availableFiles
+            });
+        }
+    } catch (err) {
+        console.error('Error deleting H&W file:', err);
+        res.status(500).json({ error: 'Failed to delete file: ' + err.message });
+    }
+});
+
+
+/////////////////Testong routes//////////////////////
+// QMS test endpoint
+app.get('/api/qms/test', (req, res) => {
+    res.json({ message: 'QMS API endpoint working' });
+});
+
+// Keep your existing test endpoint
+app.get('/api/test', (req, res) => {
+    res.json({ message: 'Test endpoint working' });
+});
+
+
 // app.delete('/api/ems', async (req, res) => {
 //     console.log('EMS all DELETE route hit');
 //     try {
@@ -1369,7 +1515,6 @@ app.get('/api/qms/info', async (req, res) => {
 app.get('/api/test', (req, res) => {
     res.json({ message: 'Test endpoint working' });
 });
-
 
 
 const PORT = 3001;

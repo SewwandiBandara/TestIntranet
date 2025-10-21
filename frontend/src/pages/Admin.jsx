@@ -73,8 +73,13 @@ const Admin = () => {
     const [emsUploadedFiles, setEmsUploadedFiles] = useState([]);
     const [uploadEmsStatus, setUploadEmsStatus] = useState('');
     const emsInputRef = useRef(null);
-
    
+    //status for add H&W documents in policies
+    const [hwFiles, setHwFiles] = useState([]);
+    const [hwUploadedFiles, setHwUploadedFiles] = useState([]);
+    const [uploadHwStatus, setUploadHwStatus] = useState('');
+    const hwInputRef = useRef(null);
+
 
     // Check login state on mount
     useEffect(() => {
@@ -263,7 +268,21 @@ const Admin = () => {
         }
     };
 
- 
+    //Function to fetch H&W files
+    const fetchHwFiles = async () => {
+        try {
+            const response = await fetch('http://localhost:3001/api/hw');
+            if (!response.ok) {
+                throw new Error('Failed to fetch H&W files');
+            }
+            const data = await response.json();
+            setHwUploadedFiles(data.files || []);
+        }
+        catch (error) {
+            console.error('Error fetching H&W files:', error);
+            setHwUploadedFiles([]);
+        }
+    }
 
     // Fetch active tab data whenever it changes
     useEffect(() => {
@@ -280,6 +299,7 @@ const Admin = () => {
         } else if (activeTab === 'policies') {
             fetchQmsFiles();
             fetchEmsFiles();
+            fetchHwFiles();
         } else if (activeTab === 'communication') {
             fetchEmailList();
         }
@@ -1027,9 +1047,137 @@ const Admin = () => {
             console.error('Delete failed:', error);
             alert('Failed to delete file. Please check the server connection.');
         }
-    }
+    };
 
 
+    ////////========functions in uploading H&W document in policies==//////////
+    //Handler for H&W file selection
+    const handleHwFileChange = (e) => {
+        const selectedFiles = Array.from(e.target.files);
+        const validFiles = selectedFiles.filter(file => 
+            file.type === 'application/pdf' ||
+            file.type === 'application/msword' ||
+            file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+            file.type === 'text/plain' ||
+            file.type.startswith('image/')
+        );
+        if (validFiles.length !== selectedFiles.length) {
+            setUploadHwStatus('Some files were skipped. Only PDF, DOC, DOCX, TXT, and images are allowed.');
+        }
+        else {
+            setUploadHwStatus('');
+        }
+        setHwFiles(validFiles);
+    };
+
+    //Handler for H&W upload
+   // Handler for H&W upload
+    const handleUploadHw = async (e) => {
+        e.preventDefault();
+        if (!hwFiles || hwFiles.length === 0) {
+            setUploadHwStatus('Please select at least one file to upload.');
+            return;
+        }
+
+        const formData = new FormData();
+        hwFiles.forEach((file, index) => {
+            formData.append('hwFiles', file);  // Change from 'emsFiles' to 'hwFiles'
+            console.log(`Added file ${index + 1}:`, file.name, 'Field: hwFiles');
+        });
+
+        // Log form data entries (for debugging)
+        console.log('FormData entries:');
+        for (let pair of formData.entries()) {
+            console.log(pair[0] + ', ' + pair[1].name);
+        }
+
+        try {
+            console.log('Uploading to http://localhost:3001/api/hw');
+            
+            const response = await fetch('http://localhost:3001/api/hw', {
+                method: 'POST',
+                body: formData,
+            });
+            
+            console.log('Response status:', response.status);
+            
+            const responseText = await response.text();
+            console.log('Response:', responseText);
+            
+            let data;
+            try {
+                data = JSON.parse(responseText);
+            } catch (parseError) {
+                console.error('JSON parse error:', parseError);
+                throw new Error(`Server returned: ${responseText.substring(0, 200)}`);
+            }
+            
+            if (!response.ok) {
+                throw new Error(data.error || `Server error: ${response.status}`);
+            }
+            
+            setUploadHwStatus(`Success! ${data.message}`);
+            setHwFiles([]);
+            if (hwInputRef.current) {
+                hwInputRef.current.value = '';
+            }
+            fetchHwFiles(); // Refresh the list after successful upload
+            
+            setTimeout(() => {
+                setUploadHwStatus('');
+            }, 5000);
+            
+        } catch (error) {
+            console.error('Upload failed:', error);
+            setUploadHwStatus(`Upload failed: ${error.message}`);
+            
+            setTimeout(() => {
+                setUploadHwStatus('');
+            }, 5000);
+        }
+    };
+
+    //Handler for removing a selected H&W file
+    const handleRemoveHwFile = (index) => {
+        setHwFiles(prev => prev.filter((_, i) => i !== index));
+        if (hwFiles.length === 1) {
+            setUploadHwStatus('');
+        }
+    };
+
+    //Handler for clearing H&W files
+    const handleClearHwFiles = () => {
+        setHwFiles([]);
+        setUploadHwStatus('');
+        if (hwInputRef.current) {
+            hwInputRef.current.value = '';
+        }
+    };
+
+    //Handler for deleting H&W files
+    const handleDeleteHwFiles = async (filename) => {
+        const isConfirmed = window.confirm('Are you sure you want to delete this file?');
+        if (!isConfirmed) return;
+
+        try {
+            const response = await fetch(`http://localhost:3001/api/hw/${filename}`, {
+                method: 'DELETE',
+            });
+            if (response.ok) {
+                alert('File deleted successfully!');
+                fetchHwFiles(); // Refresh the list
+            } else {
+                const errorData = await response.json();
+                alert(`Error: ${errorData.error || 'Failed to delete file'}`);
+            }
+        } catch (error) {
+            console.error('Delete failed:', error);
+            alert('Failed to delete file. Please check the server connection.');
+        }
+    };
+
+
+    //Application list
     const applications = [
         { id: 'hr', name: 'Human Resource Management', icon: <FiUsers /> },
         { id: 'medical', name: 'Medical', icon: <FiFileText /> },
@@ -1990,7 +2138,7 @@ const Admin = () => {
                                     Select multiple files (PDF, DOC, DOCX, TXT, images) to upload
                                 </p>
                                 <form 
-                                    // onSubmit={handleUploadQms}
+                                    onSubmit={handleUploadHw}
                                 >
                                     <div className="mb-4">
                                         <label className="block text-sm font-medium text-gray-700">
@@ -1998,8 +2146,8 @@ const Admin = () => {
                                         </label>
                                     <input
                                         type="file"
-                                        // ref={qmsInputRef}
-                                        // onChange={handleQmsFilesChange}
+                                        ref={hwInputRef}
+                                        onChange={handleHwFileChange}
                                         accept=".pdf,.doc,.docx,.txt,image/*"
                                         multiple
                                         className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
@@ -2007,16 +2155,16 @@ const Admin = () => {
                                     </div>
                                                 
                                     {/* Selected Files List */}
-                                    {qmsFiles.length > 0 && (
+                                    {hwFiles.length > 0 && (
                                         <div className="mb-4 p-3 bg-white rounded border">
-                                            <h4 className="font-medium mb-2">Selected Files ({qmsFiles.length}):</h4>
+                                            <h4 className="font-medium mb-2">Selected Files ({hwFiles.length}):</h4>
                                             <ul className="space-y-1 max-h-32 overflow-y-auto">
-                                                {qmsFiles.map((file, index) => (
+                                                {hwFiles.map((file, index) => (
                                                     <li key={index} className="flex justify-between items-center text-sm">
                                                         <span className="truncate flex-1">{file.name}</span>
                                                         <button
                                                             type="button"
-                                                            // onClick={() => handleRemoveQmsFile(index)}
+                                                            onClick={() => handleRemoveHwFile(index)}
                                                             className="ml-2 text-red-500 hover:text-red-700"
                                                         >
                                                             Remove
@@ -2027,18 +2175,18 @@ const Admin = () => {
                                         </div>
                                     )}
                                                 
-                                    <div className={uploadQmsStatus.includes('Success') ? 'text-green-500' : 'text-red-500'}>{uploadQmsStatus}</div>
+                                    <div className={uploadHwStatus.includes('Success') ? 'text-green-500' : 'text-red-500'}>{uploadHwStatus}</div>
                                     <div className="flex space-x-2">
                                         <button
                                             type="submit"
                                             className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400"
-                                            disabled={qmsFiles.length === 0}
+                                            disabled={hwFiles.length === 0}
                                         >
-                                            Upload {qmsFiles.length > 0 ? `(${qmsFiles.length})` : ''} Files
+                                            Upload {hwFiles.length > 0 ? `(${hwFiles.length})` : ''} Files
                                         </button>
                                         <button
                                             type="button"
-                                            onClick={handleClearQmsFiles}
+                                            onClick={handleClearHwFiles}
                                             className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
                                         >
                                             Clear All
@@ -2047,11 +2195,11 @@ const Admin = () => {
                                 </form>
 
                                 {/* Uploaded Files List */}
-                                {/* <div className="mt-8">
-                                    <h3 className="text-lg font-semibold mb-4">Uploaded QMS Documents ({qmsUploadedFiles.length})</h3>
-                                    {qmsUploadedFiles.length > 0 ? (
+                                <div className="mt-8">
+                                    <h3 className="text-lg font-semibold mb-4">Uploaded H&W Documents ({hwUploadedFiles.length})</h3>
+                                    {hwUploadedFiles.length > 0 ? (
                                         <div className="space-y-3">
-                                        {qmsUploadedFiles.map((file) => (
+                                        {hwUploadedFiles.map((file) => (
                                             <div key={file.filename} className="flex justify-between items-center p-3 bg-white rounded border">
                                                 <div className="flex-1">
                                                     <p className="font-medium truncate">{file.filename}</p>
@@ -2069,7 +2217,7 @@ const Admin = () => {
                                                         Download
                                                     </a>
                                                     <button
-                                                        onClick={() => handleDeleteQmsFile(file.filename)}
+                                                        onClick={() => handleDeleteHwFiles(file.filename)}
                                                         className="px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600"
                                                     >
                                                         Delete
@@ -2079,9 +2227,9 @@ const Admin = () => {
                                         ))}
                                         </div>
                                     ) : (
-                                        <p className="text-gray-500 text-center py-4">No QMS documents uploaded yet.</p>
+                                        <p className="text-gray-500 text-center py-4">No H&W documents uploaded yet.</p>
                                     )}
-                                </div> */}
+                                </div>
                             </div>
                         </div>
                     </div>
