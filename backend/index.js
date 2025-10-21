@@ -1264,8 +1264,60 @@ app.post('/api/ems', uploadMultiple.array('emsFiles', 100), async (req, res) => 
 console.log('EMS POST route registered successfully');  // Confirm registration
 
 
+app.delete('/api/ems/:filename', async (req, res) => {
+    console.log('EMS single DELETE route hit - filename:', req.params.filename);
+    try {
+        const { filename } = req.params;
+        
+        // Decode the filename in case it contains URL-encoded characters like spaces
+        const decodedFilename = decodeURIComponent(filename);
+        console.log('Decoded filename:', decodedFilename);
+        
+        const filePath = path.join(emsDir, decodedFilename);
+        console.log('Full file path:', filePath);
+        
+        if (fs.existsSync(filePath)) {
+            await fs.promises.unlink(filePath);
+            console.log('EMS file deleted successfully:', decodedFilename);
+            res.status(200).json({ message: 'File deleted successfully!' });
+        } else {
+            console.log('EMS file not found at path:', filePath);
+            
+            // List available files for debugging
+            const availableFiles = await fs.promises.readdir(emsDir);
+            console.log('Available EMS files:', availableFiles);
+            
+            res.status(404).json({ 
+                error: 'File not found',
+                availableFiles: availableFiles
+            });
+        }
+    } catch (err) {
+        console.error('Error deleting EMS file:', err);
+        res.status(500).json({ error: 'Failed to delete file: ' + err.message });
+    }
+});
 
-
+// app.delete('/api/ems', async (req, res) => {
+//     console.log('EMS all DELETE route hit');
+//     try {
+//         const files = await fs.promises.readdir(emsDir);
+//         let deletedCount = 0;
+        
+//         for (const file of files) {
+//             const filePath = path.join(emsDir, file);
+//             await fs.promises.unlink(filePath);
+//             deletedCount++;
+//         }
+        
+//         res.status(200).json({ 
+//             message: `All ${deletedCount} files deleted successfully!` 
+//         });
+//     } catch (err) {
+//         console.error('Error deleting all EMS files:', err);
+//         res.status(500).json({ error: 'Failed to delete files' });
+//     }
+// });
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1317,6 +1369,7 @@ app.get('/api/qms/info', async (req, res) => {
 app.get('/api/test', (req, res) => {
     res.json({ message: 'Test endpoint working' });
 });
+
 
 
 const PORT = 3001;

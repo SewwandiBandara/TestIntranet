@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FiFile, FiFolder, FiSearch, FiEye } from 'react-icons/fi';
 
-const QMS = () => {
+const EMS = () => {
   const [documents, setDocuments] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [error, setError] = useState('');
@@ -17,7 +17,7 @@ const QMS = () => {
 
   const testConnection = async () => {
     try {
-      console.log('Testing QMS API connection...');
+      console.log('Testing EMS API connection...');
       const response = await fetch('http://localhost:3001/api/test');
       const text = await response.text();
       console.log('Test response:', text);
@@ -42,8 +42,8 @@ const QMS = () => {
 
   const fetchDocuments = async () => {
     try {
-      console.log('Fetching QMS documents...');
-      const response = await fetch('http://localhost:3001/api/qms');
+      console.log('Fetching EMS documents...');
+      const response = await fetch('http://localhost:3001/api/ems');
       
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -58,8 +58,8 @@ const QMS = () => {
         DocumentName: file.filename,
         FileType: file.filename.split('.').pop().toLowerCase() || 'unknown',
         FileSize: file.size || 0, // Assuming backend includes size; otherwise 0
-        Category: 'QMS', // Default category
-        Description: `QMS Document: ${file.filename}`, // Default description
+        Category: 'EMS', // Default category
+        Description: `EMS Document: ${file.filename}`, // Default description
         UploadedAt: file.uploadDate,
         FilePath: file.filePath
       }));
@@ -86,7 +86,7 @@ const QMS = () => {
   const formatFileSize = (bytes) => {
     if (bytes === 0) return 'Unknown';
     const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    // const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
@@ -112,10 +112,10 @@ const QMS = () => {
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Quality Management System
+            Environmental Management System
           </h1>
           <p className="text-lg text-gray-600">
-            View your QMS documents and procedures
+            View your EMS documents and procedures
           </p>
         </div>
 
@@ -151,7 +151,7 @@ const QMS = () => {
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
             <h2 className="text-xl font-semibold flex items-center">
               <FiFolder className="mr-2" />
-              QMS Documents ({filteredDocuments.length})
+              EMS documents ({filteredDocuments.length})
             </h2>
             
             <div className="relative">
@@ -185,9 +185,9 @@ const QMS = () => {
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Category
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Size
-                    </th>
+                    </th> */}
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Uploaded
                     </th>
@@ -221,9 +221,9 @@ const QMS = () => {
                           {document.Category}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {formatFileSize(document.FileSize)}
-                      </td>
+                      </td> */}
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {new Date(document.UploadedAt).toLocaleDateString()}
                       </td>
@@ -279,4 +279,4 @@ const QMS = () => {
   );
 };
 
-export default QMS;
+export default EMS;

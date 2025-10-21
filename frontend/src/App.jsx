@@ -13,6 +13,7 @@ import SOP from "./pages/SOP";
 import POS from "./pages/POS";
 import ISO from "./pages/ISO";
 import QMS from "./pages/QMS";
+import EMS from "./pages/EMS";
 //admin import
 import Admin from "./pages/Admin";
 
@@ -39,6 +40,7 @@ function App() {
         <Route element={<POS/>} path="/pos"/>
         <Route element={<ISO/>} path="/iso"/>
         <Route element={<QMS/>} path="/qms"/>
+        <Route element={<EMS/>} path="/ems"/>
                
     </Routes>
     </BrowserRouter>
