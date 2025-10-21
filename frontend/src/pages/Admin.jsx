@@ -2126,7 +2126,7 @@ const Admin = () => {
                                 You can upload multiple files at once.
                             </p>
                             <button
-                                onClick={() => window.location.href = '#'}
+                                onClick={() => window.location.href = '/hw'}
                                 className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
                             >
                                 Go to H&W Documents
