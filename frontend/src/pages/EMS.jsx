@@ -83,14 +83,6 @@ const EMS = () => {
   };
 
 
-  const formatFileSize = (bytes) => {
-    if (bytes === 0) return 'Unknown';
-    const k = 1024;
-    // const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  };
-
   const getFileIcon = (fileType) => {
     if (fileType.includes('word') || fileType.includes('doc')) {
       return <FiFile className="text-blue-600" />;
@@ -185,9 +177,6 @@ const EMS = () => {
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Category
                     </th>
-                    {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Size
-                    </th> */}
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Uploaded
                     </th>
@@ -221,9 +210,6 @@ const EMS = () => {
                           {document.Category}
                         </span>
                       </td>
-                      {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {formatFileSize(document.FileSize)}
-                      </td> */}
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {new Date(document.UploadedAt).toLocaleDateString()}
                       </td>
