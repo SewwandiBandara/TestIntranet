@@ -263,6 +263,8 @@ const Admin = () => {
         }
     };
 
+ 
+
     // Fetch active tab data whenever it changes
     useEffect(() => {
         if (activeTab === 'carousel') {
@@ -1043,13 +1045,13 @@ const Admin = () => {
         { id: 'production display', name: 'Production Display', icon: <FiSettings /> }
     ];
 
-    const policies = [
-        { id: 1, title: 'Standard Operating Procedures', category: 'SOP' },
-        { id: 2, title: 'International Organization for Standardization', category: 'ISO' },
-        { id: 3, title: 'Quality Management System', category: 'QMS' },
-        { id: 4, title: 'Environmental Management System', category: 'EMS' },
-        { id: 5, title: 'Health and Welfare', category: 'H&W' }
-    ];
+    // const policies = [
+    //     { id: 1, title: 'Standard Operating Procedures', category: 'SOP' },
+    //     { id: 2, title: 'International Organization for Standardization', category: 'ISO' },
+    //     { id: 3, title: 'Quality Management System', category: 'QMS' },
+    //     { id: 4, title: 'Environmental Management System', category: 'EMS' },
+    //     { id: 5, title: 'Health and Welfare', category: 'H&W' }
+    // ];
 
     const renderContent = () => {
         switch (activeTab) {
@@ -1867,104 +1869,104 @@ const Admin = () => {
                             </button>
                             {/* file uload section - ISO */}
                             <div className="mb-6 mt-4 p-4 bg-indigo-100 rounded-lg shadow">
-                                            <h2 className="text-xl font-semibold mb-2">Upload ISO Documents</h2>
-                                            <p className="text-sm text-gray-600 mb-4">
-                                                Select multiple files (PDF, DOC, DOCX, TXT, images) to upload
-                                            </p>
-                                            <form 
-                                            // onSubmit={handleUploadQms}
-                                            >
-                                                <div className="mb-4">
-                                                    <label className="block text-sm font-medium text-gray-700">
-                                                        Select Files (Multiple files allowed)
-                                                    </label>
-                                                    <input
-                                                        type="file"
-                                                        // ref={qmsInputRef}
-                                                        // onChange={handleQmsFilesChange}
-                                                        accept=".pdf,.doc,.docx,.txt,image/*"
-                                                        multiple
-                                                        className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                                                    />
-                                                </div>
+                                <h2 className="text-xl font-semibold mb-2">Upload ISO Documents</h2>
+                                <p className="text-sm text-gray-600 mb-4">
+                                    Select multiple files (PDF, DOC, DOCX, TXT, images) to upload
+                                </p>
+                                <form 
+                                    // onSubmit={handleUploadQms}
+                                >
+                                    <div className="mb-4">
+                                        <label className="block text-sm font-medium text-gray-700">
+                                            Select Files (Multiple files allowed)
+                                        </label>
+                                        <input
+                                            type="file"
+                                            // ref={qmsInputRef}
+                                            // onChange={handleQmsFilesChange}
+                                            accept=".pdf,.doc,.docx,.txt,image/*"
+                                            multiple
+                                            className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                                        />
+                                    </div>
                                                 
-                                                {/* Selected Files List */}
-                                                {qmsFiles.length > 0 && (
-                                                    <div className="mb-4 p-3 bg-white rounded border">
-                                                        <h4 className="font-medium mb-2">Selected Files ({qmsFiles.length}):</h4>
-                                                        <ul className="space-y-1 max-h-32 overflow-y-auto">
-                                                            {qmsFiles.map((file, index) => (
-                                                                <li key={index} className="flex justify-between items-center text-sm">
-                                                                    <span className="truncate flex-1">{file.name}</span>
-                                                                    <button
-                                                                        type="button"
-                                                                        // onClick={() => handleRemoveQmsFile(index)}
-                                                                        className="ml-2 text-red-500 hover:text-red-700"
-                                                                    >
-                                                                        Remove
-                                                                    </button>
-                                                                </li>
-                                                            ))}
-                                                        </ul>
-                                                    </div>
-                                                )}
+                            {/* Selected Files List */}
+                            {qmsFiles.length > 0 && (
+                                <div className="mb-4 p-3 bg-white rounded border">
+                                    <h4 className="font-medium mb-2">Selected Files ({qmsFiles.length}):</h4>
+                                    <ul className="space-y-1 max-h-32 overflow-y-auto">
+                                        {qmsFiles.map((file, index) => (
+                                            <li key={index} className="flex justify-between items-center text-sm">
+                                                <span className="truncate flex-1">{file.name}</span>
+                                                <button
+                                                    type="button"
+                                                    // onClick={() => handleRemoveQmsFile(index)}
+                                                    className="ml-2 text-red-500 hover:text-red-700"
+                                                >
+                                                    Remove
+                                                </button>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
                                                 
-                                                <div className={uploadQmsStatus.includes('Success') ? 'text-green-500' : 'text-red-500'}>{uploadQmsStatus}</div>
-                                                <div className="flex space-x-2">
-                                                    <button
-                                                        type="submit"
-                                                        className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400"
-                                                        disabled={qmsFiles.length === 0}
-                                                    >
-                                                        Upload {qmsFiles.length > 0 ? `(${qmsFiles.length})` : ''} Files
-                                                    </button>
-                                                    <button
-                                                        type="button"
-                                                        onClick={handleClearQmsFiles}
-                                                        className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
-                                                    >
-                                                        Clear All
-                                                    </button>
-                                                </div>
-                                            </form>
+                            <div className={uploadQmsStatus.includes('Success') ? 'text-green-500' : 'text-red-500'}>{uploadQmsStatus}</div>
+                            <div className="flex space-x-2">
+                                <button
+                                    type="submit"
+                                    className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400"
+                                    disabled={qmsFiles.length === 0}
+                                >
+                                    Upload {qmsFiles.length > 0 ? `(${qmsFiles.length})` : ''} Files
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={handleClearQmsFiles}
+                                    className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
+                                >
+                                    Clear All
+                                </button>
+                            </div>
+                                </form>
 
-                                            {/* Uploaded Files List */}
-                                            {/* <div className="mt-8">
-                                                <h3 className="text-lg font-semibold mb-4">Uploaded QMS Documents ({qmsUploadedFiles.length})</h3>
-                                                {qmsUploadedFiles.length > 0 ? (
-                                                    <div className="space-y-3">
-                                                        {qmsUploadedFiles.map((file) => (
-                                                            <div key={file.filename} className="flex justify-between items-center p-3 bg-white rounded border">
-                                                                <div className="flex-1">
-                                                                    <p className="font-medium truncate">{file.filename}</p>
-                                                                    <p className="text-sm text-gray-500">
-                                                                        Uploaded: {new Date(file.uploadDate).toLocaleDateString()}
-                                                                    </p>
-                                                                </div>
-                                                                <div className="flex space-x-2">
-                                                                    <a
-                                                                        href={`http://localhost:3001${file.filePath}`}
-                                                                        target="_blank"
-                                                                        rel="noopener noreferrer"
-                                                                        className="px-3 py-1 bg-green-500 text-white rounded text-sm hover:bg-green-600"
-                                                                    >
-                                                                        Download
-                                                                    </a>
-                                                                    <button
-                                                                        onClick={() => handleDeleteQmsFile(file.filename)}
-                                                                        className="px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600"
-                                                                    >
-                                                                        Delete
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                ) : (
-                                                    <p className="text-gray-500 text-center py-4">No QMS documents uploaded yet.</p>
-                                                )}
-                                            </div> */}
-                                        </div>
+                            {/* Uploaded Files List */}
+                            {/* <div className="mt-8">
+                                <h3 className="text-lg font-semibold mb-4">Uploaded QMS Documents ({qmsUploadedFiles.length})</h3>
+                                {qmsUploadedFiles.length > 0 ? (
+                                    <div className="space-y-3">
+                                        {qmsUploadedFiles.map((file) => (
+                                            <div key={file.filename} className="flex justify-between items-center p-3 bg-white rounded border">
+                                                <div className="flex-1">
+                                                    <p className="font-medium truncate">{file.filename}</p>
+                                                    <p className="text-sm text-gray-500">
+                                                        Uploaded: {new Date(file.uploadDate).toLocaleDateString()}
+                                                    </p>
+                                                </div>
+                                                <div className="flex space-x-2">
+                                                    <a
+                                                        href={`http://localhost:3001${file.filePath}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="px-3 py-1 bg-green-500 text-white rounded text-sm hover:bg-green-600"
+                                                    >
+                                                        Download
+                                                    </a>
+                                                    <button
+                                                        onClick={() => handleDeleteQmsFile(file.filename)}
+                                                        className="px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600"
+                                                    >
+                                                        Delete
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    ) : (
+                                        <p className="text-gray-500 text-center py-4">No QMS documents uploaded yet.</p>
+                                    )}
+                            </div> */}
+                            </div>
                         </div>
 
 
@@ -1983,126 +1985,105 @@ const Admin = () => {
                             </button>
                             {/* file uload section - H&W */}
                             <div className="mb-6 mt-4 p-4 bg-indigo-100 rounded-lg shadow">
-                                            <h2 className="text-xl font-semibold mb-2">Upload Health & Welfare Documents</h2>
-                                            <p className="text-sm text-gray-600 mb-4">
-                                                Select multiple files (PDF, DOC, DOCX, TXT, images) to upload
-                                            </p>
-                                            <form 
-                                            // onSubmit={handleUploadQms}
-                                            >
-                                                <div className="mb-4">
-                                                    <label className="block text-sm font-medium text-gray-700">
-                                                        Select Files (Multiple files allowed)
-                                                    </label>
-                                                    <input
-                                                        type="file"
-                                                        // ref={qmsInputRef}
-                                                        // onChange={handleQmsFilesChange}
-                                                        accept=".pdf,.doc,.docx,.txt,image/*"
-                                                        multiple
-                                                        className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                                                    />
-                                                </div>
-                                                
-                                                {/* Selected Files List */}
-                                                {qmsFiles.length > 0 && (
-                                                    <div className="mb-4 p-3 bg-white rounded border">
-                                                        <h4 className="font-medium mb-2">Selected Files ({qmsFiles.length}):</h4>
-                                                        <ul className="space-y-1 max-h-32 overflow-y-auto">
-                                                            {qmsFiles.map((file, index) => (
-                                                                <li key={index} className="flex justify-between items-center text-sm">
-                                                                    <span className="truncate flex-1">{file.name}</span>
-                                                                    <button
-                                                                        type="button"
-                                                                        // onClick={() => handleRemoveQmsFile(index)}
-                                                                        className="ml-2 text-red-500 hover:text-red-700"
-                                                                    >
-                                                                        Remove
-                                                                    </button>
-                                                                </li>
-                                                            ))}
-                                                        </ul>
-                                                    </div>
-                                                )}
-                                                
-                                                <div className={uploadQmsStatus.includes('Success') ? 'text-green-500' : 'text-red-500'}>{uploadQmsStatus}</div>
-                                                <div className="flex space-x-2">
-                                                    <button
-                                                        type="submit"
-                                                        className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400"
-                                                        disabled={qmsFiles.length === 0}
-                                                    >
-                                                        Upload {qmsFiles.length > 0 ? `(${qmsFiles.length})` : ''} Files
-                                                    </button>
-                                                    <button
-                                                        type="button"
-                                                        onClick={handleClearQmsFiles}
-                                                        className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
-                                                    >
-                                                        Clear All
-                                                    </button>
-                                                </div>
-                                            </form>
-
-                                            {/* Uploaded Files List */}
-                                            {/* <div className="mt-8">
-                                                <h3 className="text-lg font-semibold mb-4">Uploaded QMS Documents ({qmsUploadedFiles.length})</h3>
-                                                {qmsUploadedFiles.length > 0 ? (
-                                                    <div className="space-y-3">
-                                                        {qmsUploadedFiles.map((file) => (
-                                                            <div key={file.filename} className="flex justify-between items-center p-3 bg-white rounded border">
-                                                                <div className="flex-1">
-                                                                    <p className="font-medium truncate">{file.filename}</p>
-                                                                    <p className="text-sm text-gray-500">
-                                                                        Uploaded: {new Date(file.uploadDate).toLocaleDateString()}
-                                                                    </p>
-                                                                </div>
-                                                                <div className="flex space-x-2">
-                                                                    <a
-                                                                        href={`http://localhost:3001${file.filePath}`}
-                                                                        target="_blank"
-                                                                        rel="noopener noreferrer"
-                                                                        className="px-3 py-1 bg-green-500 text-white rounded text-sm hover:bg-green-600"
-                                                                    >
-                                                                        Download
-                                                                    </a>
-                                                                    <button
-                                                                        onClick={() => handleDeleteQmsFile(file.filename)}
-                                                                        className="px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600"
-                                                                    >
-                                                                        Delete
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                ) : (
-                                                    <p className="text-gray-500 text-center py-4">No QMS documents uploaded yet.</p>
-                                                )}
-                                            </div> */}
-                                        </div>
-                        </div>
-
-
-
-
-
-                        {/* <div className="space-y-4">
-                            {policies.map(policy => (
-                                <div
-                                    key={policy.id}
-                                    className="border rounded-lg p-4 hover:bg-blue-50 transition-colors"
+                                <h2 className="text-xl font-semibold mb-2">Upload Health & Welfare Documents</h2>
+                                <p className="text-sm text-gray-600 mb-4">
+                                    Select multiple files (PDF, DOC, DOCX, TXT, images) to upload
+                                </p>
+                                <form 
+                                    // onSubmit={handleUploadQms}
                                 >
-                                    <div className="flex justify-between items-center mb-3">
-                                        <div className="flex-1">
-                                            <h3 className="font-medium text-lg">{policy.title}</h3>
-                                            <span className="text-sm text-gray-500">{policy.category}</span>
-
-                                        </div>
+                                    <div className="mb-4">
+                                        <label className="block text-sm font-medium text-gray-700">
+                                            Select Files (Multiple files allowed)
+                                        </label>
+                                    <input
+                                        type="file"
+                                        // ref={qmsInputRef}
+                                        // onChange={handleQmsFilesChange}
+                                        accept=".pdf,.doc,.docx,.txt,image/*"
+                                        multiple
+                                        className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                                    />
                                     </div>
-                                </div>
-                            ))}
-                        </div> */}
+                                                
+                                    {/* Selected Files List */}
+                                    {qmsFiles.length > 0 && (
+                                        <div className="mb-4 p-3 bg-white rounded border">
+                                            <h4 className="font-medium mb-2">Selected Files ({qmsFiles.length}):</h4>
+                                            <ul className="space-y-1 max-h-32 overflow-y-auto">
+                                                {qmsFiles.map((file, index) => (
+                                                    <li key={index} className="flex justify-between items-center text-sm">
+                                                        <span className="truncate flex-1">{file.name}</span>
+                                                        <button
+                                                            type="button"
+                                                            // onClick={() => handleRemoveQmsFile(index)}
+                                                            className="ml-2 text-red-500 hover:text-red-700"
+                                                        >
+                                                            Remove
+                                                        </button>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    )}
+                                                
+                                    <div className={uploadQmsStatus.includes('Success') ? 'text-green-500' : 'text-red-500'}>{uploadQmsStatus}</div>
+                                    <div className="flex space-x-2">
+                                        <button
+                                            type="submit"
+                                            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400"
+                                            disabled={qmsFiles.length === 0}
+                                        >
+                                            Upload {qmsFiles.length > 0 ? `(${qmsFiles.length})` : ''} Files
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={handleClearQmsFiles}
+                                            className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
+                                        >
+                                            Clear All
+                                        </button>
+                                    </div>
+                                </form>
+
+                                {/* Uploaded Files List */}
+                                {/* <div className="mt-8">
+                                    <h3 className="text-lg font-semibold mb-4">Uploaded QMS Documents ({qmsUploadedFiles.length})</h3>
+                                    {qmsUploadedFiles.length > 0 ? (
+                                        <div className="space-y-3">
+                                        {qmsUploadedFiles.map((file) => (
+                                            <div key={file.filename} className="flex justify-between items-center p-3 bg-white rounded border">
+                                                <div className="flex-1">
+                                                    <p className="font-medium truncate">{file.filename}</p>
+                                                    <p className="text-sm text-gray-500">
+                                                        Uploaded: {new Date(file.uploadDate).toLocaleDateString()}
+                                                    </p>
+                                                </div>
+                                                <div className="flex space-x-2">
+                                                    <a
+                                                        href={`http://localhost:3001${file.filePath}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="px-3 py-1 bg-green-500 text-white rounded text-sm hover:bg-green-600"
+                                                    >
+                                                        Download
+                                                    </a>
+                                                    <button
+                                                        onClick={() => handleDeleteQmsFile(file.filename)}
+                                                        className="px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600"
+                                                    >
+                                                        Delete
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                        </div>
+                                    ) : (
+                                        <p className="text-gray-500 text-center py-4">No QMS documents uploaded yet.</p>
+                                    )}
+                                </div> */}
+                            </div>
+                        </div>
                     </div>
                 );
 
