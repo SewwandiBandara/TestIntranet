@@ -322,7 +322,7 @@ const Navbar = () => {
             <div className="absolute left-0 lg:group-hover:block hidden bg-blue-950 min-w-[150px] rounded-md shadow-lg z-10 mt-1 transition-opacity duration-200 opacity-0 group-hover:opacity-100">
               <ul className="py-1">
                 <li className="block px-4 py-2 hover:bg-yellow-400 hover:text-black">
-                  <Link to="#" onClick={() => setIsOpen(false)}>
+                  <Link to="/sop" onClick={() => setIsOpen(false)}>
                     SOP
                   </Link>
                 </li>

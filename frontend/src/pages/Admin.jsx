@@ -80,6 +80,12 @@ const Admin = () => {
     const [uploadHwStatus, setUploadHwStatus] = useState('');
     const hwInputRef = useRef(null);
 
+    //status for add SOP documents in policies
+    const [sopFiles, setSopFiles] = useState([]);
+    const [sopUploadedFiles, setSopUploadedFiles] = useState([]);
+    const [uploadSopStatus, setUploadSopStatus] = useState('');
+    const sopInputRef = useRef(null);
+
 
     // Check login state on mount
     useEffect(() => {
@@ -282,7 +288,24 @@ const Admin = () => {
             console.error('Error fetching H&W files:', error);
             setHwUploadedFiles([]);
         }
-    }
+    };
+
+    //Function to fetch SOP files
+    const fetchSopFiles = async () => {
+        try {
+            const response = await fetch('http://localhost:3001/api/sop');
+            if (!response.ok) {
+                throw new Error('Failed to fetch SOP files');
+            }
+            const data = await response.json();
+            setSopUploadedFiles(data.files || []);
+        }
+        catch (error) {
+            console.error('Error fetching SOP files:', error);
+            setSopUploadedFiles([]);
+        }
+    };
+
 
     // Fetch active tab data whenever it changes
     useEffect(() => {
@@ -300,6 +323,7 @@ const Admin = () => {
             fetchQmsFiles();
             fetchEmsFiles();
             fetchHwFiles();
+            fetchSopFiles();
         } else if (activeTab === 'communication') {
             fetchEmailList();
         }
@@ -1070,7 +1094,6 @@ const Admin = () => {
         setHwFiles(validFiles);
     };
 
-    //Handler for H&W upload
    // Handler for H&W upload
     const handleUploadHw = async (e) => {
         e.preventDefault();
@@ -1166,6 +1189,132 @@ const Admin = () => {
             if (response.ok) {
                 alert('File deleted successfully!');
                 fetchHwFiles(); // Refresh the list
+            } else {
+                const errorData = await response.json();
+                alert(`Error: ${errorData.error || 'Failed to delete file'}`);
+            }
+        } catch (error) {
+            console.error('Delete failed:', error);
+            alert('Failed to delete file. Please check the server connection.');
+        }
+    };
+
+
+    ///////=======Functions in uploading SOP documents in policies====///////
+    //handler for sop file selection
+    const handleSopFileChange = (e) => {
+        const selectedFiles = Array.from(e.target.files);
+        const validFiles = selectedFiles.filter (file => 
+            file.type === 'application/pdf' ||
+            file.type === 'application/msword' ||
+            file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+            file.type === 'text/plain' ||
+            file.type.startsWith('image/')
+        );
+        if (validFiles.length !== selectedFiles.length) {
+            setUploadSopStatus('Some files were skipped.Only PDF, DOC, DOCX, TXT and images are allowed')
+        }
+        else {
+            setUploadSopStatus('');
+        }
+        setSopFiles(validFiles);
+    };
+
+    //handler for SOP upload
+    const handleUploadSop = async (e) => {
+        e.preventDefault();
+        if (!sopFiles || sopFiles.length === 0) {
+            setUploadSopStatus('Please select at least one file to upload.');
+            return;
+        }
+
+        const formData = new FormData();
+        sopFiles.forEach((file, index) => {
+            formData.append('sopFiles', file);  
+            console.log(`Added file ${index + 1}:`, file.name, 'Field: sopFiles');
+        });
+
+        // Log form data entries (for debugging)
+        console.log('FormData entries:');
+        for (let pair of formData.entries()) {
+            console.log(pair[0] + ', ' + pair[1].name);
+        }
+
+        try {
+            console.log('Uploading to http://localhost:3001/api/sop');
+            
+            const response = await fetch('http://localhost:3001/api/sop', {
+                method: 'POST',
+                body: formData,
+            });
+            
+            console.log('Response status:', response.status);
+            
+            const responseText = await response.text();
+            console.log('Response:', responseText);
+            
+            let data;
+            try {
+                data = JSON.parse(responseText);
+            } catch (parseError) {
+                console.error('JSON parse error:', parseError);
+                throw new Error(`Server returned: ${responseText.substring(0, 200)}`);
+            }
+            
+            if (!response.ok) {
+                throw new Error(data.error || `Server error: ${response.status}`);
+            }
+            
+            setUploadSopStatus(`Success! ${data.message}`);
+            setSopFiles([]);
+            if (sopInputRef.current) {
+                sopInputRef.current.value = '';
+            }
+            fetchSopFiles(); // Refresh the list after successful upload
+            
+            setTimeout(() => {
+                setUploadSopStatus('');
+            }, 5000);
+            
+        } catch (error) {
+            console.error('Upload failed:', error);
+            setUploadSopStatus(`Upload failed: ${error.message}`);
+            
+            setTimeout(() => {
+                setUploadSopStatus('');
+            }, 5000);
+        }
+    };
+
+    //handler for removing a selected SOP file
+    const handleRemoveSopFile = (index) => {
+        setSopFiles(prev => prev.filter((_, i) => i !== index));
+        if (sopFiles.length === 1) {
+            setUploadSopStatus('');
+        }
+    };
+
+    //handler for clearing SOP files
+    const handleClearSopFiles = () => {
+        setSopFiles([]);
+        setUploadSopStatus('');
+        if (sopInputRef.current) {
+            sopInputRef.current.value = '';
+        }
+    };
+
+    //handler for deleting SOP files
+    const handleDeleteSopFile = async (filename) => {
+        const isConfirmed = window.confirm('Are you sure you want to delete this file?');
+        if (!isConfirmed) return;
+
+        try {
+            const response = await fetch(`http://localhost:3001/api/sop/${filename}`, {
+                method: 'DELETE',
+            });
+            if (response.ok) {
+                alert('File deleted successfully!');
+                fetchSopFiles(); // Refresh the list
             } else {
                 const errorData = await response.json();
                 alert(`Error: ${errorData.error || 'Failed to delete file'}`);
@@ -1894,7 +2043,7 @@ const Admin = () => {
                                 You can upload multiple files at once.
                             </p>
                             <button
-                                onClick={() => window.location.href = '#'}
+                                onClick={() => window.location.href = '/sop'}
                                 className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
                             >
                                 Go to SOP Documents
@@ -1906,7 +2055,7 @@ const Admin = () => {
                                     Select multiple files (PDF, DOC, DOCX, TXT, images) to upload
                                 </p>
                                 <form 
-                                // onSubmit={handleUploadQms}
+                                onSubmit={handleUploadSop}
                                 >
                                 <div className="mb-4">
                                     <label className="block text-sm font-medium text-gray-700">
@@ -1914,8 +2063,8 @@ const Admin = () => {
                                     </label>
                                     <input
                                         type="file"
-                                        // ref={qmsInputRef}
-                                        // onChange={handleQmsFilesChange}
+                                        ref={sopInputRef}
+                                        onChange={handleSopFileChange}
                                         accept=".pdf,.doc,.docx,.txt,image/*"
                                         multiple
                                         className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
@@ -1923,16 +2072,16 @@ const Admin = () => {
                                 </div>
                                                 
                                 {/* Selected Files List */}
-                                {qmsFiles.length > 0 && (
+                                {sopFiles.length > 0 && (
                                     <div className="mb-4 p-3 bg-white rounded border">
-                                        <h4 className="font-medium mb-2">Selected Files ({qmsFiles.length}):</h4>
+                                        <h4 className="font-medium mb-2">Selected Files ({sopFiles.length}):</h4>
                                         <ul className="space-y-1 max-h-32 overflow-y-auto">
-                                            {qmsFiles.map((file, index) => (
+                                            {sopFiles.map((file, index) => (
                                                 <li key={index} className="flex justify-between items-center text-sm">
                                                     <span className="truncate flex-1">{file.name}</span>
                                                     <button
                                                         type="button"
-                                                        // onClick={() => handleRemoveQmsFile(index)}
+                                                        onClick={() => handleRemoveSopFile(index)}
                                                         className="ml-2 text-red-500 hover:text-red-700"
                                                     >
                                                         Remove
@@ -1943,18 +2092,18 @@ const Admin = () => {
                                     </div>
                                 )}
                                                 
-                                <div className={uploadQmsStatus.includes('Success') ? 'text-green-500' : 'text-red-500'}>{uploadQmsStatus}</div>
+                                <div className={uploadSopStatus.includes('Success') ? 'text-green-500' : 'text-red-500'}>{uploadSopStatus}</div>
                                 <div className="flex space-x-2">
                                     <button
                                         type="submit"
                                         className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400"
-                                        disabled={qmsFiles.length === 0}
+                                        disabled={sopFiles.length === 0}
                                     >
-                                        Upload {qmsFiles.length > 0 ? `(${qmsFiles.length})` : ''} Files
+                                        Upload {sopFiles.length > 0 ? `(${sopFiles.length})` : ''} Files
                                     </button>
                                     <button
                                         type="button"
-                                        onClick={handleClearQmsFiles}
+                                        onClick={handleClearSopFiles}
                                         className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
                                     >
                                         Clear All
@@ -1963,11 +2112,11 @@ const Admin = () => {
                                 </form>
 
                                 {/* Uploaded Files List */}
-                                {/* <div className="mt-8">
-                                    <h3 className="text-lg font-semibold mb-4">Uploaded QMS Documents ({qmsUploadedFiles.length})</h3>
+                                <div className="mt-8">
+                                    <h3 className="text-lg font-semibold mb-4">Uploaded QMS Documents ({sopUploadedFiles.length})</h3>
                                         {qmsUploadedFiles.length > 0 ? (
                                         <div className="space-y-3">
-                                            {qmsUploadedFiles.map((file) => (
+                                            {sopUploadedFiles.map((file) => (
                                                 <div key={file.filename} className="flex justify-between items-center p-3 bg-white rounded border">
                                                     <div className="flex-1">
                                                         <p className="font-medium truncate">{file.filename}</p>
@@ -1985,7 +2134,7 @@ const Admin = () => {
                                                             Download
                                                         </a>
                                                         <button
-                                                            onClick={() => handleDeleteQmsFile(file.filename)}
+                                                            onClick={() => handleDeleteSopFile(file.filename)}
                                                             className="px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600"
                                                         >
                                                             Delete
@@ -1995,9 +2144,9 @@ const Admin = () => {
                                             ))}
                                         </div>
                                         ) : (
-                                            <p className="text-gray-500 text-center py-4">No QMS documents uploaded yet.</p>
+                                            <p className="text-gray-500 text-center py-4">No SOP documents uploaded yet.</p>
                                         )}
-                                    </div> */}
+                                    </div>
                                 </div>
                         </div>
 
