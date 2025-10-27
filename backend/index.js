@@ -22,9 +22,10 @@ const qmsDir = path.join(baseUploadsDir, 'QMS');
 const emsDir = path.join(baseUploadsDir, 'EMS');
 const hwDir = path.join(baseUploadsDir, 'HW');
 const sopDir = path.join(baseUploadsDir, 'SOP');
+const isoDir = path.join(baseUploadsDir, 'ISO');
 
 
-[baseUploadsDir, carouselDir, calendarDir, achievementsDir, monthDir, extensionsDir, emailsDir, qmsDir, emsDir, hwDir, sopDir].forEach(dir => {
+[baseUploadsDir, carouselDir, calendarDir, achievementsDir, monthDir, extensionsDir, emailsDir, qmsDir, emsDir, hwDir, sopDir, isoDir].forEach(dir => {
     if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir, { recursive: true });
     }
@@ -56,6 +57,8 @@ const storage = multer.diskStorage({
             uploadPath = hwDir; 
         } else if (req.path.includes('/api/sop')) {
             uploadPath = sopDir;
+        } else if (req.path.includes('/api/iso')) {
+            uploadPath = isoDir;
         } else {
             uploadPath = baseUploadsDir;
         }
@@ -69,7 +72,8 @@ const storage = multer.diskStorage({
                                req.path.includes('/api/qms') ||
                                req.path.includes('/api/ems') ||
                                req.path.includes('/api/hw') ||
-                               req.path.includes('/api/sop');
+                               req.path.includes('/api/sop') ||
+                               req.path.includes('/api/iso');
 
         if (isDocumentPath) {
             // Save files in document-related paths (like /api/qms) with their original name.
@@ -129,7 +133,7 @@ const upload = multer({
 const uploadMultiple = multer({
     storage: storage,
     fileFilter: (req, file, cb) => {
-        if (req.path.includes('/api/qms') || req.path.includes('/api/ems') || req.path.includes('/api/hw') || req.path.includes('/api/sop') ) {
+        if (req.path.includes('/api/qms') || req.path.includes('/api/ems') || req.path.includes('/api/hw') || req.path.includes('/api/sop') || req.path.includes('/api/iso') ) {
             if (file.mimetype === 'application/pdf' || 
                 file.mimetype === 'application/msword' || 
                 file.mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
@@ -1571,6 +1575,144 @@ app.delete('/api/sop/:filename', async (req, res) => {
     }
 });
 
+/////////Policies and procedures - ISO documents
+app.get('/api/iso', async (req, res) => {
+    try {
+        const files = await fs.promises.readdir(isoDir);
+        //Return all files not just the latest one
+        const isoFiles = files.map(filename => ({
+            filename: filename,
+            filePath: `/backend/uploads/ISO/${filename}` ,
+            uploadDate: fs.statSync(path.join(isoDir, filename)).mtime
+        })).sort((a,b) => new Date(b.uploadDate) - new Date(a.uploadDate));
+
+        res.json({
+            files: isoFiles,
+            count: isoFiles.length
+        });
+    }
+    catch (error) {
+        console.error('Error fetching ISO document lists:', error);
+        res.status(500).json({error: 'Failed to fetch ISO document list'});
+    }
+});
+
+
+app.post('/api/iso', uploadMultiple.array('isoFiles', 100), async (req, res) => {
+    console.log('ISO POST route hit');
+    try {
+        console.log('Received POST /api/iso at', new Date().toISOString());
+        console.log('Upload request received - Files:', req.files);
+        console.log('Request body fields:', req.body);
+
+        if (!req.files || req.files.length === 0) {
+            console.log('No files uploaded');
+            return res.status(400).json({ error: 'At least one file is required.' });
+        }
+
+        // Enhanced file validation for each file
+        const allowedTypes = [
+            'application/pdf',
+            'application/msword',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'text/plain'
+        ];
+        
+        const invalidFiles = req.files.filter(file => 
+            !allowedTypes.includes(file.mimetype) && !file.mimetype.startsWith('image/')
+        );
+
+        if (invalidFiles.length > 0) {
+            return res.status(400).json({ 
+                error: 'Invalid file types. Allowed: PDF, DOC, DOCX, TXT, images',
+                invalidFiles: invalidFiles.map(f => f.originalname)
+            });
+        }
+
+        // Process each file
+        const uploadedFiles = [];
+        for (const file of req.files) {
+            console.log('File details:', {
+                filename: file.filename,
+                originalname: file.originalname,
+                mimetype: file.mimetype,
+                path: file.path,
+                size: file.size
+            });
+
+            // Check if file was saved
+            try {
+                const fileExists = fs.existsSync(file.path);
+                console.log('File exists after upload:', fileExists);
+                if (fileExists) {
+                    const stats = fs.statSync(file.path);
+                    console.log('File size on disk:', stats.size);
+                }
+            } catch (fileError) {
+                console.error('Error checking file existence:', fileError);
+                // Continue with other files even if one fails verification
+            }
+
+            uploadedFiles.push({
+                originalName: file.originalname,
+                savedName: file.filename,
+                filePath: `/backend/uploads/ISO/${file.filename}`,
+                size: file.size,
+                mimetype: file.mimetype
+            });
+        }
+
+        res.status(201).json({
+            message: `${uploadedFiles.length} file(s) uploaded successfully!`,
+            files: uploadedFiles,
+            totalCount: uploadedFiles.length
+        });
+
+    }
+    catch (error) {
+        console.error('Error uploading ISO files:', {
+            message: error.message,
+            stack: error.stack,
+            code: error.code
+        });
+        res.status(500).json({ error: 'Failed to upload ISO files: ' + error.message });
+    }
+});
+
+app.delete('/api/iso/:filename', async (req, res) => {
+    console.log('ISO single DELETE route hit - filename:', req.params.filename);
+    try {
+        const { filename } = req.params;
+        
+        // Decode the filename in case it contains URL-encoded characters like spaces
+        const decodedFilename = decodeURIComponent(filename);
+        console.log('Decoded filename:', decodedFilename);
+        
+        const filePath = path.join(isoDir, decodedFilename);
+        console.log('Full file path:', filePath);
+        
+        if (fs.existsSync(filePath)) {
+            await fs.promises.unlink(filePath);
+            console.log('ISO file deleted successfully:', decodedFilename);
+            res.status(200).json({ message: 'File deleted successfully!' });
+        } else {
+            console.log('ISO file not found at path:', filePath);
+            
+            // List available files for debugging
+            const availableFiles = await fs.promises.readdir(isoDir);
+            console.log('Available ISO files:', availableFiles);
+            
+            res.status(404).json({ 
+                error: 'File not found',
+                availableFiles: availableFiles
+            });
+        }
+    }
+    catch (error) {
+        console.error('Error deleting ISO file', error);
+        res.status(500).json({error: 'Failed to delete the file:' + err.message});
+    }
+})
 
 /////////////////Testing routes//////////////////////
 // QMS test endpoint

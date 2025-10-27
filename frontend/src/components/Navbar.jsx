@@ -136,7 +136,7 @@ const Navbar = () => {
 
 
   return (
-    <div className="fixed w-full bg-blue-950 py-2 z-50">
+    <div className="fixed w-full bg-gradient-to-r from-blue-900 to-blue-800 py-3 z-50 shadow-lg">
       <div className="container mx-auto flex items-center justify-between px-4 text-white">
         {/* Logo */}
         <div className="flex items-center">
@@ -144,8 +144,17 @@ const Navbar = () => {
         </div>
 
         {/* Hamburger Menu for Mobile */}
-        <div className="lg:hidden">
+        {/* <div className="lg:hidden">
           <button onClick={toggleMenu} className="text-white focus:outline-none">
+            {isOpen ? <HiX className="h-6 w-6" /> : <HiMenu className="h-6 w-6" />}
+          </button>
+        </div> */}
+        <div className="lg:hidden">
+          <button 
+            onClick={toggleMenu} 
+            className="text-white focus:outline-none p-2 rounded-lg hover:bg-blue-800 transition-colors"
+            aria-label="Toggle menu"
+          >
             {isOpen ? <HiX className="h-6 w-6" /> : <HiMenu className="h-6 w-6" />}
           </button>
         </div>

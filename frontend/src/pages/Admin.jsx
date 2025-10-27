@@ -86,6 +86,12 @@ const Admin = () => {
     const [uploadSopStatus, setUploadSopStatus] = useState('');
     const sopInputRef = useRef(null);
 
+    //status for add ISO documents in policies
+    const [isoFiles, setIsoFiles] = useState([]);
+    const [isoUploadedFiles, setIsoUploadedFiles] = useState([]);
+    const [uploadIsoStatus, setUploadIsoStatus] = useState('');
+    const isoInputRef = useRef(null);
+
 
     // Check login state on mount
     useEffect(() => {
@@ -306,6 +312,22 @@ const Admin = () => {
         }
     };
 
+    //Function to fetch ISO files
+    const fetchIsoFiles = async () => {
+        try {
+            const response = await fetch('http://localhost:3001/api/iso');
+            if(!response.ok) {
+                throw new Error('Failed to fetch ISO files');
+            }
+            const data = await response.json();
+            setIsoUploadedFiles(data.files || []);
+        }
+        catch (error) {
+            console.error('Error fetching ISO files:', error);
+            setIsoUploadedFiles([]); 
+        }
+    };
+
 
     // Fetch active tab data whenever it changes
     useEffect(() => {
@@ -324,6 +346,7 @@ const Admin = () => {
             fetchEmsFiles();
             fetchHwFiles();
             fetchSopFiles();
+            fetchIsoFiles();
         } else if (activeTab === 'communication') {
             fetchEmailList();
         }
@@ -1326,6 +1349,132 @@ const Admin = () => {
     };
 
 
+    //////======Functions in uploading ISo documents in policies====//////
+    //handler for ISo file selection
+    const handleIsoFileChange = (e) => {
+        const selectedFiles = Array.from(e.target.files);
+        const validFiles = selectedFiles.filter (file => 
+            file.type === 'application/pdf' ||
+            file.type === 'application/msword' ||
+            file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+            file.type === 'text/plain' ||
+            file.type.startsWith('image/')
+        );
+
+        if (validFiles.length !== selectedFiles.length) {
+            setUploadIsoStatus('Some files were skipped.Only PDF, DOC, Docx, TXT and images are allowed')
+        }
+        else {
+            setUploadIsoStatus('');
+        }
+        setIsoFiles(validFiles);
+    };
+
+    //handler for ISo upload
+    const handleUploadIso = async (e) => {
+        e.preventDefault();
+        if (!isoFiles || isoFiles.length === 0) {
+            setUploadIsoStatus('Please select at least one file to upload.');
+            return;
+        }
+
+        const formData = new FormData();
+        isoFiles.forEach((file, index) => {
+            formData.append('isoFiles', file);  
+            console.log(`Added file ${index + 1}:`, file.name, 'Field: isoFiles');
+        });
+
+        // Log form data entries (for debugging)
+        console.log('FormData entries:');
+        for (let pair of formData.entries()) {
+            console.log(pair[0] + ', ' + pair[1].name);
+        }
+
+        try {
+            console.log('Uploading to http://localhost:3001/api/iso');
+            
+            const response = await fetch('http://localhost:3001/api/iso', {
+                method: 'POST',
+                body: formData,
+            });
+            
+            console.log('Response status:', response.status);
+            
+            const responseText = await response.text();
+            console.log('Response:', responseText);
+            
+            let data;
+            try {
+                data = JSON.parse(responseText);
+            } catch (parseError) {
+                console.error('JSON parse error:', parseError);
+                throw new Error(`Server returned: ${responseText.substring(0, 200)}`);
+            }
+            
+            if (!response.ok) {
+                throw new Error(data.error || `Server error: ${response.status}`);
+            }
+            
+            setUploadIsoStatus(`Success! ${data.message}`);
+            setIsoFiles([]);
+            if (isoInputRef.current) {
+                isoInputRef.current.value = '';
+            }
+            fetchIsoFiles(); // Refresh the list after successful upload
+            
+            setTimeout(() => {
+                setUploadIsoStatus('');
+            }, 5000);
+            
+        } catch (error) {
+            console.error('Upload failed:', error);
+            setUploadIsoStatus(`Upload failed: ${error.message}`);
+            
+            setTimeout(() => {
+                setUploadIsoStatus('');
+            }, 5000);
+        }
+    };
+
+    //handler for removing a selected ISO file
+    const handleRemoveIsoFile = (index) => {
+        setIsoFiles(prev => prev.filter((_, i) => i !== index));
+        if (isoFiles.length === 1) {
+            setUploadIsoStatus('');
+        }
+    };
+
+    //handler for clearing ISO files
+    const handleClearIsoFiles = () => {
+        setIsoFiles([]);
+        setUploadIsoStatus('');
+        if (isoInputRef.current) {
+            isoInputRef.current.value = '';
+        }
+    };
+
+    //handler for deleting ISO files
+    const handleDeleteIsoFile = async (filename) => {
+        const isConfirmed = window.confirm('Are you sure you want to delete this file?');
+        if (!isConfirmed) return;
+
+        try {
+            const response = await fetch(`http://localhost:3001/api/iso/${filename}`, {
+                method: 'DELETE',
+            });
+            if (response.ok) {
+                alert('File deleted successfully!');
+                fetchIsoFiles(); // Refresh the list
+            } else {
+                const errorData = await response.json();
+                alert(`Error: ${errorData.error || 'Failed to delete file'}`);
+            }
+        } catch (error) {
+            console.error('Delete failed:', error);
+            alert('Failed to delete file. Please check the server connection.');
+        }
+    }
+
     //Application list
     const applications = [
         { id: 'hr', name: 'Human Resource Management', icon: <FiUsers /> },
@@ -2171,7 +2320,7 @@ const Admin = () => {
                                     Select multiple files (PDF, DOC, DOCX, TXT, images) to upload
                                 </p>
                                 <form 
-                                    // onSubmit={handleUploadQms}
+                                    onSubmit={handleUploadIso}
                                 >
                                     <div className="mb-4">
                                         <label className="block text-sm font-medium text-gray-700">
@@ -2179,8 +2328,8 @@ const Admin = () => {
                                         </label>
                                         <input
                                             type="file"
-                                            // ref={qmsInputRef}
-                                            // onChange={handleQmsFilesChange}
+                                            ref={isoInputRef}
+                                            onChange={handleIsoFileChange}
                                             accept=".pdf,.doc,.docx,.txt,image/*"
                                             multiple
                                             className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
@@ -2188,16 +2337,16 @@ const Admin = () => {
                                     </div>
                                                 
                             {/* Selected Files List */}
-                            {qmsFiles.length > 0 && (
+                            {isoFiles.length > 0 && (
                                 <div className="mb-4 p-3 bg-white rounded border">
-                                    <h4 className="font-medium mb-2">Selected Files ({qmsFiles.length}):</h4>
+                                    <h4 className="font-medium mb-2">Selected Files ({isoFiles.length}):</h4>
                                     <ul className="space-y-1 max-h-32 overflow-y-auto">
-                                        {qmsFiles.map((file, index) => (
+                                        {isoFiles.map((file, index) => (
                                             <li key={index} className="flex justify-between items-center text-sm">
                                                 <span className="truncate flex-1">{file.name}</span>
                                                 <button
                                                     type="button"
-                                                    // onClick={() => handleRemoveQmsFile(index)}
+                                                    onClick={() => handleRemoveIsoFile(index)}
                                                     className="ml-2 text-red-500 hover:text-red-700"
                                                 >
                                                     Remove
@@ -2208,18 +2357,18 @@ const Admin = () => {
                                 </div>
                             )}
                                                 
-                            <div className={uploadQmsStatus.includes('Success') ? 'text-green-500' : 'text-red-500'}>{uploadQmsStatus}</div>
+                            <div className={uploadIsoStatus.includes('Success') ? 'text-green-500' : 'text-red-500'}>{uploadIsoStatus}</div>
                             <div className="flex space-x-2">
                                 <button
                                     type="submit"
                                     className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400"
-                                    disabled={qmsFiles.length === 0}
+                                    disabled={isoFiles.length === 0}
                                 >
-                                    Upload {qmsFiles.length > 0 ? `(${qmsFiles.length})` : ''} Files
+                                    Upload {isoFiles.length > 0 ? `(${isoFiles.length})` : ''} Files
                                 </button>
                                 <button
                                     type="button"
-                                    onClick={handleClearQmsFiles}
+                                    onClick={handleClearIsoFiles}
                                     className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
                                 >
                                     Clear All
@@ -2228,11 +2377,11 @@ const Admin = () => {
                                 </form>
 
                             {/* Uploaded Files List */}
-                            {/* <div className="mt-8">
-                                <h3 className="text-lg font-semibold mb-4">Uploaded QMS Documents ({qmsUploadedFiles.length})</h3>
-                                {qmsUploadedFiles.length > 0 ? (
+                            <div className="mt-8">
+                                <h3 className="text-lg font-semibold mb-4">Uploaded ISO Documents ({isoUploadedFiles.length})</h3>
+                                {isoUploadedFiles.length > 0 ? (
                                     <div className="space-y-3">
-                                        {qmsUploadedFiles.map((file) => (
+                                        {isoUploadedFiles.map((file) => (
                                             <div key={file.filename} className="flex justify-between items-center p-3 bg-white rounded border">
                                                 <div className="flex-1">
                                                     <p className="font-medium truncate">{file.filename}</p>
@@ -2250,7 +2399,7 @@ const Admin = () => {
                                                         Download
                                                     </a>
                                                     <button
-                                                        onClick={() => handleDeleteQmsFile(file.filename)}
+                                                        onClick={() => handleDeleteIsoFile(file.filename)}
                                                         className="px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600"
                                                     >
                                                         Delete
@@ -2260,9 +2409,9 @@ const Admin = () => {
                                         ))}
                                     </div>
                                     ) : (
-                                        <p className="text-gray-500 text-center py-4">No QMS documents uploaded yet.</p>
+                                        <p className="text-gray-500 text-center py-4">No ISO documents uploaded yet.</p>
                                     )}
-                            </div> */}
+                            </div>
                             </div>
                         </div>
 
