@@ -1,23 +1,22 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FiMail, FiCalendar, FiImage, FiFileText, FiUsers, FiSettings, FiAward, FiMessageSquare, FiUser, FiLock } from 'react-icons/fi';
+import { FiMail, FiCalendar, FiImage, FiFileText, FiUsers, FiSettings, FiAward, FiMessageSquare, FiUser, FiLock, FiUpload, FiX } from 'react-icons/fi';
 import { TbLogout } from "react-icons/tb";
 import Navbar from '../components/Navbar';
 import { FaNewspaper } from "react-icons/fa6";
 import { IoSearchOutline } from "react-icons/io5";
 import { MdOutlineCancel } from "react-icons/md";
-import {  FiUpload } from 'react-icons/fi';
 
 const COPYRIGHT_TEXT = `All rights reserved © DSI Samson Rubber Industries - Information Technology Department`;
 
 const Admin = () => {
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState('carousel');
-    const [activeApplication, setActiveApplication] = useState(null);
+    // const [activeApplication, setActiveApplication] = useState(null);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [successMessage, setSuccessMessage] = useState(''); // New state for success message
+    const [successMessage, setSuccessMessage] = useState('');
 
     // State for carousel data from API
     const [carouselImages, setCarouselImages] = useState([]);
@@ -50,48 +49,46 @@ const Admin = () => {
     const [calendarForm, setCalendarForm] = useState({ image: null });
     const [calendarPreview, setCalendarPreview] = useState(null);
 
-    //status for add extansions in communication
+    // Status for add extensions in communication
     const [uploadedFile, setUploadedFile] = useState(null);
     const [uploadStatus, setUploadStatus] = useState('');
     const fileInputRef = useRef(null);
 
-    //status for add email list in communication
+    // Status for add email list in communication
     const [uploadedEmailFile, setUploadedEmailFile] = useState(null);
     const [uploadEmailStatus, setUploadEmailStatus] = useState('');
     const emailInputRef = useRef(null);
     const [currentEmailFile, setCurrentEmailFile] = useState(null);
 
-
-    //status for add QMS document in policies
+    // Status for add QMS document in policies
     const [qmsFiles, setQmsFiles] = useState([]);
     const [qmsUploadedFiles, setQmsUploadedFiles] = useState([]);
     const [uploadQmsStatus, setUploadQmsStatus] = useState('');
     const qmsInputRef = useRef(null);
 
-    //status for add EMS documents in policies
+    // Status for add EMS documents in policies
     const [emsFiles, setEmsFiles] = useState([]);
     const [emsUploadedFiles, setEmsUploadedFiles] = useState([]);
     const [uploadEmsStatus, setUploadEmsStatus] = useState('');
     const emsInputRef = useRef(null);
    
-    //status for add H&W documents in policies
+    // Status for add H&W documents in policies
     const [hwFiles, setHwFiles] = useState([]);
     const [hwUploadedFiles, setHwUploadedFiles] = useState([]);
     const [uploadHwStatus, setUploadHwStatus] = useState('');
     const hwInputRef = useRef(null);
 
-    //status for add SOP documents in policies
+    // Status for add SOP documents in policies
     const [sopFiles, setSopFiles] = useState([]);
     const [sopUploadedFiles, setSopUploadedFiles] = useState([]);
     const [uploadSopStatus, setUploadSopStatus] = useState('');
     const sopInputRef = useRef(null);
 
-    //status for add ISO documents in policies
+    // Status for add ISO documents in policies
     const [isoFiles, setIsoFiles] = useState([]);
     const [isoUploadedFiles, setIsoUploadedFiles] = useState([]);
     const [uploadIsoStatus, setUploadIsoStatus] = useState('');
     const isoInputRef = useRef(null);
-
 
     // Check login state on mount
     useEffect(() => {
@@ -113,10 +110,9 @@ const Admin = () => {
             const data = await response.json();
             if (data.success) {
                 localStorage.setItem('adminToken', data.token);
-                setSuccessMessage('Login Successful!'); // Set success message
+                setSuccessMessage('Login Successful!');
                 setUsername('');
                 setPassword('');
-                // Clear message and set logged-in state after 3 seconds
                 setTimeout(() => {
                     setSuccessMessage('');
                     setIsLoggedIn(true);
@@ -134,10 +130,10 @@ const Admin = () => {
     const handleLogout = () => {
         localStorage.removeItem('adminToken');
         setIsLoggedIn(false);
-        navigate('/');  // Navigate to home page after logout
+        navigate('/');
     };
 
-    //Function to handle cancel
+    // Function to handle cancel
     const handleCancel = () => {
         setUsername('');
         setPassword('');
@@ -159,7 +155,7 @@ const Admin = () => {
         }
     };
 
-    // Functions to fetch news data from the backend
+    // Function to fetch news from the backend
     const fetchNews = async () => {
         try {
             const response = await fetch('http://localhost:3001/api/news');
@@ -173,7 +169,7 @@ const Admin = () => {
         }
     };
 
-    // Function to fetch calendar events data from backend
+    // Function to fetch events from the backend
     const fetchEvents = async () => {
         try {
             const response = await fetch('http://localhost:3001/api/calendar');
@@ -188,7 +184,7 @@ const Admin = () => {
         }
     };
 
-    // Function to fetch achievement data from backend
+    // Function to fetch achievements from the backend
     const fetchAchievements = async () => {
         try {
             const response = await fetch('http://localhost:3001/api/achievements');
@@ -203,7 +199,7 @@ const Admin = () => {
         }
     };
 
-    // Function to fetch monthly plan image from backend
+    // Function to fetch mobthly plan from the backend
     const fetchMonthlyPlan = async () => {
         try {
             const response = await fetch('http://localhost:3001/api/monthly-plan');
@@ -218,7 +214,7 @@ const Admin = () => {
         }
     };
 
-    // Function to fetch calendar image from backend
+    // Function to fetch monthly calendar from the backend
     const fetchCalendarImage = async () => {
         try {
             const response = await fetch('http://localhost:3001/api/calendar-image');
@@ -233,12 +229,12 @@ const Admin = () => {
         }
     };
 
-    //Function to fetch email list
+    // Function to fetch email list from the backend
     const fetchEmailList = async () => {
         try {
             const response = await fetch('http://localhost:3001/api/emailList');
             if (!response.ok) {
-            throw new Error('Failed to fetch email list');
+                throw new Error('Failed to fetch email list');
             }
             const data = await response.json();
             setCurrentEmailFile(data.emailPath);
@@ -246,10 +242,9 @@ const Admin = () => {
             console.error('Error fetching email list:', error);
             setCurrentEmailFile(null);
         }
-        };
+    };
 
-
-    // Function to fetch QMS files
+    // Function to fetch QMS files from the backend
     const fetchQmsFiles = async () => {
         try {
             const response = await fetch('http://localhost:3001/api/qms');
@@ -264,7 +259,7 @@ const Admin = () => {
         }
     };
 
-    //Function to fetch EMS files
+    // Function to fetch EMS files from the backend
     const fetchEmsFiles = async () => {
         try {
             const response = await fetch('http://localhost:3001/api/ems');
@@ -273,14 +268,13 @@ const Admin = () => {
             }
             const data = await response.json();
             setEmsUploadedFiles(data.files || []);
-        }
-        catch (error) {
+        } catch (error) {
             console.error('Error fetching EMS files:', error);
             setEmsUploadedFiles([]);
         }
     };
 
-    //Function to fetch H&W files
+    // Function to fetch H&W from the backend
     const fetchHwFiles = async () => {
         try {
             const response = await fetch('http://localhost:3001/api/hw');
@@ -289,14 +283,13 @@ const Admin = () => {
             }
             const data = await response.json();
             setHwUploadedFiles(data.files || []);
-        }
-        catch (error) {
+        } catch (error) {
             console.error('Error fetching H&W files:', error);
             setHwUploadedFiles([]);
         }
     };
 
-    //Function to fetch SOP files
+    // Function to fetch SOP files from the backend
     const fetchSopFiles = async () => {
         try {
             const response = await fetch('http://localhost:3001/api/sop');
@@ -305,29 +298,26 @@ const Admin = () => {
             }
             const data = await response.json();
             setSopUploadedFiles(data.files || []);
-        }
-        catch (error) {
+        } catch (error) {
             console.error('Error fetching SOP files:', error);
             setSopUploadedFiles([]);
         }
     };
 
-    //Function to fetch ISO files
+    // Function to fetch ISO files from the backend
     const fetchIsoFiles = async () => {
         try {
             const response = await fetch('http://localhost:3001/api/iso');
-            if(!response.ok) {
+            if (!response.ok) {
                 throw new Error('Failed to fetch ISO files');
             }
             const data = await response.json();
             setIsoUploadedFiles(data.files || []);
-        }
-        catch (error) {
+        } catch (error) {
             console.error('Error fetching ISO files:', error);
             setIsoUploadedFiles([]); 
         }
     };
-
 
     // Fetch active tab data whenever it changes
     useEffect(() => {
@@ -352,8 +342,7 @@ const Admin = () => {
         }
     }, [activeTab]);
 
-    ////////======/functions in carousel images/========///////////
-    // Handle form input changes in carousel images
+    //== Functions in Carousel image section ==//
     const handleInputChange = (e) => {
         const { name, value, files } = e.target;
         if (name === 'image') {
@@ -365,7 +354,6 @@ const Admin = () => {
         }
     };
 
-    //form submission
     const handleUpload = async (e) => {
         e.preventDefault();
         const formData = new FormData();
@@ -392,7 +380,6 @@ const Admin = () => {
         }
     };
 
-    //handle deletion
     const handleDeleteCarousel = async (imageId) => {
         const isConfirmed = window.confirm("Are you sure you want to delete this image?");
         if (isConfirmed) {
@@ -416,8 +403,7 @@ const Admin = () => {
         }
     };
 
-    //////==========/functions in news==============////
-    //form submission
+    //== Function in News section ==//
     const handleAddOrUpdate = async (e) => {
         e.preventDefault();
         try {
@@ -453,7 +439,6 @@ const Admin = () => {
         }
     };
 
-    //handle deletion
     const handleDeleteNews = async (id) => {
         try {
             const parsedId = parseInt(id, 10);
@@ -482,21 +467,18 @@ const Admin = () => {
         }
     };
 
-    //handle edit
     const handleEdit = (item) => {
         setTitle(item.Title);
         setContent(item.Content);
         setEditingId(item.Id);
     };
 
-    ///////================Calendar events functions===================///////////
-    // Handle form input changes in events
+    //== Functions in Events section ==//
     const handleEventInputChange = (e) => {
         const { name, value } = e.target;
         setEventForm({ ...eventForm, [name]: value });
     };
 
-    // Form submission
     const handleEventSubmit = async (e) => {
         e.preventDefault();
         const { title, description, eventDate } = eventForm;
@@ -533,7 +515,6 @@ const Admin = () => {
         }
     };
 
-    // Handle event deletion
     const handleDeleteEvent = async (id) => {
         const isConfirmed = window.confirm('Are you sure you want to delete this event?');
         if (isConfirmed) {
@@ -555,7 +536,6 @@ const Admin = () => {
         }
     };
 
-    // Handle event editing
     const handleEditEvent = (event) => {
         setEventForm({
             title: event.Title,
@@ -565,26 +545,22 @@ const Admin = () => {
         setEditingId(event.Id);
     };
 
-    // Handle search input
     const handleSearchChange = (e) => {
         setSearchQuery(e.target.value);
     };
 
-    // Filter events based on search query
     const filteredEvents = events.filter(event =>
         event.Title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         event.Description.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
-    ////////=======functions in monthly plan image========///////////
-    // Handle form input changes in monthly plan
+    //== Functions in Monthly plan - Calendar section ==//
     const handleMonthlyChange = (e) => {
         const file = e.target.files[0];
         setMonthlyPlanForm({ image: file });
         setMonthlyPreview(file ? URL.createObjectURL(file) : null);
     };
 
-    // Handle monthly plan image upload
     const handleUploadMonthly = async (e) => {
         e.preventDefault();
         if (!monthlyPlanForm.image) {
@@ -614,15 +590,13 @@ const Admin = () => {
         }
     };
 
-    //////////==========functions in calendar image========///////////
-    // Handle form input changes in calendar image
+    //== Functions in Monthly calendar image - Calendar section ==//
     const handleCalendarChange = (e) => {
         const file = e.target.files[0];
         setCalendarForm({ image: file });
         setCalendarPreview(file ? URL.createObjectURL(file) : null);
     };
 
-    // Handle calendar image upload
     const handleUploadCalendar = async (e) => {
         e.preventDefault();
         if (!calendarForm.image) {
@@ -652,8 +626,7 @@ const Admin = () => {
         }
     };
 
-    ///////=========functions in achievements data========/////////
-    // Handle form input changes in achievements
+    //== Functions in Achievement section ==//
     const handleAchievementInputChange = (e) => {
         const { name, value, files } = e.target;
         if (name === 'image') {
@@ -665,7 +638,6 @@ const Admin = () => {
         }
     };
 
-    // Handle submit in achievements
     const handleAchievementSubmit = async (e) => {
         e.preventDefault();
         const { title, description, achievementDate, image } = achievementForm;
@@ -720,7 +692,6 @@ const Admin = () => {
         }
     };
 
-    // Handle edit in achievements
     const handleEditAchievement = (achievement) => {
         setAchievementForm({
             title: achievement.Title,
@@ -732,7 +703,6 @@ const Admin = () => {
         setEditingAchievementId(achievement.Id);
     };
 
-    // Handle delete in achievements
     const handleDeleteAchievement = async (id) => {
         const isConfirmed = window.confirm('Are you sure you want to delete this achievement?');
         if (isConfirmed) {
@@ -754,118 +724,113 @@ const Admin = () => {
         }
     };
 
-    ////////========functions in add extensions/contacts in communication====//////
-
-    // Handler for extension file selection
+    //== Functions in Extension list - Communication section ==//
     const handleExtensionFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file && file.type === 'application/pdf') {
-        setUploadedFile(file);
-        setUploadStatus(''); // Clear error message on valid file selection
-    } else {
-        setUploadedFile(null);
-        setUploadStatus('Please select a PDF file to upload.');
-    }
-    };
-
-     const handleUploadExtension = async (e) => {
-    e.preventDefault();
-    if (!uploadedFile) {
-        setUploadStatus('Please select a PDF file to upload.');
-        return;
-    }
-
-    const formData = new FormData();
-    formData.append('extensionList', uploadedFile);
-
-    try {
-        const response = await fetch('http://localhost:3001/api/extension', {
-        method: 'POST',
-        body: formData,
-        });
-        const data = await response.json();
-        if (response.ok) {
-        setUploadStatus('File uploaded successfully!');
-        setUploadedFile(null); // Reset after success
-        fileInputRef.current.value = ''; // Clear the file input
+        const file = e.target.files[0];
+        if (file && file.type === 'application/pdf') {
+            setUploadedFile(file);
+            setUploadStatus('');
         } else {
-        setUploadStatus(`Error: ${data.error || 'Failed to upload file'}`);
+            setUploadedFile(null);
+            setUploadStatus('Please select a PDF file to upload.');
         }
-    } catch (error) {
-        console.error('Upload failed:', error);
-        setUploadStatus('Upload failed. Please check the server connection.');
-    }
     };
 
-    // Handler for email list upload
-    const handleEmailFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file && file.type === 'application/pdf') {
-        setUploadedEmailFile(file);
-        setUploadEmailStatus(''); // Clear error message on valid file selection
-    } else {
-        setUploadedEmailFile(null);
-        setUploadEmailStatus('Please select a PDF file to upload.');
-    }
-    };
- 
-    const handleUploadEmail = async (e) => {
-    e.preventDefault();
-    if (!uploadedEmailFile) {
-        setUploadEmailStatus('Please select a PDF file to upload.');
-        return;
-    }
-
-    const formData = new FormData();
-    formData.append('emails', uploadedEmailFile);
-
-    try {
-        const response = await fetch('http://localhost:3001/api/emailList', {
-        method: 'POST',
-        body: formData,
-        });
-
-        if (!response.ok) {
-        const text = await response.text();
-        console.error('Non-OK response:', response.status, response.statusText, text.substring(0, 200));
-        setUploadEmailStatus(`Error: ${response.status} ${response.statusText}. Check console for details.`);
-        return;
+    const handleUploadExtension = async (e) => {
+        e.preventDefault();
+        if (!uploadedFile) {
+            setUploadStatus('Please select a PDF file to upload.');
+            return;
         }
 
-        const data = await response.json();
+        const formData = new FormData();
+        formData.append('extensionList', uploadedFile);
 
-        setUploadEmailStatus('File uploaded successfully!');
-        setUploadedEmailFile(null);
-        emailInputRef.current.value = ''; // Use separate ref
-    } catch (error) {
-        console.error('Upload failed:', error);
-        setUploadEmailStatus('Upload failed. Please check the server connection.');
-    }
-    };
-
-
-    //////////========functions in uploading QMS document in policies==//////////
-    // Handler for QMS file selection
-        const handleQmsFilesChange = (e) => {
-            const selectedFiles = Array.from(e.target.files);
-            const validFiles = selectedFiles.filter(file => 
-                file.type === 'application/pdf' || 
-                file.type === 'application/msword' ||
-                file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
-                file.type === 'text/plain' ||
-                file.type.startsWith('image/')
-            );
-            
-            if (validFiles.length !== selectedFiles.length) {
-                setUploadQmsStatus('Some files were skipped. Only PDF, DOC, DOCX, TXT, and image files are allowed.');
+        try {
+            const response = await fetch('http://localhost:3001/api/extension', {
+                method: 'POST',
+                body: formData,
+            });
+            const data = await response.json();
+            if (response.ok) {
+                setUploadStatus('File uploaded successfully!');
+                setUploadedFile(null);
+                fileInputRef.current.value = '';
             } else {
-                setUploadQmsStatus('');
+                setUploadStatus(`Error: ${data.error || 'Failed to upload file'}`);
             }
-            
-            setQmsFiles(validFiles);
-        };
+        } catch (error) {
+            console.error('Upload failed:', error);
+            setUploadStatus('Upload failed. Please check the server connection.');
+        }
+    };
 
-    // Handler for QMS upload
+    //== Function in Email list - Communication section ==//
+    const handleEmailFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file && file.type === 'application/pdf') {
+            setUploadedEmailFile(file);
+            setUploadEmailStatus('');
+        } else {
+            setUploadedEmailFile(null);
+            setUploadEmailStatus('Please select a PDF file to upload.');
+        }
+    };
+
+    const handleUploadEmail = async (e) => {
+        e.preventDefault();
+        if (!uploadedEmailFile) {
+            setUploadEmailStatus('Please select a PDF file to upload.');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('emails', uploadedEmailFile);
+
+        try {
+            const response = await fetch('http://localhost:3001/api/emailList', {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (!response.ok) {
+                const text = await response.text();
+                console.error('Non-OK response:', response.status, response.statusText, text.substring(0, 200));
+                setUploadEmailStatus(`Error: ${response.status} ${response.statusText}. Check console for details.`);
+                return;
+            }
+
+            const data = await response.json();
+
+            setUploadEmailStatus('File uploaded successfully!');
+            setUploadedEmailFile(null);
+            emailInputRef.current.value = '';
+        } catch (error) {
+            console.error('Upload failed:', error);
+            setUploadEmailStatus('Upload failed. Please check the server connection.');
+        }
+    };
+
+    //== Functions in QMS files - policies and procedures ==//
+    const handleQmsFilesChange = (e) => {
+        const selectedFiles = Array.from(e.target.files);
+        const validFiles = selectedFiles.filter(file => 
+            file.type === 'application/pdf' || 
+            file.type === 'application/msword' ||
+            file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+            file.type === 'text/plain' ||
+            file.type.startsWith('image/')
+        );
+        
+        if (validFiles.length !== selectedFiles.length) {
+            setUploadQmsStatus('Some files were skipped. Only PDF, DOC, DOCX, TXT, and image files are allowed.');
+        } else {
+            setUploadQmsStatus('');
+        }
+        
+        setQmsFiles(validFiles);
+    };
+
     const handleUploadQms = async (e) => {
         e.preventDefault();
         if (!qmsFiles || qmsFiles.length === 0) {
@@ -875,15 +840,9 @@ const Admin = () => {
 
         const formData = new FormData();
         qmsFiles.forEach((file, index) => {
-        formData.append('qmsFiles', file);  
-        console.log(`Added file ${index + 1}:`, file.name, 'Field: qms');
-    });
-
-        // Log form data entries (for debugging)
-        console.log('FormData entries:');
-        for (let pair of formData.entries()) {
-            console.log(pair[0] + ', ' + pair[1].name);
-        }
+            formData.append('qmsFiles', file);  
+            console.log(`Added file ${index + 1}:`, file.name, 'Field: qms');
+        });
 
         try {
             console.log('Uploading to http://localhost:3001/api/qms');
@@ -915,7 +874,7 @@ const Admin = () => {
             if (qmsInputRef.current) {
                 qmsInputRef.current.value = '';
             }
-            fetchQmsFiles(); // Refresh the list after successful upload
+            fetchQmsFiles();
             
             setTimeout(() => {
                 setUploadQmsStatus('');
@@ -931,7 +890,6 @@ const Admin = () => {
         }
     };
 
-    // Handler for removing a selected QMS file
     const handleRemoveQmsFile = (index) => {
         setQmsFiles(prev => prev.filter((_, i) => i !== index));
         if (qmsFiles.length === 1) {
@@ -939,7 +897,6 @@ const Admin = () => {
         }
     };
 
-    // Handler for clearing all selected QMS files
     const handleClearQmsFiles = () => {
         setQmsFiles([]);
         setUploadQmsStatus('');
@@ -948,7 +905,6 @@ const Admin = () => {
         }
     };
 
-    // Handler for deleting an uploaded QMS file
     const handleDeleteQmsFile = async (filename) => {
         const isConfirmed = window.confirm('Are you sure you want to delete this file?');
         if (!isConfirmed) return;
@@ -959,7 +915,7 @@ const Admin = () => {
             });
             if (response.ok) {
                 alert('File deleted successfully!');
-                fetchQmsFiles(); // Refresh the list
+                fetchQmsFiles();
             } else {
                 const errorData = await response.json();
                 alert(`Error: ${errorData.error || 'Failed to delete file'}`);
@@ -970,9 +926,7 @@ const Admin = () => {
         }
     };
 
-
-    //////////========functions in uploading EMS document in policies==//////////
-    //Handler for EMS file selection
+    //== Functions in EMS files - policies and procedures ==//
     const handleEmsFileChange = (e) => {
         const selectedFiles = Array.from(e.target.files);
         const validFiles = selectedFiles.filter(file => 
@@ -991,9 +945,8 @@ const Admin = () => {
         setEmsFiles(validFiles);
     };
 
-    //Handler for EMS upload
     const handleUploadEms = async (e) => {
-         e.preventDefault();
+        e.preventDefault();
         if (!emsFiles || emsFiles.length === 0) {
             setUploadEmsStatus('Please select at least one file to upload.');
             return;
@@ -1001,15 +954,9 @@ const Admin = () => {
 
         const formData = new FormData();
         emsFiles.forEach((file, index) => {
-        formData.append('emsFiles', file);  
-        console.log(`Added file ${index + 1}:`, file.name, 'Field: ems');
-    });
-
-        // Log form data entries (for debugging)
-        console.log('FormData entries:');
-        for (let pair of formData.entries()) {
-            console.log(pair[0] + ', ' + pair[1].name);
-        }
+            formData.append('emsFiles', file);  
+            console.log(`Added file ${index + 1}:`, file.name, 'Field: ems');
+        });
 
         try {
             console.log('Uploading to http://localhost:3001/api/ems');
@@ -1041,7 +988,7 @@ const Admin = () => {
             if (emsInputRef.current) {
                 emsInputRef.current.value = '';
             }
-            fetchEmsFiles(); // Refresh the list after successful upload
+            fetchEmsFiles();
             
             setTimeout(() => {
                 setUploadEmsStatus('');
@@ -1057,7 +1004,6 @@ const Admin = () => {
         }
     };
 
-    //Handler for removing a selected EMS file
     const handleRemoveEmsFile = (index) => {
         setEmsFiles(prev => prev.filter((_, i) => i !== index));
         if (emsFiles.length === 1) {
@@ -1065,7 +1011,6 @@ const Admin = () => {
         }
     };
 
-    //Handler for clearing EMS files
     const handleClearEmsFiles = () => {
         setEmsFiles([]);
         setUploadEmsStatus('');
@@ -1074,7 +1019,6 @@ const Admin = () => {
         }
     };
 
-    //Handler for deleting EMS files
     const handleDeleteEmsFiles = async (filename) => {
         const isConfirmed = window.confirm('Are you sure you want to delete this file?');
         if (!isConfirmed) return;
@@ -1085,7 +1029,7 @@ const Admin = () => {
             });
             if (response.ok) {
                 alert('File deleted successfully!');
-                fetchEmsFiles(); // Refresh the list
+                fetchEmsFiles();
             } else {
                 const errorData = await response.json();
                 alert(`Error: ${errorData.error || 'Failed to delete file'}`);
@@ -1096,9 +1040,7 @@ const Admin = () => {
         }
     };
 
-
-    ////////========functions in uploading H&W document in policies==//////////
-    //Handler for H&W file selection
+    //== Functions in H&W files - policies and procedures ==//
     const handleHwFileChange = (e) => {
         const selectedFiles = Array.from(e.target.files);
         const validFiles = selectedFiles.filter(file => 
@@ -1106,18 +1048,16 @@ const Admin = () => {
             file.type === 'application/msword' ||
             file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
             file.type === 'text/plain' ||
-            file.type.startswith('image/')
+            file.type.startsWith('image/')
         );
         if (validFiles.length !== selectedFiles.length) {
             setUploadHwStatus('Some files were skipped. Only PDF, DOC, DOCX, TXT, and images are allowed.');
-        }
-        else {
+        } else {
             setUploadHwStatus('');
         }
         setHwFiles(validFiles);
     };
 
-   // Handler for H&W upload
     const handleUploadHw = async (e) => {
         e.preventDefault();
         if (!hwFiles || hwFiles.length === 0) {
@@ -1127,15 +1067,9 @@ const Admin = () => {
 
         const formData = new FormData();
         hwFiles.forEach((file, index) => {
-            formData.append('hwFiles', file);  // Change from 'emsFiles' to 'hwFiles'
+            formData.append('hwFiles', file);
             console.log(`Added file ${index + 1}:`, file.name, 'Field: hwFiles');
         });
-
-        // Log form data entries (for debugging)
-        console.log('FormData entries:');
-        for (let pair of formData.entries()) {
-            console.log(pair[0] + ', ' + pair[1].name);
-        }
 
         try {
             console.log('Uploading to http://localhost:3001/api/hw');
@@ -1167,7 +1101,7 @@ const Admin = () => {
             if (hwInputRef.current) {
                 hwInputRef.current.value = '';
             }
-            fetchHwFiles(); // Refresh the list after successful upload
+            fetchHwFiles();
             
             setTimeout(() => {
                 setUploadHwStatus('');
@@ -1183,7 +1117,6 @@ const Admin = () => {
         }
     };
 
-    //Handler for removing a selected H&W file
     const handleRemoveHwFile = (index) => {
         setHwFiles(prev => prev.filter((_, i) => i !== index));
         if (hwFiles.length === 1) {
@@ -1191,7 +1124,6 @@ const Admin = () => {
         }
     };
 
-    //Handler for clearing H&W files
     const handleClearHwFiles = () => {
         setHwFiles([]);
         setUploadHwStatus('');
@@ -1200,7 +1132,6 @@ const Admin = () => {
         }
     };
 
-    //Handler for deleting H&W files
     const handleDeleteHwFiles = async (filename) => {
         const isConfirmed = window.confirm('Are you sure you want to delete this file?');
         if (!isConfirmed) return;
@@ -1211,7 +1142,7 @@ const Admin = () => {
             });
             if (response.ok) {
                 alert('File deleted successfully!');
-                fetchHwFiles(); // Refresh the list
+                fetchHwFiles();
             } else {
                 const errorData = await response.json();
                 alert(`Error: ${errorData.error || 'Failed to delete file'}`);
@@ -1222,12 +1153,10 @@ const Admin = () => {
         }
     };
 
-
-    ///////=======Functions in uploading SOP documents in policies====///////
-    //handler for sop file selection
+    //== Functions in SOP files - policies and procedures ==//
     const handleSopFileChange = (e) => {
         const selectedFiles = Array.from(e.target.files);
-        const validFiles = selectedFiles.filter (file => 
+        const validFiles = selectedFiles.filter(file => 
             file.type === 'application/pdf' ||
             file.type === 'application/msword' ||
             file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
@@ -1235,15 +1164,13 @@ const Admin = () => {
             file.type.startsWith('image/')
         );
         if (validFiles.length !== selectedFiles.length) {
-            setUploadSopStatus('Some files were skipped.Only PDF, DOC, DOCX, TXT and images are allowed')
-        }
-        else {
+            setUploadSopStatus('Some files were skipped.Only PDF, DOC, DOCX, TXT and images are allowed');
+        } else {
             setUploadSopStatus('');
         }
         setSopFiles(validFiles);
     };
 
-    //handler for SOP upload
     const handleUploadSop = async (e) => {
         e.preventDefault();
         if (!sopFiles || sopFiles.length === 0) {
@@ -1253,15 +1180,9 @@ const Admin = () => {
 
         const formData = new FormData();
         sopFiles.forEach((file, index) => {
-            formData.append('sopFiles', file);  
+            formData.append('sopFiles', file);
             console.log(`Added file ${index + 1}:`, file.name, 'Field: sopFiles');
         });
-
-        // Log form data entries (for debugging)
-        console.log('FormData entries:');
-        for (let pair of formData.entries()) {
-            console.log(pair[0] + ', ' + pair[1].name);
-        }
 
         try {
             console.log('Uploading to http://localhost:3001/api/sop');
@@ -1293,7 +1214,7 @@ const Admin = () => {
             if (sopInputRef.current) {
                 sopInputRef.current.value = '';
             }
-            fetchSopFiles(); // Refresh the list after successful upload
+            fetchSopFiles();
             
             setTimeout(() => {
                 setUploadSopStatus('');
@@ -1309,7 +1230,6 @@ const Admin = () => {
         }
     };
 
-    //handler for removing a selected SOP file
     const handleRemoveSopFile = (index) => {
         setSopFiles(prev => prev.filter((_, i) => i !== index));
         if (sopFiles.length === 1) {
@@ -1317,7 +1237,6 @@ const Admin = () => {
         }
     };
 
-    //handler for clearing SOP files
     const handleClearSopFiles = () => {
         setSopFiles([]);
         setUploadSopStatus('');
@@ -1326,7 +1245,6 @@ const Admin = () => {
         }
     };
 
-    //handler for deleting SOP files
     const handleDeleteSopFile = async (filename) => {
         const isConfirmed = window.confirm('Are you sure you want to delete this file?');
         if (!isConfirmed) return;
@@ -1337,7 +1255,7 @@ const Admin = () => {
             });
             if (response.ok) {
                 alert('File deleted successfully!');
-                fetchSopFiles(); // Refresh the list
+                fetchSopFiles();
             } else {
                 const errorData = await response.json();
                 alert(`Error: ${errorData.error || 'Failed to delete file'}`);
@@ -1348,12 +1266,10 @@ const Admin = () => {
         }
     };
 
-
-    //////======Functions in uploading ISo documents in policies====//////
-    //handler for ISo file selection
+    //== Functions in ISO files - policies and procedures ==//
     const handleIsoFileChange = (e) => {
         const selectedFiles = Array.from(e.target.files);
-        const validFiles = selectedFiles.filter (file => 
+        const validFiles = selectedFiles.filter(file => 
             file.type === 'application/pdf' ||
             file.type === 'application/msword' ||
             file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
@@ -1362,15 +1278,13 @@ const Admin = () => {
         );
 
         if (validFiles.length !== selectedFiles.length) {
-            setUploadIsoStatus('Some files were skipped.Only PDF, DOC, Docx, TXT and images are allowed')
-        }
-        else {
+            setUploadIsoStatus('Some files were skipped.Only PDF, DOC, Docx, TXT and images are allowed');
+        } else {
             setUploadIsoStatus('');
         }
         setIsoFiles(validFiles);
     };
 
-    //handler for ISo upload
     const handleUploadIso = async (e) => {
         e.preventDefault();
         if (!isoFiles || isoFiles.length === 0) {
@@ -1380,15 +1294,9 @@ const Admin = () => {
 
         const formData = new FormData();
         isoFiles.forEach((file, index) => {
-            formData.append('isoFiles', file);  
+            formData.append('isoFiles', file);
             console.log(`Added file ${index + 1}:`, file.name, 'Field: isoFiles');
         });
-
-        // Log form data entries (for debugging)
-        console.log('FormData entries:');
-        for (let pair of formData.entries()) {
-            console.log(pair[0] + ', ' + pair[1].name);
-        }
 
         try {
             console.log('Uploading to http://localhost:3001/api/iso');
@@ -1420,7 +1328,7 @@ const Admin = () => {
             if (isoInputRef.current) {
                 isoInputRef.current.value = '';
             }
-            fetchIsoFiles(); // Refresh the list after successful upload
+            fetchIsoFiles();
             
             setTimeout(() => {
                 setUploadIsoStatus('');
@@ -1436,7 +1344,6 @@ const Admin = () => {
         }
     };
 
-    //handler for removing a selected ISO file
     const handleRemoveIsoFile = (index) => {
         setIsoFiles(prev => prev.filter((_, i) => i !== index));
         if (isoFiles.length === 1) {
@@ -1444,7 +1351,6 @@ const Admin = () => {
         }
     };
 
-    //handler for clearing ISO files
     const handleClearIsoFiles = () => {
         setIsoFiles([]);
         setUploadIsoStatus('');
@@ -1453,7 +1359,6 @@ const Admin = () => {
         }
     };
 
-    //handler for deleting ISO files
     const handleDeleteIsoFile = async (filename) => {
         const isConfirmed = window.confirm('Are you sure you want to delete this file?');
         if (!isConfirmed) return;
@@ -1464,7 +1369,7 @@ const Admin = () => {
             });
             if (response.ok) {
                 alert('File deleted successfully!');
-                fetchIsoFiles(); // Refresh the list
+                fetchIsoFiles();
             } else {
                 const errorData = await response.json();
                 alert(`Error: ${errorData.error || 'Failed to delete file'}`);
@@ -1473,84 +1378,78 @@ const Admin = () => {
             console.error('Delete failed:', error);
             alert('Failed to delete file. Please check the server connection.');
         }
-    }
+    };
 
-    //Application list
-    const applications = [
-        { id: 'hr', name: 'Human Resource Management', icon: <FiUsers /> },
-        { id: 'medical', name: 'Medical', icon: <FiFileText /> },
-        { id: 'display', name: 'Display Panel', icon: <FiImage /> },
-        { id: 'appraisal', name: 'Appraisal', icon: <FiFileText /> },
-        { id: 'feedback', name: 'Feedback Form', icon: <FiMessageSquare /> },
-        { id: 'nonconformity', name: 'Non-Conformity', icon: <FiSettings /> },
-        { id: 'sfa', name: 'SFA', icon: <FiSettings /> },
-        { id: 'ifs', name: 'IFS', icon: <FiSettings /> },
-        { id: 'kpi', name: 'KPI', icon: <FiSettings /> },
-        { id: 'wms', name: 'WMS', icon: <FiSettings /> },
-        { id: 'docware', name: 'Docware', icon: <FiSettings /> },
-        { id: 'production display', name: 'Production Display', icon: <FiSettings /> }
-    ];
-
-    // const policies = [
-    //     { id: 1, title: 'Standard Operating Procedures', category: 'SOP' },
-    //     { id: 2, title: 'International Organization for Standardization', category: 'ISO' },
-    //     { id: 3, title: 'Quality Management System', category: 'QMS' },
-    //     { id: 4, title: 'Environmental Management System', category: 'EMS' },
-    //     { id: 5, title: 'Health and Welfare', category: 'H&W' }
+    // Application list
+    // const applications = [
+    //     { id: 'hr', name: 'Human Resource Management', icon: <FiUsers />, color: 'from-blue-500 to-blue-600' },
+    //     { id: 'medical', name: 'Medical', icon: <FiFileText />, color: 'from-green-500 to-green-600' },
+    //     { id: 'display', name: 'Display Panel', icon: <FiImage />, color: 'from-purple-500 to-purple-600' },
+    //     { id: 'appraisal', name: 'Appraisal', icon: <FiFileText />, color: 'from-orange-500 to-orange-600' },
+    //     { id: 'feedback', name: 'Feedback Form', icon: <FiMessageSquare />, color: 'from-pink-500 to-pink-600' },
+    //     { id: 'nonconformity', name: 'Non-Conformity', icon: <FiSettings />, color: 'from-red-500 to-red-600' },
+    //     { id: 'sfa', name: 'SFA', icon: <FiSettings />, color: 'from-indigo-500 to-indigo-600' },
+    //     { id: 'ifs', name: 'IFS', icon: <FiSettings />, color: 'from-teal-500 to-teal-600' },
+    //     { id: 'kpi', name: 'KPI', icon: <FiSettings />, color: 'from-cyan-500 to-cyan-600' },
+    //     { id: 'wms', name: 'WMS', icon: <FiSettings />, color: 'from-lime-500 to-lime-600' },
+    //     { id: 'docware', name: 'Docware', icon: <FiSettings />, color: 'from-amber-500 to-amber-600' },
+    //     { id: 'production display', name: 'Production Display', icon: <FiSettings />, color: 'from-emerald-500 to-emerald-600' }
     // ];
 
     const renderContent = () => {
         switch (activeTab) {
-            ///-------------- image carousel---------------///
             case 'carousel':
                 return (
                     <div className="space-y-6">
-                        <h2 className="text-2xl font-bold mb-4">Company Image Carousel</h2>
-                        <div className="grid grid-cols-1 gap-4">
-                            <div className="bg-blue-50 rounded-lg shadow p-6 border border-gray-200">
-                                <h1 className="text-xl font-bold text-gray-800 mb-6">Add new image to the company carousel</h1>
-                                <form onSubmit={handleUpload} className="bg-white rounded-lg shadow p-6">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-                                        <div className="space-y-2">
-                                            <label className="block text-sm font-medium text-gray-700">Title</label>
-                                            <input
-                                                type="text"
-                                                name="title"
-                                                value={carouselForm.title}
-                                                onChange={handleInputChange}
-                                                placeholder="Enter image title"
-                                                className="w-full border border-gray-300 rounded-md py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                            />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <label className="block text-sm font-medium text-gray-700">Image</label>
-                                            <div className="flex items-center gap-3">
+                        <div className="flex items-center justify-between mb-6">
+                            <h2 className="text-2xl font-bold text-gray-800">Company Image Carousel</h2>
+                            <div className="w-16 h-1 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full"></div>
+                        </div>
+                        <div className="grid grid-cols-1 gap-6">
+                            <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+                                <h3 className="text-xl font-bold text-gray-800 mb-6">Add New Image to Carousel</h3>
+                                <form onSubmit={handleUpload} className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+                                        <div className="space-y-4">
+                                            <div className="space-y-2">
+                                                <label className="block text-sm font-medium text-gray-700">Title</label>
                                                 <input
-                                                    type="file"
-                                                    name="image"
-                                                    accept="image/*"
+                                                    type="text"
+                                                    name="title"
+                                                    value={carouselForm.title}
                                                     onChange={handleInputChange}
-                                                    className="block w-full text-sm text-gray-500
-                                                    file:mr-4 file:py-2 file:px-4
-                                                    file:rounded-md file:border-0
-                                                    file:text-sm file:font-semibold
-                                                    file:bg-blue-50 file:text-blue-700
-                                                    hover:file:bg-blue-100"
+                                                    placeholder="Enter image title"
+                                                    className="w-full border border-gray-300 rounded-lg py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                                                 />
                                             </div>
+                                            <div className="space-y-2">
+                                                <label className="block text-sm font-medium text-gray-700">Image</label>
+                                                <div className="flex items-center gap-3">
+                                                    <input
+                                                        type="file"
+                                                        name="image"
+                                                        accept="image/*"
+                                                        onChange={handleInputChange}
+                                                        className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-400 file:text-white hover:file:bg-blue-500 transition-colors"
+                                                    />
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div className="mt-6 bg-gray-50 rounded-lg border border-dashed border-gray-300 p-4 flex flex-col items-center justify-center h-48">
-                                        {previewImage ? (
-                                            <img src={previewImage} alt="Preview" className="max-h-full max-w-full object-contain" />
-                                        ) : (
-                                            <span className="text-gray-400 mb-2">Image preview will appear here</span>
-                                        )}
+                                        <div className="bg-white rounded-xl border-2 border-dashed border-gray-300 p-6 flex flex-col items-center justify-center h-48">
+                                            {previewImage ? (
+                                                <img src={previewImage} alt="Preview" className="max-h-full max-w-full object-contain rounded-lg" />
+                                            ) : (
+                                                <div className="text-center text-gray-400">
+                                                    <FiImage className="w-12 h-12 mx-auto mb-2" />
+                                                    <span>Image preview will appear here</span>
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
                                     <div className="flex justify-end space-x-4 mt-6">
                                         <button
                                             type="submit"
-                                            className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-700 transition-colors"
+                                            className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-lg hover:from-cyan-600 hover:to-blue-600 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
                                             disabled={!carouselForm.title || !carouselForm.image}
                                         >
                                             Upload Image
@@ -1561,7 +1460,7 @@ const Admin = () => {
                                                 setCarouselForm({ title: '', image: null });
                                                 setPreviewImage(null);
                                             }}
-                                            className="px-6 py-2 bg-gray-300 text-black hover:text-white rounded-md hover:bg-gray-700 transition-colors"
+                                            className="px-6 py-3 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-all"
                                         >
                                             Cancel
                                         </button>
@@ -1569,151 +1468,156 @@ const Admin = () => {
                                 </form>
                             </div>
                         </div>
-                        <div className='flex flex-col gap-4 p-4'>
-                            <h1 className='font-bold'>Manage existing images</h1>
-                            <table className="w-full bg-black border-1 border-black rounded-lg overflow-hidden">
-                                <thead className="bg-gray-200">
-                                    <tr>
-                                        <th className="px-6 py-3 text-center text-xs font-medium text-gray-600 uppercase tracking-wider">Title</th>
-                                        <th className="px-6 py-3 text-center text-xs font-medium text-gray-600 uppercase tracking-wider">Image</th>
-                                        <th className="px-6 py-3 text-center text-xs font-medium text-gray-600 uppercase tracking-wider">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="bg-white divide-y divide-black">
-                                    {carouselImages.length > 0 ? (
-                                        carouselImages.map((image) => (
-                                            <tr key={image.Id} className='text-center'>
-                                                <td className="px-4 py-4 justify-center items-center whitespace-nowrap text-sm font-medium text-black">
-                                                    {image.Title}
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap align-middle">
-                                                    <div className="h-20 w-20 border mx-auto">
-                                                        <img
-                                                            src={`http://localhost:3001${image.ImagePath}`}
-                                                            alt={image.Title}
-                                                            className="h-full w-full object-cover rounded-md"
-                                                        />
-                                                    </div>
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                                    <div className='flex justify-center space-x-2'>
-                                                        <button
-                                                            onClick={() => handleDeleteCarousel(image.Id)}
-                                                            className="text-red-600 hover:text-red-900 border-1 rounded px-3"
-                                                        >
-                                                            Delete
-                                                        </button>
-                                                        <button
-                                                            className="text-gray-400 hover:text-black border-1 rounded px-3"
-                                                        >
-                                                            Cancel
-                                                        </button>
-                                                    </div>
+                        <div className='bg-white rounded-2xl shadow-lg p-6 border border-gray-100'>
+                            <h3 className='text-xl font-bold text-gray-800 mb-6'>Manage Existing Images</h3>
+                            <div className="overflow-x-auto rounded-xl">
+                                <table className="w-full bg-white rounded-lg overflow-hidden shadow-sm">
+                                    <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
+                                        <tr>
+                                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">Title</th>
+                                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">Image</th>
+                                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="bg-white divide-y divide-gray-200">
+                                        {carouselImages.length > 0 ? (
+                                            carouselImages.map((image) => (
+                                                <tr key={image.Id} className='hover:bg-gray-50 transition-colors'>
+                                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                                        {image.Title}
+                                                    </td>
+                                                    <td className="px-6 py-4 whitespace-nowrap">
+                                                        <div className="h-20 w-20 border border-gray-200 rounded-lg overflow-hidden mx-auto">
+                                                            <img
+                                                                src={`http://localhost:3001${image.ImagePath}`}
+                                                                alt={image.Title}
+                                                                className="h-full w-full object-cover"
+                                                            />
+                                                        </div>
+                                                    </td>
+                                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                                        <div className='flex justify-start space-x-3'>
+                                                            <button
+                                                                onClick={() => handleDeleteCarousel(image.Id)}
+                                                                className="bg-gradient-to-r from-red-500 to-red-500 text-white px-4 py-2 rounded-lg hover:from-red-600 hover:to-red-600 transition-all transform hover:scale-105"
+                                                            >
+                                                                Delete
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            ))
+                                        ) : (
+                                            <tr>
+                                                <td colSpan="3" className="text-center py-8 text-gray-500">
+                                                    <FiImage className="w-12 h-12 mx-auto mb-2 text-gray-300" />
+                                                    No images found.
                                                 </td>
                                             </tr>
-                                        ))
-                                    ) : (
-                                        <tr>
-                                            <td colSpan="3" className="text-center py-4 text-gray-500">
-                                                No images found.
-                                            </td>
-                                        </tr>
-                                    )}
-                                </tbody>
-                            </table>
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 );
 
-            ///----------------------- news and announcements -------------------------------------///
             case 'news':
                 return (
                     <div className="space-y-6">
-                        <h2 className="text-2xl font-bold mb-4">News & Announcements</h2>
-                        <div className="bg-white rounded-lg shadow p-6 mt-6">
-                            <h3 className="text-xl font-semibold mb-4">{editingId ? 'Edit News' : 'Add News & Announcements'}</h3>
-                            <form onSubmit={handleAddOrUpdate} className="space-y-4">
-                                <label className='font-semibold text-blue-950'>Title:</label>
-                                <input
-                                    type="text"
-                                    placeholder="News Title"
-                                    value={title}
-                                    onChange={(e) => setTitle(e.target.value)}
-                                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                />
-                                <label className='font-semibold text-blue-950'>Content:</label>
-                                <textarea
-                                    placeholder="News Content"
-                                    value={content}
-                                    onChange={(e) => setContent(e.target.value)}
-                                    className="w-full border border-gray-300 rounded-md px-3 py-2 h-24 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                />
-                                <div className="w-2/4 flex space-x-3 pt-2">
-                                    <button type="submit" className="px-1 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors flex-1">
+                        <div className="flex items-center justify-between mb-6">
+                            <h2 className="text-2xl font-bold text-gray-800">News & Announcements</h2>
+                            <div className="w-16 h-1 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full"></div>
+                        </div>
+                        <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+                            <h3 className="text-xl font-semibold mb-6 text-gray-800">{editingId ? 'Edit News' : 'Add News & Announcements'}</h3>
+                            <form onSubmit={handleAddOrUpdate} className="space-y-6">
+                                <div>
+                                    <label className='font-semibold text-gray-700 block mb-2'>Title:</label>
+                                    <input
+                                        type="text"
+                                        placeholder="News Title"
+                                        value={title}
+                                        onChange={(e) => setTitle(e.target.value)}
+                                        className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                                    />
+                                </div>
+                                <div>
+                                    <label className='font-semibold text-gray-700 block mb-2'>Content:</label>
+                                    <textarea
+                                        placeholder="News Content"
+                                        value={content}
+                                        onChange={(e) => setContent(e.target.value)}
+                                        className="w-full border border-gray-300 rounded-lg px-4 py-3 h-32 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                                    />
+                                </div>
+                                <div className="w-2/4 flex space-x-4 pt-2">
+                                    <button type="submit" className="flex-1 bg-gradient-to-r from-cyan-500 to-blue-500 text-white py-3 rounded-lg hover:from-cyan-600 hover:to-blue-600 transition-all transform hover:scale-105">
                                         {editingId ? 'Update' : 'Add'}
                                     </button>
                                     <button type="button" onClick={() => {
                                         setTitle('');
                                         setContent('');
                                         setEditingId(null);
-                                    }} className="px-1 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-400 transition-colors flex-1">
+                                    }} className="flex-1 bg-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-400 transition-all">
                                         Clear
                                     </button>
                                 </div>
                             </form>
                         </div>
 
-                        <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-200">
-                            <div className="flex justify-between items-center mb-4">
+                        <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+                            <div className="flex justify-between items-center mb-6">
                                 <h3 className="text-xl font-semibold text-gray-800">Manage News & Announcements</h3>
                                 <div className="relative">
                                     <input
                                         type="text"
-                                        placeholder="Search events..."
-                                        className="border border-gray-300 rounded-md px-3 py-1 pl-8 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                        placeholder="Search news..."
+                                        className="border border-gray-300 rounded-lg px-4 py-2 pl-10 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                                     />
-                                    <IoSearchOutline className="w-4 h-4 absolute left-2.5 top-2.5 text-gray-400" fill="none" stroke="currentColor" />
+                                    <IoSearchOutline className="w-4 h-4 absolute left-3 top-3 text-gray-400" />
                                 </div>
                             </div>
 
-                            <div className="overflow-x-auto">
-                                <table className="min-w-full divide-y divide-black border-1 border-black rounded-lg">
-                                    <thead className="bg-gray-50">
-                                        <tr className='text-center'>
-                                            <th scope="col" className="px-6 py-3 font-bold text-medium text-blue-900 tracking-wider">
-                                                Title
-                                            </th>
-                                            <th scope="col" className="px-6 py-3 font-bold text-medium text-blue-900 tracking-wider">Content</th>
-                                            <th scope="col" className="px-6 py-3 font-bold text-medium text-blue-900 tracking-wider">Date</th>
-                                            <th scope="col" className="px-6 py-3 font-bold text-medium text-blue-900 tracking-wider">Actions</th>
+                            <div className="overflow-x-auto rounded-xl">
+                                <table className="min-w-full bg-white rounded-lg overflow-hidden shadow-sm">
+                                    <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
+                                        <tr>
+                                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">Title</th>
+                                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">Content</th>
+                                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">Date</th>
+                                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody className="bg-white divide-y divide-gray-200">
                                         {news.length > 0 ? (
                                             news.map((item) => (
-                                                <tr key={item.Id} className="text-center align-middle">
+                                                <tr key={item.Id} className="hover:bg-gray-50 transition-colors">
                                                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{item.Title}</td>
-                                                    <td className="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">{item.Content}</td>
+                                                    <td className="px-6 py-4 text-sm text-gray-600 max-w-xs truncate">{item.Content}</td>
                                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{new Date(item.CreatedAt).toLocaleDateString()}</td>
                                                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                                        <button
-                                                            onClick={() => handleEdit(item)}
-                                                            className="text-blue-600 hover:text-blue-900 mr-3 border px-3 rounded"
-                                                        >
-                                                            Edit
-                                                        </button>
-                                                        <button
-                                                            onClick={() => handleDeleteNews(item.Id)}
-                                                            className="text-red-600 hover:text-red-900 border px-3 rounded"
-                                                        >
-                                                            Delete
-                                                        </button>
+                                                        <div className="flex space-x-3">
+                                                            <button
+                                                                onClick={() => handleEdit(item)}
+                                                                className="bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-4 py-2 rounded-lg hover:from-cyan-600 hover:to-blue-600 transition-all"
+                                                            >
+                                                                Edit
+                                                            </button>
+                                                            <button
+                                                                onClick={() => handleDeleteNews(item.Id)}
+                                                                className="bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2 rounded-lg hover:from-red-600 hover:to-red-700 transition-all"
+                                                            >
+                                                                Delete
+                                                            </button>
+                                                        </div>
                                                     </td>
                                                 </tr>
                                             ))
                                         ) : (
                                             <tr>
-                                                <td colSpan="4" className="text-center py-4 text-gray-500">
+                                                <td colSpan="4" className="text-center py-8 text-gray-500">
+                                                    <FaNewspaper className="w-12 h-12 mx-auto mb-2 text-gray-300" />
                                                     No news items found.
                                                 </td>
                                             </tr>
@@ -1725,27 +1629,41 @@ const Admin = () => {
                     </div>
                 );
 
-            ///----------------------- calendar section -----------------------------------///
             case 'calendar':
                 return (
                     <div className="space-y-6">
-                        <h2 className="text-2xl font-bold mb-4">Working Calendar</h2>
+                        <div className="flex items-center justify-between mb-6">
+                            <h2 className="text-2xl font-bold text-gray-800">Working Calendar</h2>
+                            <div className="w-16 h-1 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full"></div>
+                        </div>
                         <div className="flex flex-col gap-6">
-                            <div className="bg-blue-50 rounded-lg shadow p-6 border border-gray-200">
-                                <h1 className="text-xl font-bold text-gray-800 mb-6">{editingId ? 'Edit Event' : 'Add New Event'}</h1>
-                                <div className="bg-white rounded-lg shadow p-6">
+                            <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+                                <h3 className="text-xl font-bold text-gray-800 mb-6">{editingId ? 'Edit Event' : 'Add New Event'}</h3>
+                                <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-6">
                                     <form onSubmit={handleEventSubmit}>
-                                        <div className="space-y-4">
-                                            <div className="space-y-2">
-                                                <label className="block text-sm font-medium text-gray-700">Title</label>
-                                                <input
-                                                    type="text"
-                                                    name="title"
-                                                    value={eventForm.title}
-                                                    onChange={handleEventInputChange}
-                                                    placeholder="Enter event title"
-                                                    className="w-full border border-gray-300 rounded-md py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                />
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div className="space-y-4">
+                                                <div className="space-y-2">
+                                                    <label className="block text-sm font-medium text-gray-700">Title</label>
+                                                    <input
+                                                        type="text"
+                                                        name="title"
+                                                        value={eventForm.title}
+                                                        onChange={handleEventInputChange}
+                                                        placeholder="Enter event title"
+                                                        className="w-full border border-gray-300 rounded-lg py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                                    />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <label className="block text-sm font-medium text-gray-700">Event Date</label>
+                                                    <input
+                                                        type="date"
+                                                        name="eventDate"
+                                                        value={eventForm.eventDate}
+                                                        onChange={handleEventInputChange}
+                                                        className="w-full border border-gray-300 rounded-lg py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                                    />
+                                                </div>
                                             </div>
                                             <div className="space-y-2">
                                                 <label className="block text-sm font-medium text-gray-700">Description</label>
@@ -1754,24 +1672,14 @@ const Admin = () => {
                                                     value={eventForm.description}
                                                     onChange={handleEventInputChange}
                                                     placeholder="Enter event description"
-                                                    className="w-full border border-gray-300 rounded-md py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 h-24"
-                                                />
-                                            </div>
-                                            <div className="space-y-2">
-                                                <label className="block text-sm font-medium text-gray-700">Event Date</label>
-                                                <input
-                                                    type="date"
-                                                    name="eventDate"
-                                                    value={eventForm.eventDate}
-                                                    onChange={handleEventInputChange}
-                                                    className="w-full border border-gray-300 rounded-md py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    className="w-full border border-gray-300 rounded-lg py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent h-32"
                                                 />
                                             </div>
                                         </div>
                                         <div className="flex justify-end space-x-4 mt-6">
                                             <button
                                                 type="submit"
-                                                className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-700 transition-colors"
+                                                className="px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all transform hover:scale-105 disabled:opacity-50"
                                                 disabled={!eventForm.title || !eventForm.description || !eventForm.eventDate}
                                             >
                                                 {editingId ? 'Update Event' : 'Add Event'}
@@ -1782,7 +1690,7 @@ const Admin = () => {
                                                     setEventForm({ title: '', description: '', eventDate: '' });
                                                     setEditingId(null);
                                                 }}
-                                                className="px-6 py-2 bg-gray-300 text-gray-700 hover:text-white rounded-md hover:bg-gray-700 transition-colors"
+                                                className="px-6 py-3 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-all"
                                             >
                                                 Cancel
                                             </button>
@@ -1791,10 +1699,10 @@ const Admin = () => {
                                 </div>
                             </div>
 
-                            <div className="space-y-6">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                 {/* Monthly Plan Image Upload */}
-                                <div className="bg-green-50 rounded-lg shadow p-6 border border-gray-200">
-                                    <h3 className="text-lg font-bold mb-4">Monthly Plan Image</h3>
+                                <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+                                    <h3 className="text-lg font-bold mb-4 text-gray-800">Monthly Plan Image</h3>
                                     <form onSubmit={handleUploadMonthly} className="space-y-4">
                                         <div className="space-y-2">
                                             <label className="block text-sm font-medium text-gray-700">Upload Monthly Plan</label>
@@ -1802,33 +1710,33 @@ const Admin = () => {
                                                 type="file"
                                                 accept="image/*"
                                                 onChange={handleMonthlyChange}
-                                                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100"
+                                                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-green-500 file:text-white hover:file:bg-green-600"
                                             />
                                         </div>
                                         {monthlyPreview && (
-                                            <div className="mt-4 bg-gray-50 rounded-lg p-4">
-                                                <img src={monthlyPreview} alt="Monthly Preview" className="max-h-48 max-w-full object-contain mx-auto" />
+                                            <div className="mt-4 bg-gray-50 rounded-lg p-4 border border-gray-200">
+                                                <img src={monthlyPreview} alt="Monthly Preview" className="max-h-48 max-w-full object-contain mx-auto rounded-lg" />
                                             </div>
                                         )}
                                         <button
                                             type="submit"
-                                            className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
+                                            className="w-full bg-gradient-to-r from-green-500 to-emerald-500 text-white py-3 rounded-lg hover:from-green-600 hover:to-emerald-600 transition-all transform hover:scale-105 disabled:opacity-50"
                                             disabled={!monthlyPlanForm.image}
                                         >
                                             Upload Monthly Plan
                                         </button>
                                     </form>
                                     {currentMonthlyImage && (
-                                        <div className="mt-4 p-4 bg-blue-100 rounded-lg">
-                                            <p className="text-sm font-medium mb-2">Current Monthly Plan:</p>
-                                            <img src={`http://localhost:3001${currentMonthlyImage}`} alt="Current Monthly" className="max-h-48 max-w-full object-contain mx-auto" />
+                                        <div className="mt-4 p-4 bg-green-50 rounded-lg border border-green-200">
+                                            <p className="text-sm font-medium mb-2 text-gray-700">Current Monthly Plan:</p>
+                                            <img src={`http://localhost:3001${currentMonthlyImage}`} alt="Current Monthly" className="max-h-48 max-w-full object-contain mx-auto rounded-lg" />
                                         </div>
                                     )}
                                 </div>
 
                                 {/* Calendar Image Upload */}
-                                <div className="bg-purple-50 rounded-lg shadow p-6 border border-gray-200">
-                                    <h3 className="text-lg font-bold mb-4">Calendar Image</h3>
+                                <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+                                    <h3 className="text-lg font-bold mb-4 text-gray-800">Calendar Image</h3>
                                     <form onSubmit={handleUploadCalendar} className="space-y-4">
                                         <div className="space-y-2">
                                             <label className="block text-sm font-medium text-gray-700">Upload Calendar Image</label>
@@ -1836,84 +1744,87 @@ const Admin = () => {
                                                 type="file"
                                                 accept="image/*"
                                                 onChange={handleCalendarChange}
-                                                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100"
+                                                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-purple-500 file:text-white hover:file:bg-purple-600"
                                             />
                                         </div>
                                         {calendarPreview && (
-                                            <div className="mt-4 bg-gray-50 rounded-lg p-4">
-                                                <img src={calendarPreview} alt="Calendar Preview" className="max-h-48 max-w-full object-contain mx-auto" />
+                                            <div className="mt-4 bg-gray-50 rounded-lg p-4 border border-gray-200">
+                                                <img src={calendarPreview} alt="Calendar Preview" className="max-h-48 max-w-full object-contain mx-auto rounded-lg" />
                                             </div>
                                         )}
                                         <button
                                             type="submit"
-                                            className="px-4 py-2 bg-purple-500 text-white rounded-md hover:bg-purple-600"
+                                            className="w-full bg-gradient-to-r from-purple-500 to-indigo-500 text-white py-3 rounded-lg hover:from-purple-600 hover:to-indigo-600 transition-all transform hover:scale-105 disabled:opacity-50"
                                             disabled={!calendarForm.image}
                                         >
                                             Upload Calendar Image
                                         </button>
                                     </form>
                                     {currentCalendarImage && (
-                                        <div className="mt-4 p-4 bg-blue-100 rounded-lg">
-                                            <p className="text-sm font-medium mb-2">Current Calendar Image:</p>
-                                            <img src={`http://localhost:3001${currentCalendarImage}`} alt="Current Calendar" className="max-h-48 max-w-full object-contain mx-auto" />
+                                        <div className="mt-4 p-4 bg-purple-50 rounded-lg border border-purple-200">
+                                            <p className="text-sm font-medium mb-2 text-gray-700">Current Calendar Image:</p>
+                                            <img src={`http://localhost:3001${currentCalendarImage}`} alt="Current Calendar" className="max-h-48 max-w-full object-contain mx-auto rounded-lg" />
                                         </div>
                                     )}
                                 </div>
                             </div>
                         </div>
 
-                        <div className="flex flex-col gap-4 p-4">
-                            <h1 className="text-xl font-bold text-gray-800">Manage Existing Events</h1>
-                            <div className="mb-4">
+                        <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+                            <div className="flex justify-between items-center mb-6">
+                                <h3 className="text-xl font-bold text-gray-800">Manage Existing Events</h3>
                                 <div className="relative">
                                     <input
                                         type="text"
                                         placeholder="Search events..."
                                         value={searchQuery}
                                         onChange={handleSearchChange}
-                                        className="w-full border border-gray-300 rounded-md py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 pl-10"
+                                        className="border border-gray-300 rounded-lg py-2 px-4 pl-10 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                                     />
                                     <IoSearchOutline className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
                                 </div>
                             </div>
-                            <div className="overflow-x-auto">
-                                <table className="min-w-full bg-white border border-gray-200 rounded-lg overflow-hidden">
-                                    <thead className="bg-gray-200">
+                            <div className="overflow-x-auto rounded-xl">
+                                <table className="min-w-full bg-white rounded-lg overflow-hidden shadow-sm">
+                                    <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
                                         <tr>
-                                            <th className="px-6 py-3 text-xs font-medium text-gray-600 uppercase tracking-wider">Title</th>
-                                            <th className="px-6 py-3 text-xs font-medium text-gray-600 uppercase tracking-wider">Description</th>
-                                            <th className="px-6 py-3 text-xs font-medium text-gray-600 uppercase tracking-wider">Date</th>
-                                            <th className="px-6 py-3 text-xs font-medium text-gray-600 uppercase tracking-wider">Actions</th>
+                                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">Title</th>
+                                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">Description</th>
+                                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">Date</th>
+                                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">Actions</th>
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-gray-200">
+                                    <tbody className="bg-white divide-y divide-gray-200">
                                         {filteredEvents.length > 0 ? (
                                             filteredEvents.map((event) => (
-                                                <tr key={event.Id}>
+                                                <tr key={event.Id} className="hover:bg-gray-50 transition-colors">
                                                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{event.Title}</td>
-                                                    <td className="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">{event.Description}</td>
+                                                    <td className="px-6 py-4 text-sm text-gray-600 max-w-xs truncate">{event.Description}</td>
                                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                                         {new Date(event.EventDate).toLocaleDateString()}
                                                     </td>
                                                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                                        <button
-                                                            onClick={() => handleEditEvent(event)}
-                                                            className="text-blue-600 hover:text-blue-900 mr-3"
-                                                        >
-                                                            Edit
-                                                        </button>
-                                                        <button
-                                                            onClick={() => handleDeleteEvent(event.Id)}
-                                                            className="text-red-600 hover:text-red-900"
-                                                        >
-                                                            Delete
-                                                        </button>
+                                                        <div className="flex space-x-3">
+                                                            <button
+                                                                onClick={() => handleEditEvent(event)}
+                                                                className="bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-4 py-2 rounded-lg hover:from-blue-600 hover:to-indigo-600 transition-all"
+                                                            >
+                                                                Edit
+                                                            </button>
+                                                            <button
+                                                                onClick={() => handleDeleteEvent(event.Id)}
+                                                                className="bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2 rounded-lg hover:from-red-600 hover:to-red-700 transition-all"
+                                                            >
+                                                                Delete
+                                                            </button>
+                                                        </div>
                                                     </td>
                                                 </tr>
                                             ))
                                         ) : (
                                             <tr>
-                                                <td colSpan="4" className="text-center py-4 text-gray-500">
+                                                <td colSpan="4" className="text-center py-8 text-gray-500">
+                                                    <FiCalendar className="w-12 h-12 mx-auto mb-2 text-gray-300" />
                                                     No events found.
                                                 </td>
                                             </tr>
@@ -1925,57 +1836,73 @@ const Admin = () => {
                     </div>
                 );
 
-            ///------------------------- applications section -----------------------------------///
-            case 'applications':
-                return (
-                    <div className="space-y-6">
-                        <h2 className="text-2xl font-bold mb-4">Applications</h2>
-                        <div className="grid grid-cols-2 gap-4">
-                            {applications.map(app => (
-                                <div
-                                    key={app.id}
-                                    className={`border rounded-lg p-4 flex items-center space-x-3 cursor-pointer ${activeApplication === app.id ? 'border-blue-500 bg-blue-50' : 'border-gray-400 hover:bg-gray-50'}`}
-                                    onClick={() => setActiveApplication(app.id)}
-                                >
-                                    <div className="text-blue-600">{app.icon}</div>
-                                    <div>
-                                        <h3 className="font-medium">{app.name}</h3>
-                                        <p className="text-sm text-gray-500">Manage {app.name.toLowerCase()}</p>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                );
+            // case 'applications':
+            //     return (
+            //         <div className="space-y-6">
+            //             <div className="flex items-center justify-between mb-6">
+            //                 <h2 className="text-2xl font-bold text-gray-800">Applications</h2>
+            //                 <div className="w-16 h-1 bg-gradient-to-r from-teal-500 to-cyan-500 rounded-full"></div>
+            //             </div>
+            //             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            //                 {applications.map(app => (
+            //                     <div
+            //                         key={app.id}
+            //                         className={`bg-white rounded-2xl shadow-lg p-6 border-2 cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-xl ${
+            //                             activeApplication === app.id 
+            //                             ? `border-gradient ${app.color} border-transparent bg-gradient-to-br ${app.color} text-white` 
+            //                             : 'border-gray-200 hover:border-gray-300'
+            //                         }`}
+            //                         onClick={() => setActiveApplication(app.id)}
+            //                     >
+            //                         <div className="flex items-center space-x-4">
+            //                             <div className={`p-3 rounded-xl ${
+            //                                 activeApplication === app.id 
+            //                                 ? 'bg-white bg-opacity-20' 
+            //                                 : `bg-gradient-to-br ${app.color} text-white`
+            //                             }`}>
+            //                                 {app.icon}
+            //                             </div>
+            //                             <div>
+            //                                 <h3 className="font-bold text-lg">{app.name}</h3>
+            //                                 <p className={`text-sm ${
+            //                                     activeApplication === app.id 
+            //                                     ? 'text-white text-opacity-90' 
+            //                                     : 'text-gray-500'
+            //                                 }`}>
+            //                                     Manage {app.name.toLowerCase()}
+            //                                 </p>
+            //                             </div>
+            //                         </div>
+            //                     </div>
+            //                 ))}
+            //             </div>
+            //         </div>
+            //     );
 
-            ///----------------------- policies and procedures section ---------------------------///
             case 'policies':
                 return (
-                    <div className="space-y-6 w-full">
-                        <h2 className="text-2xl font-bold text-blue-900 mb-4">Policies & Procedures</h2>
+                    <div className="space-y-6">
+                        <div className="flex items-center justify-between mb-6">
+                            <h2 className="text-2xl font-bold text-gray-800">Policies & Procedures</h2>
+                            <div className="w-16 h-1 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full"></div>
+                        </div>
                         
-                        {/* QMS Quick Access */}
-                        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-                            <h3 className="text-xl font-semibold mb-4">Quality Management System (QMS)</h3>
-                            <p className="text-gray-600 mb-4">
+                        {/* QMS Section */}
+                        <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+                            <h3 className="text-xl font-semibold mb-4 text-gray-800">Quality Management System (QMS)</h3>
+                            <p className="text-gray-600 mb-6">
                                 Manage all your QMS documents including SOPs, ISO documentation, policies, and procedures.
                                 You can upload multiple files at once.
                             </p>
-                            <button
-                                onClick={() => window.location.href = '/qms'}
-                                className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-                            >
-                                Go to QMS Documents
-                            </button>
-                            {/* upload QMS files */}
-                            <div className="mb-6 mt-4 p-4 bg-indigo-100 rounded-lg shadow">
-                            <h2 className="text-xl font-semibold mb-2">Upload QMS Documents</h2>
+                            
+                            <div className="mb-6 p-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-200">
+                                <h4 className="text-lg font-semibold mb-4 text-gray-800">Upload QMS Documents</h4>
                                 <p className="text-sm text-gray-600 mb-4">
                                     Select multiple files (PDF, DOC, DOCX, TXT, images) to upload
                                 </p>
                                 <form onSubmit={handleUploadQms}>
                                     <div className="mb-4">
-                                        <label className="block text-sm font-medium text-gray-700">
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
                                             Select Files (Multiple files allowed)
                                         </label>
                                         <input
@@ -1984,36 +1911,37 @@ const Admin = () => {
                                             onChange={handleQmsFilesChange}
                                             accept=".pdf,.doc,.docx,.txt,image/*"
                                             multiple
-                                            className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                                            className="block w-full text-sm text-gray-500 file:mr-4 file:py-3 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-500 file:text-white hover:file:bg-blue-600 transition-colors"
                                         />
                                     </div>
-                                                
-                                {/* Selected Files List */}
-                                {qmsFiles.length > 0 && (
-                                    <div className="mb-4 p-3 bg-white rounded border">
-                                        <h4 className="font-medium mb-2">Selected Files ({qmsFiles.length}):</h4>
-                                        <ul className="space-y-1 max-h-32 overflow-y-auto">
-                                            {qmsFiles.map((file, index) => (
-                                                <li key={index} className="flex justify-between items-center text-sm">
-                                                <span className="truncate flex-1">{file.name}</span>
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => handleRemoveQmsFile(index)}
-                                                        className="ml-2 text-red-500 hover:text-red-700"
-                                                    >
-                                                    Remove
-                                                    </button>
-                                                </li>
-                                            ))}
-                                        </ul>
+                                    
+                                    {qmsFiles.length > 0 && (
+                                        <div className="mb-4 p-4 bg-white rounded-lg border border-gray-200">
+                                            <h5 className="font-medium mb-2 text-gray-700">Selected Files ({qmsFiles.length}):</h5>
+                                            <ul className="space-y-2 max-h-32 overflow-y-auto">
+                                                {qmsFiles.map((file, index) => (
+                                                    <li key={index} className="flex justify-between items-center text-sm bg-gray-50 p-2 rounded">
+                                                        <span className="truncate flex-1 text-gray-600">{file.name}</span>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleRemoveQmsFile(index)}
+                                                            className="ml-2 text-red-500 hover:text-red-700 p-1"
+                                                        >
+                                                            <FiX className="w-4 h-4" />
+                                                        </button>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    )}
+                                    
+                                    <div className={`text-sm mb-4 ${uploadQmsStatus.includes('Success') ? 'text-green-600' : 'text-red-600'}`}>
+                                        {uploadQmsStatus}
                                     </div>
-                                )}
-                                                
-                                <div className={uploadQmsStatus.includes('Success') ? 'text-green-500' : 'text-red-500'}>{uploadQmsStatus}</div>
-                                    <div className="flex space-x-2">
+                                    <div className="flex space-x-3">
                                         <button
                                             type="submit"
-                                            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400"
+                                            className="bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-6 py-3 rounded-lg hover:from-cyan-600 hover:to-blue-600 transition-all transform hover:scale-105 disabled:opacity-50"
                                             disabled={qmsFiles.length === 0}
                                         >
                                             Upload {qmsFiles.length > 0 ? `(${qmsFiles.length})` : ''} Files
@@ -2021,7 +1949,7 @@ const Admin = () => {
                                         <button
                                             type="button"
                                             onClick={handleClearQmsFiles}
-                                            className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
+                                            className="bg-gray-300 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-400 transition-all"
                                         >
                                             Clear All
                                         </button>
@@ -2030,245 +1958,13 @@ const Admin = () => {
 
                                 {/* Uploaded Files List */}
                                 <div className="mt-8">
-                                    <h3 className="text-lg font-semibold mb-4">Uploaded QMS Documents ({qmsUploadedFiles.length})</h3>
+                                    <h5 className="text-lg font-semibold mb-4 text-gray-800">Uploaded QMS Documents ({qmsUploadedFiles.length})</h5>
                                     {qmsUploadedFiles.length > 0 ? (
                                         <div className="space-y-3">
                                             {qmsUploadedFiles.map((file) => (
-                                                <div key={file.filename} className="flex justify-between items-center p-3 bg-white rounded border">
+                                                <div key={file.filename} className="flex justify-between items-center p-4 bg-white rounded-lg border border-gray-200 hover:border-blue-300 transition-colors">
                                                     <div className="flex-1">
-                                                        <p className="font-medium truncate">{file.filename}</p>
-                                                        <p className="text-sm text-gray-500">
-                                                            Uploaded: {new Date(file.uploadDate).toLocaleDateString()}
-                                                        </p>
-                                                    </div>
-                                                <div className="flex space-x-2">
-                                                    <a
-                                                         href={`http://localhost:3001${file.filePath}`}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="px-3 py-1 bg-green-500 text-white rounded text-sm hover:bg-green-600"
-                                                    >
-                                                        Download
-                                                    </a>
-                                                    <button
-                                                        onClick={() => handleDeleteQmsFile(file.filename)}
-                                                        className="px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600"
-                                                    >
-                                                        Delete
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                ) : (
-                                    <p className="text-gray-500 text-center py-4">No QMS documents uploaded yet.</p>
-                                    )}
-                            </div>
-                        </div>
-                        </div>
-
-
-                        {/* EMS Quick Access */}
-                        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-                            <h3 className="text-xl font-semibold mb-4">Environmental Management System (QMS)</h3>
-                            <p className="text-gray-600 mb-4">
-                                Manage all your EMS documents including SOPs, ISO documentation, policies, and procedures.
-                                You can upload multiple files at once.
-                            </p>
-                            <button
-                                onClick={() => window.location.href = '/ems'}
-                                className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-                            >
-                                Go to EMS Documents
-                            </button>
-                            {/* file uload section - EMS */}
-                            <div className="mb-6 mt-4 p-4 bg-indigo-100 rounded-lg shadow">
-                                <h2 className="text-xl font-semibold mb-2">Upload EMS Documents</h2>
-                                <p className="text-sm text-gray-600 mb-4">
-                                    Select multiple files (PDF, DOC, DOCX, TXT, images) to upload
-                                </p>
-                                <form 
-                                    onSubmit={handleUploadEms}
-                                >
-                                <div className="mb-4">
-                                    <label className="block text-sm font-medium text-gray-700">
-                                        Select Files (Multiple files allowed)
-                                    </label>
-                                    <input
-                                        type="file"
-                                        ref={emsInputRef}
-                                        onChange={handleEmsFileChange}
-                                        accept=".pdf,.doc,.docx,.txt,image/*"
-                                        multiple
-                                        className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                                    />
-                                </div>
-                                                
-                                {/* Selected Files List */}
-                                {emsFiles.length > 0 && (
-                                    <div className="mb-4 p-3 bg-white rounded border">
-                                        <h4 className="font-medium mb-2">Selected Files ({emsFiles.length}):</h4>
-                                        <ul className="space-y-1 max-h-32 overflow-y-auto">
-                                            {emsFiles.map((file, index) => (
-                                                <li key={index} className="flex justify-between items-center text-sm">
-                                                    <span className="truncate flex-1">{file.name}</span>
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => handleRemoveEmsFile(index)}
-                                                        className="ml-2 text-red-500 hover:text-red-700"
-                                                    >
-                                                        Remove
-                                                    </button>
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </div>
-                                )}
-                                                
-                                <div className={uploadEmsStatus.includes('Success') ? 'text-green-500' : 'text-red-500'}>{uploadEmsStatus}</div>
-                                <div className="flex space-x-2">
-                                    <button
-                                        type="submit"
-                                        className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400"
-                                        disabled={emsFiles.length === 0}
-                                    >
-                                        Upload {emsFiles.length > 0 ? `(${emsFiles.length})` : ''} Files
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={handleClearEmsFiles}
-                                        className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
-                                    >
-                                        Clear All
-                                    </button>
-                                </div>
-                                </form>
-
-                                {/* Uploaded Files List */}
-                                <div className="mt-8">
-                                    <h3 className="text-lg font-semibold mb-4">Uploaded Ems Documents ({emsUploadedFiles.length})</h3>
-                                        {emsUploadedFiles.length > 0 ? (
-                                        <div className="space-y-3">
-                                            {emsUploadedFiles.map((file) => (
-                                            <div key={file.filename} className="flex justify-between items-center p-3 bg-white rounded border">
-                                                <div className="flex-1">
-                                                    <p className="font-medium truncate">{file.filename}</p>
-                                                    <p className="text-sm text-gray-500">
-                                                        Uploaded: {new Date(file.uploadDate).toLocaleDateString()}
-                                                    </p>
-                                                </div>
-                                                <div className="flex space-x-2">
-                                                    <a
-                                                        href={`http://localhost:3001${file.filePath}`}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="px-3 py-1 bg-green-500 text-white rounded text-sm hover:bg-green-600"
-                                                    >
-                                                        Download
-                                                    </a>
-                                                    <button
-                                                        onClick={() => handleDeleteEmsFiles(file.filename)}
-                                                        className="px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600"
-                                                    >
-                                                        Delete
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                ) : (
-                                <p className="text-gray-500 text-center py-4">No EMS documents uploaded yet.</p>
-                                )}
-                                </div>
-                            </div>
-                        </div>
-
-
-                        {/* SOP Quick Access */}
-                        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-                            <h3 className="text-xl font-semibold mb-4">Standard Operating Procedures (SOP)</h3>
-                            <p className="text-gray-600 mb-4">
-                                Manage all your SOP documents including SOPs, ISO documentation, policies, and procedures.
-                                You can upload multiple files at once.
-                            </p>
-                            <button
-                                onClick={() => window.location.href = '/sop'}
-                                className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-                            >
-                                Go to SOP Documents
-                            </button>
-                            {/* file uload section - SOP */}
-                             <div className="mb-6 mt-4 p-4 bg-indigo-100 rounded-lg shadow">
-                                <h2 className="text-xl font-semibold mb-2">Upload SOP Documents</h2>
-                                <p className="text-sm text-gray-600 mb-4">
-                                    Select multiple files (PDF, DOC, DOCX, TXT, images) to upload
-                                </p>
-                                <form 
-                                onSubmit={handleUploadSop}
-                                >
-                                <div className="mb-4">
-                                    <label className="block text-sm font-medium text-gray-700">
-                                        Select Files (Multiple files allowed)
-                                    </label>
-                                    <input
-                                        type="file"
-                                        ref={sopInputRef}
-                                        onChange={handleSopFileChange}
-                                        accept=".pdf,.doc,.docx,.txt,image/*"
-                                        multiple
-                                        className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                                    />
-                                </div>
-                                                
-                                {/* Selected Files List */}
-                                {sopFiles.length > 0 && (
-                                    <div className="mb-4 p-3 bg-white rounded border">
-                                        <h4 className="font-medium mb-2">Selected Files ({sopFiles.length}):</h4>
-                                        <ul className="space-y-1 max-h-32 overflow-y-auto">
-                                            {sopFiles.map((file, index) => (
-                                                <li key={index} className="flex justify-between items-center text-sm">
-                                                    <span className="truncate flex-1">{file.name}</span>
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => handleRemoveSopFile(index)}
-                                                        className="ml-2 text-red-500 hover:text-red-700"
-                                                    >
-                                                        Remove
-                                                    </button>
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </div>
-                                )}
-                                                
-                                <div className={uploadSopStatus.includes('Success') ? 'text-green-500' : 'text-red-500'}>{uploadSopStatus}</div>
-                                <div className="flex space-x-2">
-                                    <button
-                                        type="submit"
-                                        className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400"
-                                        disabled={sopFiles.length === 0}
-                                    >
-                                        Upload {sopFiles.length > 0 ? `(${sopFiles.length})` : ''} Files
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={handleClearSopFiles}
-                                        className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
-                                    >
-                                        Clear All
-                                    </button>
-                                </div>
-                                </form>
-
-                                {/* Uploaded Files List */}
-                                <div className="mt-8">
-                                    <h3 className="text-lg font-semibold mb-4">Uploaded QMS Documents ({sopUploadedFiles.length})</h3>
-                                        {qmsUploadedFiles.length > 0 ? (
-                                        <div className="space-y-3">
-                                            {sopUploadedFiles.map((file) => (
-                                                <div key={file.filename} className="flex justify-between items-center p-3 bg-white rounded border">
-                                                    <div className="flex-1">
-                                                        <p className="font-medium truncate">{file.filename}</p>
+                                                        <p className="font-medium text-gray-800 truncate">{file.filename}</p>
                                                         <p className="text-sm text-gray-500">
                                                             Uploaded: {new Date(file.uploadDate).toLocaleDateString()}
                                                         </p>
@@ -2278,13 +1974,13 @@ const Admin = () => {
                                                             href={`http://localhost:3001${file.filePath}`}
                                                             target="_blank"
                                                             rel="noopener noreferrer"
-                                                            className="px-3 py-1 bg-green-500 text-white rounded text-sm hover:bg-green-600"
+                                                            className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-4 py-2 rounded-lg hover:from-green-600 hover:to-emerald-600 transition-all text-sm"
                                                         >
                                                             Download
                                                         </a>
                                                         <button
-                                                            onClick={() => handleDeleteSopFile(file.filename)}
-                                                            className="px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600"
+                                                            onClick={() => handleDeleteQmsFile(file.filename)}
+                                                            className="bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2 rounded-lg hover:from-red-600 hover:to-red-700 transition-all text-sm"
                                                         >
                                                             Delete
                                                         </button>
@@ -2292,200 +1988,76 @@ const Admin = () => {
                                                 </div>
                                             ))}
                                         </div>
-                                        ) : (
-                                            <p className="text-gray-500 text-center py-4">No SOP documents uploaded yet.</p>
-                                        )}
-                                    </div>
+                                    ) : (
+                                        <p className="text-gray-500 text-center py-4">No QMS documents uploaded yet.</p>
+                                    )}
                                 </div>
+                            </div>
                         </div>
 
-
-                        {/* ISO Quick Access */}
-                         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-                            <h3 className="text-xl font-semibold mb-4">International Organization for Standardization (ISO)</h3>
-                            <p className="text-gray-600 mb-4">
-                                Manage all your ISO documents including SOPs, ISO documentation, policies, and procedures.
+                        {/* EMS Section */}
+                        <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+                            <h3 className="text-xl font-semibold mb-4 text-gray-800">Environmental management Systems (EMS)</h3>
+                            <p className="text-gray-600 mb-6">
+                                Manage all your EMS documents including SOPs, ISO documentation, policies, and procedures.
                                 You can upload multiple files at once.
                             </p>
-                            <button
-                                onClick={() => window.location.href = '#'}
-                                className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-                            >
-                                Go to ISO Documents
-                            </button>
-                            {/* file uload section - ISO */}
-                            <div className="mb-6 mt-4 p-4 bg-indigo-100 rounded-lg shadow">
-                                <h2 className="text-xl font-semibold mb-2">Upload ISO Documents</h2>
+                            
+                            <div className="mb-6 p-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-200">
+                                <h4 className="text-lg font-semibold mb-4 text-gray-800">Upload EMS Documents</h4>
                                 <p className="text-sm text-gray-600 mb-4">
                                     Select multiple files (PDF, DOC, DOCX, TXT, images) to upload
                                 </p>
-                                <form 
-                                    onSubmit={handleUploadIso}
-                                >
+                                <form onSubmit={handleUploadEms}>
                                     <div className="mb-4">
-                                        <label className="block text-sm font-medium text-gray-700">
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
                                             Select Files (Multiple files allowed)
                                         </label>
                                         <input
                                             type="file"
-                                            ref={isoInputRef}
-                                            onChange={handleIsoFileChange}
+                                            ref={emsInputRef}
+                                            onChange={handleEmsFileChange}
                                             accept=".pdf,.doc,.docx,.txt,image/*"
                                             multiple
-                                            className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                                            className="block w-full text-sm text-gray-500 file:mr-4 file:py-3 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-500 file:text-white hover:file:bg-blue-600 transition-colors"
                                         />
                                     </div>
-                                                
-                            {/* Selected Files List */}
-                            {isoFiles.length > 0 && (
-                                <div className="mb-4 p-3 bg-white rounded border">
-                                    <h4 className="font-medium mb-2">Selected Files ({isoFiles.length}):</h4>
-                                    <ul className="space-y-1 max-h-32 overflow-y-auto">
-                                        {isoFiles.map((file, index) => (
-                                            <li key={index} className="flex justify-between items-center text-sm">
-                                                <span className="truncate flex-1">{file.name}</span>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => handleRemoveIsoFile(index)}
-                                                    className="ml-2 text-red-500 hover:text-red-700"
-                                                >
-                                                    Remove
-                                                </button>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            )}
-                                                
-                            <div className={uploadIsoStatus.includes('Success') ? 'text-green-500' : 'text-red-500'}>{uploadIsoStatus}</div>
-                            <div className="flex space-x-2">
-                                <button
-                                    type="submit"
-                                    className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400"
-                                    disabled={isoFiles.length === 0}
-                                >
-                                    Upload {isoFiles.length > 0 ? `(${isoFiles.length})` : ''} Files
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={handleClearIsoFiles}
-                                    className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
-                                >
-                                    Clear All
-                                </button>
-                            </div>
-                                </form>
-
-                            {/* Uploaded Files List */}
-                            <div className="mt-8">
-                                <h3 className="text-lg font-semibold mb-4">Uploaded ISO Documents ({isoUploadedFiles.length})</h3>
-                                {isoUploadedFiles.length > 0 ? (
-                                    <div className="space-y-3">
-                                        {isoUploadedFiles.map((file) => (
-                                            <div key={file.filename} className="flex justify-between items-center p-3 bg-white rounded border">
-                                                <div className="flex-1">
-                                                    <p className="font-medium truncate">{file.filename}</p>
-                                                    <p className="text-sm text-gray-500">
-                                                        Uploaded: {new Date(file.uploadDate).toLocaleDateString()}
-                                                    </p>
-                                                </div>
-                                                <div className="flex space-x-2">
-                                                    <a
-                                                        href={`http://localhost:3001${file.filePath}`}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="px-3 py-1 bg-green-500 text-white rounded text-sm hover:bg-green-600"
-                                                    >
-                                                        Download
-                                                    </a>
-                                                    <button
-                                                        onClick={() => handleDeleteIsoFile(file.filename)}
-                                                        className="px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600"
-                                                    >
-                                                        Delete
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                    ) : (
-                                        <p className="text-gray-500 text-center py-4">No ISO documents uploaded yet.</p>
-                                    )}
-                            </div>
-                            </div>
-                        </div>
-
-
-                        {/* H&W Quick Access */}
-                         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-                            <h3 className="text-xl font-semibold mb-4">Health & Welfare</h3>
-                            <p className="text-gray-600 mb-4">
-                                Manage all your H&W documents including SOPs, ISO documentation, policies, and procedures.
-                                You can upload multiple files at once.
-                            </p>
-                            <button
-                                onClick={() => window.location.href = '/hw'}
-                                className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-                            >
-                                Go to H&W Documents
-                            </button>
-                            {/* file uload section - H&W */}
-                            <div className="mb-6 mt-4 p-4 bg-indigo-100 rounded-lg shadow">
-                                <h2 className="text-xl font-semibold mb-2">Upload Health & Welfare Documents</h2>
-                                <p className="text-sm text-gray-600 mb-4">
-                                    Select multiple files (PDF, DOC, DOCX, TXT, images) to upload
-                                </p>
-                                <form 
-                                    onSubmit={handleUploadHw}
-                                >
-                                    <div className="mb-4">
-                                        <label className="block text-sm font-medium text-gray-700">
-                                            Select Files (Multiple files allowed)
-                                        </label>
-                                    <input
-                                        type="file"
-                                        ref={hwInputRef}
-                                        onChange={handleHwFileChange}
-                                        accept=".pdf,.doc,.docx,.txt,image/*"
-                                        multiple
-                                        className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                                    />
-                                    </div>
-                                                
-                                    {/* Selected Files List */}
-                                    {hwFiles.length > 0 && (
-                                        <div className="mb-4 p-3 bg-white rounded border">
-                                            <h4 className="font-medium mb-2">Selected Files ({hwFiles.length}):</h4>
-                                            <ul className="space-y-1 max-h-32 overflow-y-auto">
-                                                {hwFiles.map((file, index) => (
-                                                    <li key={index} className="flex justify-between items-center text-sm">
-                                                        <span className="truncate flex-1">{file.name}</span>
+                                    
+                                    {emsFiles.length > 0 && (
+                                        <div className="mb-4 p-4 bg-white rounded-lg border border-gray-200">
+                                            <h5 className="font-medium mb-2 text-gray-700">Selected Files ({emsFiles.length}):</h5>
+                                            <ul className="space-y-2 max-h-32 overflow-y-auto">
+                                                {emsFiles.map((file, index) => (
+                                                    <li key={index} className="flex justify-between items-center text-sm bg-gray-50 p-2 rounded">
+                                                        <span className="truncate flex-1 text-gray-600">{file.name}</span>
                                                         <button
                                                             type="button"
-                                                            onClick={() => handleRemoveHwFile(index)}
-                                                            className="ml-2 text-red-500 hover:text-red-700"
+                                                            onClick={() => handleRemoveEmsFile(index)}
+                                                            className="ml-2 text-red-500 hover:text-red-700 p-1"
                                                         >
-                                                            Remove
+                                                            <FiX className="w-4 h-4" />
                                                         </button>
                                                     </li>
                                                 ))}
                                             </ul>
                                         </div>
                                     )}
-                                                
-                                    <div className={uploadHwStatus.includes('Success') ? 'text-green-500' : 'text-red-500'}>{uploadHwStatus}</div>
-                                    <div className="flex space-x-2">
+                                    
+                                    <div className={`text-sm mb-4 ${uploadEmsStatus.includes('Success') ? 'text-green-600' : 'text-red-600'}`}>
+                                        {uploadEmsStatus}
+                                    </div>
+                                    <div className="flex space-x-3">
                                         <button
                                             type="submit"
-                                            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400"
-                                            disabled={hwFiles.length === 0}
+                                            className="bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-6 py-3 rounded-lg hover:from-cyan-600 hover:to-blue-600 transition-all transform hover:scale-105 disabled:opacity-50"
+                                            disabled={emsFiles.length === 0}
                                         >
-                                            Upload {hwFiles.length > 0 ? `(${hwFiles.length})` : ''} Files
+                                            Upload {emsFiles.length > 0 ? `(${emsFiles.length})` : ''} Files
                                         </button>
                                         <button
                                             type="button"
-                                            onClick={handleClearHwFiles}
-                                            className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
+                                            onClick={handleClearEmsFiles}
+                                            className="bg-gray-300 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-400 transition-all"
                                         >
                                             Clear All
                                         </button>
@@ -2494,35 +2066,359 @@ const Admin = () => {
 
                                 {/* Uploaded Files List */}
                                 <div className="mt-8">
-                                    <h3 className="text-lg font-semibold mb-4">Uploaded H&W Documents ({hwUploadedFiles.length})</h3>
+                                    <h5 className="text-lg font-semibold mb-4 text-gray-800">Uploaded SOP Documents ({emsUploadedFiles.length})</h5>
+                                    {emsUploadedFiles.length > 0 ? (
+                                        <div className="space-y-3">
+                                            {emsUploadedFiles.map((file) => (
+                                                <div key={file.filename} className="flex justify-between items-center p-4 bg-white rounded-lg border border-gray-200 hover:border-blue-300 transition-colors">
+                                                    <div className="flex-1">
+                                                        <p className="font-medium text-gray-800 truncate">{file.filename}</p>
+                                                        <p className="text-sm text-gray-500">
+                                                            Uploaded: {new Date(file.uploadDate).toLocaleDateString()}
+                                                        </p>
+                                                    </div>
+                                                    <div className="flex space-x-2">
+                                                        <a
+                                                            href={`http://localhost:3001${file.filePath}`}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-4 py-2 rounded-lg hover:from-green-600 hover:to-emerald-600 transition-all text-sm"
+                                                        >
+                                                            Download
+                                                        </a>
+                                                        <button
+                                                            onClick={() => handleDeleteEmsFiles(file.filename)}
+                                                            className="bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2 rounded-lg hover:from-red-600 hover:to-red-700 transition-all text-sm"
+                                                        >
+                                                            Delete
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <p className="text-gray-500 text-center py-4">No EMS documents uploaded yet.</p>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* SOP Section */}
+                        <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+                            <h3 className="text-xl font-semibold mb-4 text-gray-800">Standard Operating Procedures (SOP)</h3>
+                            <p className="text-gray-600 mb-6">
+                                Manage all your SOP documents including SOPs, ISO documentation, policies, and procedures.
+                                You can upload multiple files at once.
+                            </p>
+                            
+                            <div className="mb-6 p-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-200">
+                                <h4 className="text-lg font-semibold mb-4 text-gray-800">Upload SOP Documents</h4>
+                                <p className="text-sm text-gray-600 mb-4">
+                                    Select multiple files (PDF, DOC, DOCX, TXT, images) to upload
+                                </p>
+                                <form onSubmit={handleUploadSop}>
+                                    <div className="mb-4">
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            Select Files (Multiple files allowed)
+                                        </label>
+                                        <input
+                                            type="file"
+                                            ref={sopInputRef}
+                                            onChange={handleSopFileChange}
+                                            accept=".pdf,.doc,.docx,.txt,image/*"
+                                            multiple
+                                            className="block w-full text-sm text-gray-500 file:mr-4 file:py-3 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-500 file:text-white hover:file:bg-blue-600 transition-colors"
+                                        />
+                                    </div>
+                                    
+                                    {sopFiles.length > 0 && (
+                                        <div className="mb-4 p-4 bg-white rounded-lg border border-gray-200">
+                                            <h5 className="font-medium mb-2 text-gray-700">Selected Files ({sopFiles.length}):</h5>
+                                            <ul className="space-y-2 max-h-32 overflow-y-auto">
+                                                {sopFiles.map((file, index) => (
+                                                    <li key={index} className="flex justify-between items-center text-sm bg-gray-50 p-2 rounded">
+                                                        <span className="truncate flex-1 text-gray-600">{file.name}</span>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleRemoveSopFile(index)}
+                                                            className="ml-2 text-red-500 hover:text-red-700 p-1"
+                                                        >
+                                                            <FiX className="w-4 h-4" />
+                                                        </button>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    )}
+                                    
+                                    <div className={`text-sm mb-4 ${uploadSopStatus.includes('Success') ? 'text-green-600' : 'text-red-600'}`}>
+                                        {uploadSopStatus}
+                                    </div>
+                                    <div className="flex space-x-3">
+                                        <button
+                                            type="submit"
+                                            className="bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-6 py-3 rounded-lg hover:from-cyan-600 hover:to-blue-600 transition-all transform hover:scale-105 disabled:opacity-50"
+                                            disabled={sopFiles.length === 0}
+                                        >
+                                            Upload {sopFiles.length > 0 ? `(${sopFiles.length})` : ''} Files
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={handleClearSopFiles}
+                                            className="bg-gray-300 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-400 transition-all"
+                                        >
+                                            Clear All
+                                        </button>
+                                    </div>
+                                </form>
+
+                                {/* Uploaded Files List */}
+                                <div className="mt-8">
+                                    <h5 className="text-lg font-semibold mb-4 text-gray-800">Uploaded SOP Documents ({sopUploadedFiles.length})</h5>
+                                    {sopUploadedFiles.length > 0 ? (
+                                        <div className="space-y-3">
+                                            {sopUploadedFiles.map((file) => (
+                                                <div key={file.filename} className="flex justify-between items-center p-4 bg-white rounded-lg border border-gray-200 hover:border-blue-300 transition-colors">
+                                                    <div className="flex-1">
+                                                        <p className="font-medium text-gray-800 truncate">{file.filename}</p>
+                                                        <p className="text-sm text-gray-500">
+                                                            Uploaded: {new Date(file.uploadDate).toLocaleDateString()}
+                                                        </p>
+                                                    </div>
+                                                    <div className="flex space-x-2">
+                                                        <a
+                                                            href={`http://localhost:3001${file.filePath}`}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-4 py-2 rounded-lg hover:from-green-600 hover:to-emerald-600 transition-all text-sm"
+                                                        >
+                                                            Download
+                                                        </a>
+                                                        <button
+                                                            onClick={() => handleDeleteSopFile(file.filename)}
+                                                            className="bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2 rounded-lg hover:from-red-600 hover:to-red-700 transition-all text-sm"
+                                                        >
+                                                            Delete
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <p className="text-gray-500 text-center py-4">No SOP documents uploaded yet.</p>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* ISO Section */}
+                        <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+                            <h3 className="text-xl font-semibold mb-4 text-gray-800">International Organization for Standardization (ISO) </h3>
+                            <p className="text-gray-600 mb-6">
+                                Manage all your ISO documents including SOPs, ISO documentation, policies, and procedures.
+                                You can upload multiple files at once.
+                            </p>
+                            
+                            <div className="mb-6 p-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-200">
+                                <h4 className="text-lg font-semibold mb-4 text-gray-800">Upload ISO Documents</h4>
+                                <p className="text-sm text-gray-600 mb-4">
+                                    Select multiple files (PDF, DOC, DOCX, TXT, images) to upload
+                                </p>
+                                <form onSubmit={handleUploadIso}>
+                                    <div className="mb-4">
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            Select Files (Multiple files allowed)
+                                        </label>
+                                        <input
+                                            type="file"
+                                            ref={isoInputRef}
+                                            onChange={handleIsoFileChange}
+                                            accept=".pdf,.doc,.docx,.txt,image/*"
+                                            multiple
+                                            className="block w-full text-sm text-gray-500 file:mr-4 file:py-3 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-500 file:text-white hover:file:bg-blue-600 transition-colors"
+                                        />
+                                    </div>
+                                    
+                                    {isoFiles.length > 0 && (
+                                        <div className="mb-4 p-4 bg-white rounded-lg border border-gray-200">
+                                            <h5 className="font-medium mb-2 text-gray-700">Selected Files ({isoFiles.length}):</h5>
+                                            <ul className="space-y-2 max-h-32 overflow-y-auto">
+                                                {isoFiles.map((file, index) => (
+                                                    <li key={index} className="flex justify-between items-center text-sm bg-gray-50 p-2 rounded">
+                                                        <span className="truncate flex-1 text-gray-600">{file.name}</span>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleRemoveIsoFile(index)}
+                                                            className="ml-2 text-red-500 hover:text-red-700 p-1"
+                                                        >
+                                                            <FiX className="w-4 h-4" />
+                                                        </button>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    )}
+                                    
+                                    <div className={`text-sm mb-4 ${uploadIsoStatus.includes('Success') ? 'text-green-600' : 'text-red-600'}`}>
+                                        {uploadIsoStatus}
+                                    </div>
+                                    <div className="flex space-x-3">
+                                        <button
+                                            type="submit"
+                                            className="bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-6 py-3 rounded-lg hover:from-cyan-600 hover:to-blue-600 transition-all transform hover:scale-105 disabled:opacity-50"
+                                            disabled={isoFiles.length === 0}
+                                        >
+                                            Upload {isoFiles.length > 0 ? `(${isoFiles.length})` : ''} Files
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={handleClearIsoFiles}
+                                            className="bg-gray-300 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-400 transition-all"
+                                        >
+                                            Clear All
+                                        </button>
+                                    </div>
+                                </form>
+
+                                {/* Uploaded Files List */}
+                                <div className="mt-8">
+                                    <h5 className="text-lg font-semibold mb-4 text-gray-800">Uploaded SOP Documents ({isoUploadedFiles.length})</h5>
+                                    {isoUploadedFiles.length > 0 ? (
+                                        <div className="space-y-3">
+                                            {isoUploadedFiles.map((file) => (
+                                                <div key={file.filename} className="flex justify-between items-center p-4 bg-white rounded-lg border border-gray-200 hover:border-blue-300 transition-colors">
+                                                    <div className="flex-1">
+                                                        <p className="font-medium text-gray-800 truncate">{file.filename}</p>
+                                                        <p className="text-sm text-gray-500">
+                                                            Uploaded: {new Date(file.uploadDate).toLocaleDateString()}
+                                                        </p>
+                                                    </div>
+                                                    <div className="flex space-x-2">
+                                                        <a
+                                                            href={`http://localhost:3001${file.filePath}`}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-4 py-2 rounded-lg hover:from-green-600 hover:to-emerald-600 transition-all text-sm"
+                                                        >
+                                                            Download
+                                                        </a>
+                                                        <button
+                                                            onClick={() => handleDeleteIsoFile(file.filename)}
+                                                            className="bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2 rounded-lg hover:from-red-600 hover:to-red-700 transition-all text-sm"
+                                                        >
+                                                            Delete
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <p className="text-gray-500 text-center py-4">No ISO documents uploaded yet.</p>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* H&W sections */}
+                        <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+                            <h3 className="text-xl font-semibold mb-4 text-gray-800">Health & Welfare </h3>
+                            <p className="text-gray-600 mb-6">
+                                Manage all your H&W documents including SOPs, ISO documentation, policies, and procedures.
+                                You can upload multiple files at once.
+                            </p>
+                            
+                            <div className="mb-6 p-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-200">
+                                <h4 className="text-lg font-semibold mb-4 text-gray-800">Upload H&W Documents</h4>
+                                <p className="text-sm text-gray-600 mb-4">
+                                    Select multiple files (PDF, DOC, DOCX, TXT, images) to upload
+                                </p>
+                                <form onSubmit={handleUploadHw}>
+                                    <div className="mb-4">
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            Select Files (Multiple files allowed)
+                                        </label>
+                                        <input
+                                            type="file"
+                                            ref={hwInputRef}
+                                            onChange={handleHwFileChange}
+                                            accept=".pdf,.doc,.docx,.txt,image/*"
+                                            multiple
+                                            className="block w-full text-sm text-gray-500 file:mr-4 file:py-3 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-500 file:text-white hover:file:bg-blue-600 transition-colors"
+                                        />
+                                    </div>
+                                    
+                                    {hwFiles.length > 0 && (
+                                        <div className="mb-4 p-4 bg-white rounded-lg border border-gray-200">
+                                            <h5 className="font-medium mb-2 text-gray-700">Selected Files ({hwFiles.length}):</h5>
+                                            <ul className="space-y-2 max-h-32 overflow-y-auto">
+                                                {isoFiles.map((file, index) => (
+                                                    <li key={index} className="flex justify-between items-center text-sm bg-gray-50 p-2 rounded">
+                                                        <span className="truncate flex-1 text-gray-600">{file.name}</span>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleRemoveHwFile(index)}
+                                                            className="ml-2 text-red-500 hover:text-red-700 p-1"
+                                                        >
+                                                            <FiX className="w-4 h-4" />
+                                                        </button>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    )}
+                                    
+                                    <div className={`text-sm mb-4 ${uploadHwStatus.includes('Success') ? 'text-green-600' : 'text-red-600'}`}>
+                                        {uploadHwStatus}
+                                    </div>
+                                    <div className="flex space-x-3">
+                                        <button
+                                            type="submit"
+                                            className="bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-6 py-3 rounded-lg hover:from-cyan-600 hover:to-blue-600 transition-all transform hover:scale-105 disabled:opacity-50"
+                                            disabled={hwFiles.length === 0}
+                                        >
+                                            Upload {hwFiles.length > 0 ? `(${hwFiles.length})` : ''} Files
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={handleClearHwFiles}
+                                            className="bg-gray-300 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-400 transition-all"
+                                        >
+                                            Clear All
+                                        </button>
+                                    </div>
+                                </form>
+
+                                {/* Uploaded Files List */}
+                                <div className="mt-8">
+                                    <h5 className="text-lg font-semibold mb-4 text-gray-800">Uploaded SOP Documents ({hwUploadedFiles.length})</h5>
                                     {hwUploadedFiles.length > 0 ? (
                                         <div className="space-y-3">
-                                        {hwUploadedFiles.map((file) => (
-                                            <div key={file.filename} className="flex justify-between items-center p-3 bg-white rounded border">
-                                                <div className="flex-1">
-                                                    <p className="font-medium truncate">{file.filename}</p>
-                                                    <p className="text-sm text-gray-500">
-                                                        Uploaded: {new Date(file.uploadDate).toLocaleDateString()}
-                                                    </p>
+                                            {hwUploadedFiles.map((file) => (
+                                                <div key={file.filename} className="flex justify-between items-center p-4 bg-white rounded-lg border border-gray-200 hover:border-blue-300 transition-colors">
+                                                    <div className="flex-1">
+                                                        <p className="font-medium text-gray-800 truncate">{file.filename}</p>
+                                                        <p className="text-sm text-gray-500">
+                                                            Uploaded: {new Date(file.uploadDate).toLocaleDateString()}
+                                                        </p>
+                                                    </div>
+                                                    <div className="flex space-x-2">
+                                                        <a
+                                                            href={`http://localhost:3001${file.filePath}`}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-4 py-2 rounded-lg hover:from-green-600 hover:to-emerald-600 transition-all text-sm"
+                                                        >
+                                                            Download
+                                                        </a>
+                                                        <button
+                                                            onClick={() => handleDeleteHwFiles(file.filename)}
+                                                            className="bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2 rounded-lg hover:from-red-600 hover:to-red-700 transition-all text-sm"
+                                                        >
+                                                            Delete
+                                                        </button>
+                                                    </div>
                                                 </div>
-                                                <div className="flex space-x-2">
-                                                    <a
-                                                        href={`http://localhost:3001${file.filePath}`}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="px-3 py-1 bg-green-500 text-white rounded text-sm hover:bg-green-600"
-                                                    >
-                                                        Download
-                                                    </a>
-                                                    <button
-                                                        onClick={() => handleDeleteHwFiles(file.filename)}
-                                                        className="px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600"
-                                                    >
-                                                        Delete
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        ))}
+                                            ))}
                                         </div>
                                     ) : (
                                         <p className="text-gray-500 text-center py-4">No H&W documents uploaded yet.</p>
@@ -2530,230 +2426,295 @@ const Admin = () => {
                                 </div>
                             </div>
                         </div>
+
+
                     </div>
                 );
 
-            ///----------------------- manage communication section -------------------------------///
             case 'communication':
                 return (
-                    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-gray-100 py-12 px-4 sm:px-6 lg:px-8">
-                        <div className="max-w-7xl mx-auto">
-                            <h2 className="text-3xl font-extrabold text-gray-900 bg-clip-text text-transparent bg-gradient-to-r from-blue-800 to-black mb-8 text-center">
-                                Communication
-                            </h2>
-                            <div className="flex flex-col gap-6">
-                                <div className="border rounded-lg p-6 bg-green-100 shadow-lg">
-                                    <h3 className="text-lg font-semibold mb-4 flex items-center text-gray-900">
-                                        <FiMail className="mr-2 h-5 w-5 text-blue-600" /> Email Management
-                                    </h3>
-                                    <div className="space-y-3">
-                                        <button
-                                            onClick={() => navigate('#')}
-                                            className="w-full text-left px-4 py-3 rounded-lg bg-white text-gray-900 hover:bg-gray-400 hover:text-white transition-colors duration-300 flex items-center space-x-3"
-                                        >
-                                            Send Bulk Email
-                                        </button>
-                                        <button
-                                            onClick={() => navigate('#')}
-                                            className="w-full text-left px-4 py-3 rounded-lg bg-white text-gray-900 hover:bg-gray-400 hover:text-white transition-colors duration-300 flex items-center space-x-3"
-                                        >
-                                            Email Templates
-                                        </button>
-                                        <button
-                                            onClick={() => navigate('#')}
-                                            className="w-full text-left px-4 py-3 rounded-lg bg-white text-gray-900 hover:bg-gray-400 hover:text-white transition-colors duration-300 flex items-center space-x-3"
-                                        >
-                                            Subscriber List
-                                        </button>
-                                    </div>
-                                </div>
-                               {/* Extension Upload Section */}
-                                <div className="mb-6 p-4 bg-indigo-100 rounded-lg shadow">
-                                    <h2 className="text-xl font-semibold mb-2">Upload Extension List</h2>
-                                    <form onSubmit={handleUploadExtension}>
-                                    <div className="mb-6">
-                                        <label className="block text-sm font-medium text-gray-700">
-                                        Select PDF File
-                                        </label>
-                                        <input
-                                        type="file"
-                                        ref={fileInputRef}
-                                        onChange={handleExtensionFileChange}
-                                        className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                                        />
-                                    </div>
-                                    <div className="text-red-500 text-sm mb-4">{uploadStatus}</div>
-                                    <button
-                                        type="submit"
-                                        className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-700"
-                                        disabled={!uploadedFile}
-                                    >
-                                        Upload PDF
+                    <div className="space-y-6">
+                        <div className="flex items-center justify-between mb-6">
+                            <h2 className="text-2xl font-bold text-gray-800">Communication</h2>
+                            <div className="w-16 h-1 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full"></div>
+                        </div>
+                        
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            {/* Email Management */}
+                            <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+                                <h3 className="text-lg font-semibold mb-4 text-gray-800 flex items-center">
+                                    <FiMail className="mr-3 h-6 w-6 text-blue-500" /> Email Management
+                                </h3>
+                                <div className="space-y-4">
+                                    <button className="w-full text-left px-4 py-4 rounded-xl bg-gradient-to-r from-blue-50 to-cyan-50 text-gray-800 hover:from-blue-100 hover:to-cyan-100 transition-all transform hover:scale-105 border border-blue-200">
+                                        Send Bulk Email
                                     </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => {
-                                        setUploadedFile(null);
-                                        setUploadStatus('');
-                                        fileInputRef.current.value = '';
-                                        }}
-                                        className="ml-2 px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
-                                    >
-                                        Cancel
+                                    <button className="w-full text-left px-4 py-4 rounded-xl bg-gradient-to-r from-blue-50 to-cyan-50 text-gray-800 hover:from-blue-100 hover:to-cyan-100 transition-all transform hover:scale-105 border border-blue-200">
+                                        Email Templates
                                     </button>
-                                    </form>
-                                </div>
-
-                                {/* Email List Upload Section */}
-                                <div className="mb-6 p-4 bg-fuchsia-100 rounded-lg shadow">
-                                    <h2 className="text-xl font-semibold mb-2">Upload Email List</h2>
-                                    <form onSubmit={handleUploadEmail}>
-                                    <div className="mb-4">
-                                        <label className="block text-sm font-medium text-gray-700">
-                                        Select PDF File
-                                        </label>
-                                        <input
-                                        type="file"
-                                        ref={emailInputRef}
-                                        onChange={handleEmailFileChange}
-                                        className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                                        />
-                                    </div>
-                                    <div className="text-red-500 text-sm mb-4">{uploadEmailStatus}</div>
-                                    <button
-                                        type="submit"
-                                        className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-700"
-                                        disabled={!uploadedEmailFile}
-                                    >
-                                        Upload PDF
+                                    <button className="w-full text-left px-4 py-4 rounded-xl bg-gradient-to-r from-blue-50 to-cyan-50 text-gray-800 hover:from-blue-100 hover:to-cyan-100 transition-all transform hover:scale-105 border border-blue-200">
+                                        Subscriber List
                                     </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => {
-                                        setUploadedEmailFile(null);
-                                        setUploadEmailStatus('');
-                                        emailInputRef.current.value = '';
-                                        }}
-                                        className="ml-2 px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
-                                    >
-                                        Cancel
-                                    </button>
-                                    </form>
-                                </div>
-                                
-                                {/* Current Email List Display */}
-                                {currentEmailFile && (
-                                    <div className="mt-6 p-4 bg-white rounded-lg shadow border">
-                                    <h3 className="text-lg font-semibold mb-2">Current Email List</h3>
-                                    <div className="flex justify-between items-center">
-                                        <a
-                                        href={`http://localhost:3001${currentEmailFile}`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-blue-500 hover:underline flex-1 truncate"
-                                        title={currentEmailFile.split('/').pop()}
-                                        >
-                                        📄 {currentEmailFile.split('/').pop()}
-                                        </a>
-                                        {/* <button
-                                        onClick={handleDeleteEmail}
-                                        className="ml-4 px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 text-sm"
-                                        >
-                                        Delete
-                                        </button> */}
-                                    </div>
-                                    </div>
-                                )}
-                                </div>
-
                                 </div>
                             </div>
-                );
 
-
-            ///----------------------- manage achievements page -----------------------------------///
-            case 'achievements':
-                return (
-                    <div className="space-y-6">
-                        <h2 className="text-2xl font-bold mb-4">Achievements</h2>
-                        <div className="grid grid-cols-1 gap-4">
-                            <div className="bg-blue-50 rounded-lg shadow p-6 border border-gray-200">
-                                <h1 className="text-xl font-bold text-gray-800 mb-6">{editingAchievementId ? 'Edit Achievement' : 'Add new achievements to showcase company\'s outcomes'}</h1>
-                                <div className="bg-white rounded-lg shadow p-6">
-                                    <form onSubmit={handleAchievementSubmit}>
-                                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                                            <div className="space-y-4">
-                                                <div className="space-y-2">
-                                                    <label className="block text-sm font-medium text-gray-700">Title</label>
-                                                    <input type="text" name="title" value={achievementForm.title} onChange={handleAchievementInputChange} placeholder="Enter achievement title" className="w-full border border-gray-300 rounded-md py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                                                </div>
-                                                <div className="space-y-2">
-                                                    <label className="block text-sm font-medium text-gray-700">Description</label>
-                                                    <textarea name="description" value={achievementForm.description} onChange={handleAchievementInputChange} placeholder="Enter description of achievement" className="w-full border border-gray-300 rounded-md py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 h-24" />
-                                                </div>
-                                                <div className="space-y-2">
-                                                    <label className="block text-sm font-medium text-gray-700">Date</label>
-                                                    <input type="date" name="achievementDate" value={achievementForm.achievementDate} onChange={handleAchievementInputChange} className="w-full border border-gray-300 rounded-md py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                                                </div>
-                                                <div className="space-y-2">
-                                                    <label className="block text-sm font-medium text-gray-700">Image (Optional)</label>
-                                                    <input type="file" name="image" accept="image/*" onChange={handleAchievementInputChange} className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
-                                                </div>
-                                            </div>
-                                            <div className="flex flex-col">
-                                                <label className="block text-sm font-medium text-gray-700 mb-2">Preview</label>
-                                                <div className="bg-gray-50 rounded-lg border-2 border-dashed border-gray-300 p-4 flex flex-col items-center justify-center h-full min-h-[200px]">
-                                                    {previewImage ? (
-                                                        <img src={previewImage} alt="Preview" className="max-h-full max-w-full object-contain rounded-md" />
-                                                    ) : (
-                                                        <span className="text-gray-400 mb-2">Image preview will appear here</span>
-                                                    )}
-                                                </div>
-                                            </div>
+                            {/* File Upload Sections */}
+                            <div className="space-y-6">
+                                {/* Extension Upload */}
+                                <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+                                    <h4 className="text-lg font-semibold mb-4 text-gray-800">Upload Extension List</h4>
+                                    <form onSubmit={handleUploadExtension}>
+                                        <div className="mb-4">
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                Select PDF File
+                                            </label>
+                                            <input
+                                                type="file"
+                                                ref={fileInputRef}
+                                                onChange={handleExtensionFileChange}
+                                                className="block w-full text-sm text-gray-500 file:mr-4 file:py-3 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-400 file:text-white hover:file:bg-blue-500"
+                                            />
                                         </div>
-                                        <div className="flex justify-end space-x-4 mt-6">
-                                            <button type="submit" className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-700 transition-colors" disabled={!achievementForm.title || !achievementForm.description || !achievementForm.achievementDate}>{editingAchievementId ? 'Update Achievement' : 'Save Achievement'}</button>
-                                            <button type="button" onClick={() => { setAchievementForm({ title: '', description: '', achievementDate: '', image: null }); setPreviewImage(null); setEditingAchievementId(null); }} className="px-6 py-2 bg-gray-300 text-gray-700 hover:text-white rounded-md hover:bg-gray-700 transition-colors">Cancel</button>
+                                        <div className={`text-sm mb-4 ${uploadStatus.includes('Success') ? 'text-green-600' : 'text-red-600'}`}>
+                                            {uploadStatus}
+                                        </div>
+                                        <div className="flex space-x-3">
+                                            <button
+                                                type="submit"
+                                                className="bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-6 py-3 rounded-lg hover:from-cyan-600 hover:to-blue-600 transition-all disabled:opacity-50"
+                                                disabled={!uploadedFile}
+                                            >
+                                                Upload PDF
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setUploadedFile(null);
+                                                    setUploadStatus('');
+                                                    fileInputRef.current.value = '';
+                                                }}
+                                                className="bg-gray-300 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-400 transition-all"
+                                            >
+                                                Cancel
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+
+                                {/* Email List Upload */}
+                                <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+                                    <h4 className="text-lg font-semibold mb-4 text-gray-800">Upload Email List</h4>
+                                    <form onSubmit={handleUploadEmail}>
+                                        <div className="mb-4">
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                Select PDF File
+                                            </label>
+                                            <input
+                                                type="file"
+                                                ref={emailInputRef}
+                                                onChange={handleEmailFileChange}
+                                                className="block w-full text-sm text-gray-500 file:mr-4 file:py-3 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-400 file:text-white hover:file:bg-blue-600"
+                                            />
+                                        </div>
+                                        <div className={`text-sm mb-4 ${uploadEmailStatus.includes('Success') ? 'text-green-600' : 'text-red-600'}`}>
+                                            {uploadEmailStatus}
+                                        </div>
+                                        <div className="flex space-x-3">
+                                            <button
+                                                type="submit"
+                                                className="bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-6 py-3 rounded-lg hover:from-cyan-600 hover:to-blue-600 transition-all disabled:opacity-50"
+                                                disabled={!uploadedEmailFile}
+                                            >
+                                                Upload PDF
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setUploadedEmailFile(null);
+                                                    setUploadEmailStatus('');
+                                                    emailInputRef.current.value = '';
+                                                }}
+                                                className="bg-gray-300 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-400 transition-all"
+                                            >
+                                                Cancel
+                                            </button>
                                         </div>
                                     </form>
                                 </div>
                             </div>
                         </div>
-                        <div className="flex flex-col gap-4 p-4">
-                            <h1 className="text-xl font-bold text-gray-800">Manage existing achievements</h1>
-                            <div className="overflow-x-auto">
-                                <table className="min-w-full bg-black border-1 border-black rounded-lg overflow-hidden">
-                                    <thead className="bg-gray-200">
-                                        <tr className="text-center">
-                                            <th className="px-6 py-3 text-xs font-medium text-gray-600 uppercase tracking-wider">Title</th>
-                                            <th className="px-6 py-3 text-xs font-medium text-gray-600 uppercase tracking-wider">Description</th>
-                                            <th className="px-6 py-3 text-xs font-medium text-gray-600 uppercase tracking-wider">Date</th>
-                                            <th className="px-6 py-3 text-xs font-medium text-gray-600 uppercase tracking-wider">Image</th>
-                                            <th className="px-6 py-3 text-xs font-medium text-gray-600 uppercase tracking-wider">Actions</th>
+
+                        {/* Current Email List Display */}
+                        {currentEmailFile && (
+                            <div className="bg-white rounded-2xl shadow-lg p-6 border border-green-200">
+                                <h4 className="text-lg font-semibold mb-4 text-gray-800">Current Email List</h4>
+                                <div className="flex justify-between items-center p-4 bg-green-50 rounded-lg border border-green-200">
+                                    <a
+                                        href={`http://localhost:3001${currentEmailFile}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-green-700 hover:text-green-800 flex-1 truncate flex items-center"
+                                        title={currentEmailFile.split('/').pop()}
+                                    >
+                                        <FiFileText className="w-5 h-5 mr-2" />
+                                        {currentEmailFile.split('/').pop()}
+                                    </a>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                );
+
+            case 'achievements':
+                return (
+                    <div className="space-y-6">
+                        <div className="flex items-center justify-between mb-6">
+                            <h2 className="text-2xl font-bold text-gray-800">Achievements</h2>
+                            <div className="w-16 h-1 bg-gradient-to-r from-amber-500 to-orange-500 rounded-full"></div>
+                        </div>
+                        
+                        <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+                            <h3 className="text-xl font-bold text-gray-800 mb-6">
+                                {editingAchievementId ? 'Edit Achievement' : 'Add New Achievement'}
+                            </h3>
+                            <div className="bg-gradient-to-br from-cyan-50 to-blue-50 rounded-xl p-6">
+                                <form onSubmit={handleAchievementSubmit}>
+                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                                        <div className="space-y-4">
+                                            <div className="space-y-2">
+                                                <label className="block text-sm font-medium text-gray-700">Title</label>
+                                                <input 
+                                                    type="text" 
+                                                    name="title" 
+                                                    value={achievementForm.title} 
+                                                    onChange={handleAchievementInputChange} 
+                                                    placeholder="Enter achievement title" 
+                                                    className="w-full border border-gray-300 rounded-lg py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent" 
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="block text-sm font-medium text-gray-700">Description</label>
+                                                <textarea 
+                                                    name="description" 
+                                                    value={achievementForm.description} 
+                                                    onChange={handleAchievementInputChange} 
+                                                    placeholder="Enter description of achievement" 
+                                                    className="w-full border border-gray-300 rounded-lg py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent h-24" 
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="block text-sm font-medium text-gray-700">Date</label>
+                                                <input 
+                                                    type="date" 
+                                                    name="achievementDate" 
+                                                    value={achievementForm.achievementDate} 
+                                                    onChange={handleAchievementInputChange} 
+                                                    className="w-full border border-gray-300 rounded-lg py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent" 
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="block text-sm font-medium text-gray-700">Image (Optional)</label>
+                                                <input 
+                                                    type="file" 
+                                                    name="image" 
+                                                    accept="image/*" 
+                                                    onChange={handleAchievementInputChange} 
+                                                    className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-cyan-500 file:text-white hover:file:bg-cyan-600" 
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="flex flex-col">
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Preview</label>
+                                            <div className="bg-white rounded-xl border-2 border-dashed border-gray-300 p-6 flex flex-col items-center justify-center h-full min-h-[200px]">
+                                                {previewImage ? (
+                                                    <img src={previewImage} alt="Preview" className="max-h-full max-w-full object-contain rounded-lg" />
+                                                ) : (
+                                                    <div className="text-center text-gray-400">
+                                                        <FiImage className="w-12 h-12 mx-auto mb-2" />
+                                                        <span>Image preview will appear here</span>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="flex justify-end space-x-4 mt-6">
+                                        <button 
+                                            type="submit" 
+                                            className="px-6 py-3 bg-gradient-to-r from-sky-500 to-blue-500 text-white rounded-lg hover:from-sky-600 hover:to-blue-600 transition-all transform hover:scale-105 disabled:opacity-50"
+                                            disabled={!achievementForm.title || !achievementForm.description || !achievementForm.achievementDate}
+                                        >
+                                            {editingAchievementId ? 'Update Achievement' : 'Save Achievement'}
+                                        </button>
+                                        <button 
+                                            type="button" 
+                                            onClick={() => { 
+                                                setAchievementForm({ title: '', description: '', achievementDate: '', image: null }); 
+                                                setPreviewImage(null); 
+                                                setEditingAchievementId(null); 
+                                            }} 
+                                            className="px-6 py-3 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-all"
+                                        >
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+                            <h3 className="text-xl font-bold text-gray-800 mb-6">Manage Existing Achievements</h3>
+                            <div className="overflow-x-auto rounded-xl">
+                                <table className="min-w-full bg-white rounded-lg overflow-hidden shadow-sm">
+                                    <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
+                                        <tr>
+                                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">Title</th>
+                                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">Description</th>
+                                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">Date</th>
+                                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">Image</th>
+                                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">Actions</th>
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-gray-200 bg-white">
+                                    <tbody className="bg-white divide-y divide-gray-200">
                                         {achievements.length > 0 ? (
                                             achievements.map((achievement) => (
-                                                <tr key={achievement.Id} className="text-center align-middle">
+                                                <tr key={achievement.Id} className="hover:bg-gray-50 transition-colors">
                                                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{achievement.Title}</td>
-                                                    <td className="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">{achievement.Description}</td>
+                                                    <td className="px-6 py-4 text-sm text-gray-600 max-w-xs truncate">{achievement.Description}</td>
                                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{new Date(achievement.AchievementDate).toLocaleDateString()}</td>
                                                     <td className="px-6 py-4 whitespace-nowrap">
                                                         {achievement.ImagePath ? (
-                                                            <img src={`http://localhost:3001${achievement.ImagePath}`} alt={achievement.Title} className="h-15 w-15 object-cover rounded-md mx-auto" />
+                                                            <img src={`http://localhost:3001${achievement.ImagePath}`} alt={achievement.Title} className="h-16 w-16 object-cover rounded-lg mx-auto" />
                                                         ) : (
-                                                            <div className="h-15 w-15 bg-gray-200 rounded-md mx-auto"></div>
+                                                            <div className="h-16 w-16 bg-gray-200 rounded-lg mx-auto flex items-center justify-center">
+                                                                <FiImage className="w-6 h-6 text-gray-400" />
+                                                            </div>
                                                         )}
                                                     </td>
                                                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                                        <button onClick={() => handleEditAchievement(achievement)} className="text-blue-600 hover:text-blue-900 mr-3 border px-3">Edit</button>
-                                                        <button onClick={() => handleDeleteAchievement(achievement.Id)} className="text-red-600 hover:text-red-900 border px-2">Delete</button>
+                                                        <div className="flex space-x-3">
+                                                            <button 
+                                                                onClick={() => handleEditAchievement(achievement)} 
+                                                                className="bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-4 py-2 rounded-lg hover:from-cyan-600 hover:to-blue-600 transition-all"
+                                                            >
+                                                                Edit
+                                                            </button>
+                                                            <button 
+                                                                onClick={() => handleDeleteAchievement(achievement.Id)} 
+                                                                className="bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2 rounded-lg hover:from-red-600 hover:to-red-700 transition-all"
+                                                            >
+                                                                Delete
+                                                            </button>
+                                                        </div>
                                                     </td>
                                                 </tr>
                                             ))
                                         ) : (
-                                            <tr><td colSpan="5" className="text-center py-4 text-gray-500">No achievements found.</td></tr>
+                                            <tr>
+                                                <td colSpan="5" className="text-center py-8 text-gray-500">
+                                                    <FiAward className="w-12 h-12 mx-auto mb-2 text-gray-300" />
+                                                    No achievements found.
+                                                </td>
+                                            </tr>
                                         )}
                                     </tbody>
                                 </table>
@@ -2763,17 +2724,27 @@ const Admin = () => {
                 );
 
             default:
-                return <div>Select a category from the left menu</div>;
+                return (
+                    <div className="text-center py-12">
+                        <div className="text-gray-400 text-6xl mb-4">🎯</div>
+                        <h3 className="text-xl font-semibold text-gray-600">Select a category from the left menu</h3>
+                    </div>
+                );
         }
     };
 
     // Render success message if present
     if (successMessage) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-gray-100 py-12 px-4 sm:px-6 lg:px-8">
-                <div className="max-w-md w-full space-y-8 bg-white rounded-2xl shadow-xl p-8 transform transition-all hover:scale-[1.02]">
+            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
+                <div className="max-w-md w-full space-y-8 bg-white rounded-2xl shadow-2xl p-8 transform transition-all">
                     <div className="text-center">
-                        <h2 className="mt-6 text-3xl font-extrabold text-gray-900 bg-clip-text text-transparent bg-gradient-to-r from-green-600 to-green-400">
+                        <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100">
+                            <svg className="h-8 w-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                        </div>
+                        <h2 className="mt-6 text-3xl font-extrabold text-gray-900 bg-clip-text text-transparent bg-gradient-to-r from-green-600 to-emerald-600">
                             {successMessage}
                         </h2>
                         <p className="mt-2 text-sm text-gray-500 font-medium">
@@ -2788,9 +2759,12 @@ const Admin = () => {
     // Render login portal if not logged in
     if (!isLoggedIn) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-gray-100 py-12 px-4 sm:px-6 lg:px-8">
-                <div className="max-w-md w-full space-y-8 bg-white rounded-2xl shadow-xl p-8 transform transition-all hover:scale-[1.02]">
+            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
+                <div className="max-w-md w-full space-y-8 bg-white rounded-2xl shadow-2xl p-8 transform transition-all hover:scale-[1.02]">
                     <div className="text-center">
+                        <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500">
+                            <FiLock className="h-8 w-8 text-white" />
+                        </div>
                         <h2 className="mt-6 text-3xl font-extrabold text-gray-900 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">
                             DSI Admin Portal
                         </h2>
@@ -2799,61 +2773,56 @@ const Admin = () => {
                         </p>
                     </div>
                     <form className="mt-8 space-y-6" onSubmit={handleLogin}>
-                        <input type="hidden" name="remember" defaultValue="true" />
                         <div className="space-y-4">
                             <div className="relative">
-                                <label>Username</label>
-                                <label htmlFor="username" className="sr-only">Username</label>
-                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <FiUser className="h-5 w-5 text-gray-400" />
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Username</label>
+                                <div className="relative">
+                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <FiUser className="h-5 w-5 text-gray-400" />
+                                    </div>
+                                    <input
+                                        id="username"
+                                        name="username"
+                                        type="text"
+                                        required
+                                        className="appearance-none rounded-lg relative block w-full px-10 py-3 border border-gray-300 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent sm:text-sm transition-all duration-300"
+                                        placeholder="Enter your username"
+                                        value={username}
+                                        onChange={(e) => setUsername(e.target.value)}
+                                    />
                                 </div>
-                                <input
-                                    id="username"
-                                    name="username"
-                                    type="text"
-                                    required
-                                    className="appearance-none rounded-lg relative block w-full px-10 py-3 border border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-all duration-300 hover:border-gray-300"
-                                    placeholder="Enter your username"
-                                    value={username}
-                                    onChange={(e) => setUsername(e.target.value)}
-                                />
                             </div>
                             <div className="relative">
-                                <label>Password</label>
-                                <label htmlFor="password" className="sr-only">Password</label>
-                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <FiLock className="h-5 w-5 text-gray-400" />
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                                <div className="relative">
+                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <FiLock className="h-5 w-5 text-gray-400" />
+                                    </div>
+                                    <input
+                                        id="password"
+                                        name="password"
+                                        type="password"
+                                        required
+                                        className="appearance-none rounded-lg relative block w-full px-10 py-3 border border-gray-300 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent sm:text-sm transition-all duration-300"
+                                        placeholder="Enter your password"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                    />
                                 </div>
-                                <input
-                                    id="password"
-                                    name="password"
-                                    type="password"
-                                    required
-                                    className="appearance-none rounded-lg relative block w-full px-10 py-3 border border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-all duration-300 hover:border-gray-300"
-                                    placeholder="Enter your password"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                />
                             </div>
                         </div>
                         <div className="flex space-x-4">
                             <button
                                 type="submit"
-                                className="group relative flex-1 justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-xl"
+                                className="group relative flex-1 justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-300 transform hover:scale-[1.02] shadow-lg"
                             >
-                                <span className="absolute left-0 inset-y-0 flex items-center pl-3">
-                                    <FiLock className="h-5 w-5 text-blue-200 group-hover:text-blue-100" />
-                                </span>
                                 Sign In
                             </button>
                             <button
-                                type="reset"
+                                type="button"
                                 onClick={handleCancel}
-                                className="group relative flex-1 justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-xl"
+                                className="group relative flex-1 justify-center py-3 px-4 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-300 transform hover:scale-[1.02] shadow-lg"
                             >
-                                <span className="absolute left-0 inset-y-0 flex items-center pl-3">
-                                    <MdOutlineCancel className="h-5 w-5 text-blue-200 group-hover:text-blue-100" />
-                                </span>
                                 Cancel
                             </button>
                         </div>
@@ -2868,77 +2837,58 @@ const Admin = () => {
 
     // Render admin panel
     return (
-        <div className="flex flex-col h-screen bg-gray-400">
+        <div className="flex flex-col h-screen bg-gradient-to-br from-slate-50 to-blue-50">
             <Navbar />
-            <div className="flex flex-1 overflow-hidden pt-13">
-                <div className="w-80 bg-blue-100 text-black p-4 overflow-y-auto">
-                    <h1 className="text-3xl text-center font-bold mb-8">DSI Admin Panel</h1>
-                    <nav className="space-y-4 text-lg">
-                        <button
-                            onClick={() => setActiveTab('carousel')}
-                            className={`w-full text-left px-4 py-3 border bg-amber-200 rounded flex items-center space-x-3 ${activeTab === 'carousel' ? 'bg-amber-200' : 'hover:bg-amber-300 '}`}
-                        >
-                            <FiImage />
-                            <span>Image Carousel</span>
-                        </button>
-                        <button
-                            onClick={() => setActiveTab('news')}
-                            className={`w-full text-left px-4 py-3 border bg-emerald-200 rounded flex items-center space-x-3 ${activeTab === 'news' ? 'bg-emerald-200' : 'hover:bg-emerald-300'}`}
-                        >
-                            <FaNewspaper />
-                            <span>News & Announcements</span>
-                        </button>
-                        <button
-                            onClick={() => setActiveTab('calendar')}
-                            className={`w-full text-left px-4 py-3 border bg-fuchsia-200 rounded flex items-center space-x-3 ${activeTab === 'calendar' ? 'bg-fuchsia-200' : 'hover:bg-fuchsia-300'}`}
-                        >
-                            <FiCalendar />
-                            <span>Working Calendar</span>
-                        </button>
-                        <button
-                            onClick={() => setActiveTab('applications')}
-                            className={`w-full text-left px-4 py-3 border bg-green-200 rounded flex items-center space-x-3 ${activeTab === 'applications' ? 'bg-green-200' : 'hover:bg-green-300'}`}
-                        >
-                            <FiSettings />
-                            <span>Applications</span>
-                        </button>
-                        <button
-                            onClick={() => setActiveTab('policies')}
-                            className={`w-full text-left px-4 py-3 border bg-purple-200 rounded flex items-center space-x-3 ${activeTab === 'policies' ? 'bg-purple-200' : 'hover:bg-purple-300'}`}
-                        >
-                            <FiFileText />
-                            <span>Policies & Procedures</span>
-                        </button>
-                        <button
-                            onClick={() => setActiveTab('communication')}
-                            className={`w-full text-left px-4 py-3 border bg-sky-200 rounded flex items-center space-x-3 ${activeTab === 'communication' ? 'bg-sky-200' : 'hover:bg-sky-300'}`}
-                        >
-                            <FiMail />
-                            <span>Communication</span>
-                        </button>
-                        <button
-                            onClick={() => setActiveTab('achievements')}
-                            className={`w-full text-left px-4 py-3 border bg-blue-200 rounded flex items-center space-x-3 ${activeTab === 'achievements' ? 'bg-blue-200' : 'hover:bg-blue-300'}`}
-                        >
-                            <FiAward />
-                            <span>Achievements</span>
-                        </button>
+            <div className="flex flex-1 overflow-hidden pt-16">
+                {/* Sidebar */}
+                <div className="w-80 bg-gradient-to-b from-white to-blue-50 text-gray-800 p-6 overflow-y-auto border-r border-gray-200 shadow-lg">
+                    <div className="text-center mb-8">
+                        <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">
+                            DSI Admin Panel
+                        </h1>
+                        <p className="text-sm text-gray-500 mt-2">Management Dashboard</p>
+                    </div>
+                    <nav className="space-y-2">
+                        {[
+                            { id: 'carousel', label: 'Image Carousel', icon: FiImage, color: 'from-cyan-500 to-blue-500' },
+                            { id: 'news', label: 'News & Announcements', icon: FaNewspaper, color: 'from-cyan-500 to-blue-500' },
+                            { id: 'calendar', label: 'Working Calendar', icon: FiCalendar, color: 'from-cyan-500 to-blue-500' },
+                            // { id: 'applications', label: 'Applications', icon: FiSettings, color: 'from-teal-500 to-cyan-500' },
+                            { id: 'policies', label: 'Policies & Procedures', icon: FiFileText, color: 'from-cyan-500 to-blue-500' },
+                            { id: 'communication', label: 'Communication', icon: FiMail, color: 'from-cyan-500 to-blue-500' },
+                            { id: 'achievements', label: 'Achievements', icon: FiAward, color: 'from-cyan-500 to-blue-500' },
+                        ].map((item) => (
+                            <button
+                                key={item.id}
+                                onClick={() => setActiveTab(item.id)}
+                                className={`w-full text-left px-4 py-4 rounded-xl flex items-center space-x-4 transition-all duration-300 transform hover:scale-105 ${
+                                    activeTab === item.id 
+                                    ? `bg-gradient-to-r ${item.color} text-white shadow-lg` 
+                                    : 'bg-white text-gray-700 hover:bg-gray-50 hover:shadow-md border border-gray-200'
+                                }`}
+                            >
+                                <item.icon className={`w-5 h-5 ${activeTab === item.id ? 'text-white' : `text-${item.color.split('-')[1]}-500`}`} />
+                                <span className="font-medium">{item.label}</span>
+                            </button>
+                        ))}
                         <button
                             onClick={handleLogout}
-                            className="w-full text-left px-4 py-3 border bg-gray-200 rounded flex items-center space-x-3 hover:bg-gray-500 text-black hover:text-white transition-colors"
+                            className="w-full text-left px-4 py-4 rounded-xl flex items-center space-x-4 bg-white text-gray-700 hover:bg-red-50 hover:text-red-700 border border-gray-200 transition-all duration-300 transform hover:scale-105 mt-8"
                         >
-                            <TbLogout />
-                            <span>Logout</span>
+                            <TbLogout className="w-5 h-5" />
+                            <span className="font-medium">Logout</span>
                         </button>
                     </nav>
                 </div>
+
+                {/* Main Content */}
                 <div className="flex-1 overflow-y-auto p-8">
-                    <div className="bg-gray-100 rounded-lg shadow p-6 min-h-full">
+                    <div className="bg-white rounded-2xl shadow-lg p-8 min-h-full border border-gray-100">
                         {renderContent()}
                     </div>
                 </div>
             </div>
-            <footer className='bg-blue-950 text-white py-4 text-center relative z-10'>
+            <footer className='bg-gradient-to-r from-gray-800 to-gray-900 text-white py-4 text-center'>
                 <p className='text-sm'>
                     {COPYRIGHT_TEXT} {new Date().getFullYear()}
                 </p>

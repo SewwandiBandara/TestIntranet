@@ -69,7 +69,7 @@ const Navbar = () => {
   //     }
   //   } catch (error) {
   //     console.error('Error fetching QMS PDF:', error);
-  //     setQmsPdfUrl(null);
+  //     setQmsPdfUrl(null); //
   //   }
   // };
 
@@ -136,7 +136,7 @@ const Navbar = () => {
 
 
   return (
-    <div className="fixed w-full bg-gradient-to-r from-blue-900 to-blue-800 py-3 z-50 shadow-lg">
+    <div className="fixed w-full bg-white py-3 z-50 shadow-lg ">
       <div className="container mx-auto flex items-center justify-between px-4 text-white">
         {/* Logo */}
         <div className="flex items-center">
@@ -152,7 +152,7 @@ const Navbar = () => {
         <div className="lg:hidden">
           <button 
             onClick={toggleMenu} 
-            className="text-white focus:outline-none p-2 rounded-lg hover:bg-blue-800 transition-colors"
+            className="text-white focus:outline-none p-2 rounded-lg bg-blue-300 hover:bg-cyan-600 transition-colors"
             aria-label="Toggle menu"
           >
             {isOpen ? <HiX className="h-6 w-6" /> : <HiMenu className="h-6 w-6" />}
@@ -161,13 +161,13 @@ const Navbar = () => {
 
         {/* Navigation items */}
         <div
-          className={`${isOpen ? 'flex' : 'hidden'} lg:flex flex-col lg:flex-row lg:flex-1 lg:justify-evenly gap-4 lg:gap-10 font-medium absolute lg:static top-12 left-0 w-full lg:w-auto bg-blue-950 lg:bg-transparent p-4 lg:p-0 transition-all duration-300`}
+          className={`${isOpen ? 'flex' : 'hidden'} lg:flex flex-col lg:flex-row lg:flex-1 lg:justify-evenly gap-4 lg:gap-10 font-medium absolute lg:static top-12 left-0 w-full lg:w-auto bg-gray-100 lg:bg-transparent p-4 lg:p-0 transition-all duration-300`}
         >
           {/* Home Link */}
           <NavLink
             to="/"
             className={({ isActive }) =>
-              `hover:text-amber-400 cursor-pointer hover:underline ${isActive ? 'text-amber-400 underline' : ''}`
+              `text-black hover:text-blue-400 cursor-pointer hover:underline p-1 ${isActive ? 'text-black border rounded text-red-400 ' : ''}`
             }
             onClick={() => setIsOpen(false)}
           >
@@ -176,22 +176,22 @@ const Navbar = () => {
 
           {/* Applications dropdown */}
           <div className="relative group">
-            <div className="text-white cursor-pointer hover:text-amber-400 hover:underline">
+            <div className="text-black cursor-pointer hover:text-blue-400 hover:underline">
               Applications
             </div>
-            <div className="absolute left-0 lg:group-hover:block hidden bg-blue-950 min-w-[150px] rounded-md shadow-lg z-10 mt-1 transition-opacity duration-200 opacity-0 group-hover:opacity-100">
+            <div className="absolute left-0 lg:group-hover:block hidden bg-blue-50 text-black min-w-[150px] rounded-md shadow-lg z-10 mt-1 transition-opacity duration-200 opacity-0 group-hover:opacity-100">
               <ul className="py-1">
                 {/* HR Section */}
-                <li className="relative px-4 py-2 hover:bg-yellow-400 hover:text-black group/hr">
+                <li className="relative px-4 py-2 hover:bg-blue-300 hover:text-black group/hr">
                   <Link to="#" onClick={() => setIsOpen(false)}>
                     HR
                   </Link>
-                  <div className="absolute hidden group-hover/hr:block left-full top-0 ml-1 bg-blue-400 min-w-[150px] rounded-md shadow-lg z-20 lg:left-auto lg:right-full lg:mr-1 transition-opacity duration-200 opacity-0 group-hover/hr:opacity-100">
-                    <ul className="py-1">
+                  <div className="absolute hidden group-hover/hr:block left-full top-0 ml-1 bg-green-50 min-w-[150px] rounded-md shadow-lg z-20 lg:left-auto lg:right-full lg:mr-1 transition-opacity duration-200 opacity-0 group-hover/hr:opacity-100">
+                    <ul className="py-1 hover:text-black">
                       <li>
                         <Link
                           to="#"
-                          className="block px-4 py-2 hover:bg-yellow-200 hover:text-black"
+                          className="block px-4 py-2 hover:bg-blue-200 hover:text-black"
                           onClick={() => setIsOpen(false)}
                         >
                           Medical
@@ -200,7 +200,7 @@ const Navbar = () => {
                       <li>
                         <Link
                           to="http://192.168.100.51:8085/login.aspx"
-                          className="block px-4 py-2 hover:bg-yellow-200 hover:text-black"
+                          className="block px-4 py-2 hover:bg-blue-200 hover:text-black"
                           onClick={() => setIsOpen(false)}
                         >
                           Appraisal
@@ -209,7 +209,7 @@ const Navbar = () => {
                       <li>
                         <Link
                           to="http://192.168.100.51:8088/loginhandler.aspx"
-                          className="block px-4 py-2 hover:bg-yellow-200 hover:text-black"
+                          className="block px-4 py-2 hover:bg-blue-200 hover:text-black"
                           onClick={() => setIsOpen(false)}
                         >
                           KPI
@@ -218,7 +218,7 @@ const Navbar = () => {
                       <li>
                         <Link
                           to="http://192.168.178.12/hris/login.aspx?ReturnUrl=%2fhris%2fdefault.aspx"
-                          className="block px-4 py-2 hover:bg-yellow-200 hover:text-black"
+                          className="block px-4 py-2 hover:bg-blue-200 hover:text-black"
                           onClick={() => setIsOpen(false)}
                         >
                          Attendance
@@ -228,16 +228,16 @@ const Navbar = () => {
                   </div>
                 </li>
                 {/* Production Section */}
-                <li className="relative px-4 py-2 hover:bg-yellow-400 hover:text-black group/production">
+                <li className="relative px-4 py-2 hover:bg-blue-300 hover:text-black group/production">
                   <Link to="/production" onClick={() => setIsOpen(false)}>
                     Production
                   </Link>
-                  <div className="absolute hidden group-hover/production:block left-full top-0 ml-1 bg-blue-400 min-w-[200px] rounded-md shadow-lg z-20 lg:left-auto lg:right-full lg:mr-1 transition-opacity duration-200 opacity-0 group-hover/production:opacity-100">
+                  <div className="absolute hidden group-hover/production:block left-full top-0 ml-1 bg-green-50 min-w-[200px] rounded-md shadow-lg z-20 lg:left-auto lg:right-full lg:mr-1 transition-opacity duration-200 opacity-0 group-hover/production:opacity-100">
                     <ul className="py-1">
                       <li>
                         <Link
                           to="/display"
-                          className="block px-4 py-2 hover:bg-yellow-200 hover:text-black"
+                          className="block px-4 py-2 hover:bg-blue-200 hover:text-black"
                           onClick={() => setIsOpen(false)}
                         >
                           Display Panel
@@ -246,7 +246,7 @@ const Navbar = () => {
                       <li>
                         <Link
                           to="http://192.168.100.51:8071/Account/Login.aspx"
-                          className="block px-4 py-2 hover:bg-yellow-200 hover:text-black"
+                          className="block px-4 py-2 hover:bg-blue-200 hover:text-black"
                           onClick={() => setIsOpen(false)}
                         >
                           Feedback Form
@@ -255,7 +255,7 @@ const Navbar = () => {
                       <li>
                         <Link
                           to="http://192.168.100.51:6060/User_Login.aspx"
-                          className="block px-4 py-2 hover:bg-yellow-200 hover:text-black"
+                          className="block px-4 py-2 hover:bg-blue-200 hover:text-black"
                           onClick={() => setIsOpen(false)}
                         >
                           Non-Conformity
@@ -264,7 +264,7 @@ const Navbar = () => {
                       <li>
                         <Link
                           to="#"
-                          className="block px-4 py-2 hover:bg-yellow-200 hover:text-black"
+                          className="block px-4 py-2 hover:bg-blue-200 hover:text-black"
                           onClick={() => setIsOpen(false)}
                         >
                           Production Display
@@ -273,7 +273,7 @@ const Navbar = () => {
                       <li>
                         <Link
                           to="http://192.168.13.1:8080/User_Login.aspx"
-                          className="block px-4 py-2 hover:bg-yellow-200 hover:text-black"
+                          className="block px-4 py-2 hover:bg-blue-200 hover:text-black"
                           onClick={() => setIsOpen(false)}
                         >
                           WMS
@@ -282,26 +282,26 @@ const Navbar = () => {
                     </ul>
                   </div>
                 </li>
-                <li className="px-4 py-2 hover:bg-yellow-400 hover:text-black">
+                <li className="px-4 py-2 hover:bg-blue-300 hover:text-black">
                   <Link to="http://192.168.100.80:58080/" className="block" onClick={() => setIsOpen(false)}>
                     IFS
                   </Link>
                 </li>
-                <li className="px-4 py-2 hover:bg-yellow-400 hover:text-black">
+                <li className="px-4 py-2 hover:bg-blue-300 hover:text-black">
                   <Link to="http://192.168.100.15/DocuWare/Platform/WebClient/ClientAccount/LogIn?returnUrl=%2FDocuWare%2FPlatform%2FWebClient" className="block" onClick={() => setIsOpen(false)}>
                     Docuware
                   </Link>
                 </li>
-                <li className="relative px-4 py-2 hover:bg-yellow-400 hover:text-black group/sfa">
+                <li className="relative px-4 py-2 hover:bg-blue-300 hover:text-black group/sfa">
                   <Link to="#" className="block" onClick={() => setIsOpen(false)}>
                     SFA
                   </Link>
-                  <div className="absolute hidden group-hover/sfa:block left-full top-0 ml-1 bg-blue-400 min-w-[150px] rounded-md shadow-lg z-20 lg:left-auto lg:right-full lg:mr-1 transition-opacity duration-200 opacity-0 group-hover/sfa:opacity-100">
+                  <div className="absolute hidden group-hover/sfa:block left-full top-0 ml-1 bg-green-50 min-w-[150px] rounded-md shadow-lg z-20 lg:left-auto lg:right-full lg:mr-1 transition-opacity duration-200 opacity-0 group-hover/sfa:opacity-100">
                     <ul className="py-1">
                       <li>
                         <Link
                           to="http://192.168.100.89:29099/ventura_live/"
-                          className="block px-4 py-2 hover:bg-yellow-200 hover:text-black"
+                          className="block px-4 py-2 hover:bg-blue-200 hover:text-black"
                           onClick={() => setIsOpen(false)}
                         >
                           DSI
@@ -310,7 +310,7 @@ const Navbar = () => {
                       <li>
                         <Link
                           to="http://192.168.100.89:28181/ventura_lotus_live/"
-                          className="block px-4 py-2 hover:bg-yellow-200 hover:text-black"
+                          className="block px-4 py-2 hover:bg-blue-200 hover:text-black"
                           onClick={() => setIsOpen(false)}
                         >
                           Lotus
@@ -325,25 +325,25 @@ const Navbar = () => {
 
           {/* Policies dropdown */}
           <div className="relative group">
-            <div className="text-white cursor-pointer hover:text-amber-400 hover:underline">
+            <div className="text-black cursor-pointer hover:text-blue-400 hover:underline">
               Policies and Procedures
             </div>
-            <div className="absolute left-0 lg:group-hover:block hidden bg-blue-950 min-w-[150px] rounded-md shadow-lg z-10 mt-1 transition-opacity duration-200 opacity-0 group-hover:opacity-100">
+            <div className="absolute left-0 lg:group-hover:block hidden bg-blue-50 text-black min-w-[150px] rounded-md shadow-lg z-10 mt-1 transition-opacity duration-200 opacity-0 group-hover:opacity-100">
               <ul className="py-1">
-                <li className="block px-4 py-2 hover:bg-yellow-400 hover:text-black">
+                <li className="block px-4 py-2 hover:bg-blue-300 hover:text-black">
                   <Link to="/sop" onClick={() => setIsOpen(false)}>
                     SOP
                   </Link>
                 </li>
-                <li className="block px-4 py-2 hover:bg-yellow-400 hover:text-black group/iso">
-                  <Link to="#" onClick={() => setIsOpen(false)}>
+                <li className="block px-4 py-2 hover:bg-blue-300 hover:text-black group/iso">
+                  <Link to="/iso" onClick={() => setIsOpen(false)}>
                     ISO
                   </Link>
-                  <div className="absolute hidden group-hover/iso:block left-full top-0 ml-1 bg-blue-400 min-w-[200px] rounded-md shadow-lg z-20 lg:left-auto lg:right-full lg:mr-1 transition-opacity duration-200 opacity-0 group-hover/iso:opacity-100">
+                  <div className="absolute hidden group-hover/iso:block left-full top-0 ml-1 bg-green-50 min-w-[200px] rounded-md shadow-lg z-20 lg:left-auto lg:right-full lg:mr-1 transition-opacity duration-200 opacity-0 group-hover/iso:opacity-100">
                     <ul className="py-1">
                       <li>
                         <Link to='/qms'
-                          className="block px-4 py-2 hover:bg-yellow-200 hover:text-black"
+                          className="block px-4 py-2 hover:bg-blue-200 hover:text-black"
                           onClick={() => setIsOpen(false)}
                           //  onClick={openQmsModal} 
                         >
@@ -353,7 +353,7 @@ const Navbar = () => {
                       <li>
                         <Link
                           to="/ems"
-                          className="block px-4 py-2 hover:bg-yellow-200 hover:text-black"
+                          className="block px-4 py-2 hover:bg-blue-200 hover:text-black"
                           onClick={() => setIsOpen(false)}
                         >
                           EMS
@@ -362,7 +362,7 @@ const Navbar = () => {
                     </ul>
                   </div>
                 </li>
-                <li className='block px-4 py-2 hover:bg-yellow-400 hover:text-black'>
+                <li className='block px-4 py-2 hover:bg-blue-300 hover:text-black'>
                   <Link to="#" onClick={() => setIsOpen(false)}>
                     DFS
                   </Link>
@@ -373,14 +373,14 @@ const Navbar = () => {
 
           {/* Communication dropdown */}
           <div className="relative group">
-            <div className="text-white cursor-pointer hover:text-amber-400 hover:underline">
+            <div className="text-black cursor-pointer hover:text-blue-400 hover:underline">
               Communication
             </div>
-            <div className="absolute left-0 lg:group-hover:block hidden bg-blue-950 min-w-[150px] rounded-md shadow-lg z-10 mt-1 transition-opacity duration-200 opacity-0 group-hover:opacity-100">
+            <div className="absolute left-0 lg:group-hover:block hidden bg-blue-50 text-black min-w-[150px] rounded-md shadow-lg z-10 mt-1 transition-opacity duration-200 opacity-0 group-hover:opacity-100">
               <ul className="py-1">
                 <li>
                   <button
-                    className="block px-4 py-2 hover:bg-yellow-400 hover:text-black w-full text-left"
+                    className="block px-4 py-2 hover:bg-blue-300 hover:text-black w-full text-left"
                     onClick={openEmailModal} // Open email modal on click
                   >
                     E-mail
@@ -388,7 +388,7 @@ const Navbar = () => {
                 </li>
                 <li>
                   <button
-                    className="block px-4 py-2 hover:bg-yellow-400 hover:text-black w-full text-left"
+                    className="block px-4 py-2 hover:bg-blue-300 hover:text-black w-full text-left"
                     onClick={openPdfModal}
                   >
                     EXT List
@@ -402,7 +402,7 @@ const Navbar = () => {
           <NavLink
             to="/ach"
             className={({ isActive }) =>
-              `hover:text-amber-400 cursor-pointer hover:underline ${isActive ? 'text-amber-400 underline' : ''}`
+              `hover:text-blue-400 cursor-pointer text-black hover:underline ${isActive ? 'text-black border rounded p-1 text-red-400' : ''}`
             }
             onClick={() => setIsOpen(false)}
           >
@@ -498,50 +498,6 @@ const Navbar = () => {
           </div>
         </div>
       )}
-
-        {/* QMSModal (for QMS List)
-        {isQmsModalOpen && (
-          <div className="fixed inset-0 bg-blue-50 bg-opacity-50 flex items-center justify-center z-50">
-            <div className="w-3/4 h-180 bg-green-50 rounded-lg p-6 flex flex-col">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-semibold text-black">QMS Document List</h2>
-                <button
-                  onClick={closeQmsModal}
-                  className="text-black hover:text-red-600 focus:outline-none"
-                >
-                  <HiX className="h-6 w-6" />
-                </button>
-              </div>
-              <div className="flex-1 overflow-auto">
-                {noQmsMessage || (
-                  <iframe
-                    src={QmsPdfUrl}
-                    title="Email List PDF"
-                    className="w-full h-[70vh] border-0"
-                  />
-                )}
-              </div>
-              <div className="mt-4 flex justify-end">
-                {QmsPdfUrl ? (
-                  <a
-                    href={QmsPdfUrl}
-                    download="email_list.pdf"
-                    className="bg-blue-950 text-white px-4 py-2 rounded hover:bg-blue-800"
-                  >
-                    Download PDF/Doc
-                  </a>
-                ) : (
-                  <button
-                    onClick={closeQmsModal}
-                    className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
-                  >
-                    Close
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
-        )} */}
 
     </div>
   );
