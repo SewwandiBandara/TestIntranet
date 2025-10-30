@@ -12,7 +12,7 @@ const COPYRIGHT_TEXT = `All rights reserved © DSI Samson Rubber Industries - In
 const Admin = () => {
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState('carousel');
-    // const [activeApplication, setActiveApplication] = useState(null);
+    const [activeApplication, setActiveApplication] = useState(null);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -1381,20 +1381,21 @@ const Admin = () => {
     };
 
     // Application list
-    // const applications = [
-    //     { id: 'hr', name: 'Human Resource Management', icon: <FiUsers />, color: 'from-blue-500 to-blue-600' },
-    //     { id: 'medical', name: 'Medical', icon: <FiFileText />, color: 'from-green-500 to-green-600' },
-    //     { id: 'display', name: 'Display Panel', icon: <FiImage />, color: 'from-purple-500 to-purple-600' },
-    //     { id: 'appraisal', name: 'Appraisal', icon: <FiFileText />, color: 'from-orange-500 to-orange-600' },
-    //     { id: 'feedback', name: 'Feedback Form', icon: <FiMessageSquare />, color: 'from-pink-500 to-pink-600' },
-    //     { id: 'nonconformity', name: 'Non-Conformity', icon: <FiSettings />, color: 'from-red-500 to-red-600' },
-    //     { id: 'sfa', name: 'SFA', icon: <FiSettings />, color: 'from-indigo-500 to-indigo-600' },
-    //     { id: 'ifs', name: 'IFS', icon: <FiSettings />, color: 'from-teal-500 to-teal-600' },
-    //     { id: 'kpi', name: 'KPI', icon: <FiSettings />, color: 'from-cyan-500 to-cyan-600' },
-    //     { id: 'wms', name: 'WMS', icon: <FiSettings />, color: 'from-lime-500 to-lime-600' },
-    //     { id: 'docware', name: 'Docware', icon: <FiSettings />, color: 'from-amber-500 to-amber-600' },
-    //     { id: 'production display', name: 'Production Display', icon: <FiSettings />, color: 'from-emerald-500 to-emerald-600' }
-    // ];
+    const applications = [
+        // { id: 'hr', name: 'Human Resource Management', icon: <FiUsers />, color: 'from-blue-500 to-blue-600' },
+        { id: 'hr', name: 'Human Resource Management', icon: <FiUsers />, color: 'from-blue-50 to-red-50'  },
+        { id: 'medical', name: 'Medical', icon: <FiFileText />, color: 'from-blue-50 to-pink-50' },
+        { id: 'display', name: 'Display Panel', icon: <FiImage />, color: 'from-blue-50 t0-pink-50' },
+        { id: 'appraisal', name: 'Appraisal', icon: <FiFileText />, color: 'from-blue-50 to-pink-50' },
+        { id: 'feedback', name: 'Feedback Form', icon: <FiMessageSquare />, color: 'from-blue-50 to-pink-50' },
+        { id: 'nonconformity', name: 'Non-Conformity', icon: <FiSettings />, color: 'from-blue-50 to-pink-50' },
+        { id: 'sfa', name: 'SFA', icon: <FiSettings />, color: 'from-blue-50 to-pink-50' },
+        { id: 'ifs', name: 'IFS', icon: <FiSettings />, color: 'from-blue-50 to-pink-50' },
+        { id: 'kpi', name: 'KPI', icon: <FiSettings />, color: 'from-blue-50 to-pink-50' },
+        { id: 'wms', name: 'WMS', icon: <FiSettings />, color: 'from-blue-50 to pink-50' },
+        { id: 'docware', name: 'Docware', icon: <FiSettings />, color: 'from-blue-50 to-pink-50' },
+        { id: 'production display', name: 'Production Display', icon: <FiSettings />, color: 'from-blue-50 to-pink-50' }
+    ];
 
     const renderContent = () => {
         switch (activeTab) {
@@ -1527,7 +1528,7 @@ const Admin = () => {
                     <div className="space-y-6">
                         <div className="flex items-center justify-between mb-6">
                             <h2 className="text-2xl font-bold text-gray-800">News & Announcements</h2>
-                            <div className="w-16 h-1 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full"></div>
+                            <div className="w-16 h-1 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full"></div>
                         </div>
                         <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
                             <h3 className="text-xl font-semibold mb-6 text-gray-800">{editingId ? 'Edit News' : 'Add News & Announcements'}</h3>
@@ -1634,12 +1635,12 @@ const Admin = () => {
                     <div className="space-y-6">
                         <div className="flex items-center justify-between mb-6">
                             <h2 className="text-2xl font-bold text-gray-800">Working Calendar</h2>
-                            <div className="w-16 h-1 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full"></div>
+                            <div className="w-16 h-1 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full"></div>
                         </div>
                         <div className="flex flex-col gap-6">
                             <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
                                 <h3 className="text-xl font-bold text-gray-800 mb-6">{editingId ? 'Edit Event' : 'Add New Event'}</h3>
-                                <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-6">
+                                <div className="bg-gradient-to-br from-cyan-50 to-blue-50 rounded-xl p-6">
                                     <form onSubmit={handleEventSubmit}>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                             <div className="space-y-4">
@@ -1679,7 +1680,7 @@ const Admin = () => {
                                         <div className="flex justify-end space-x-4 mt-6">
                                             <button
                                                 type="submit"
-                                                className="px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all transform hover:scale-105 disabled:opacity-50"
+                                                className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-lg hover:from-cyan-600 hover:to-blue-600 transition-all transform hover:scale-105 disabled:opacity-50"
                                                 disabled={!eventForm.title || !eventForm.description || !eventForm.eventDate}
                                             >
                                                 {editingId ? 'Update Event' : 'Add Event'}
@@ -1710,7 +1711,7 @@ const Admin = () => {
                                                 type="file"
                                                 accept="image/*"
                                                 onChange={handleMonthlyChange}
-                                                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-green-500 file:text-white hover:file:bg-green-600"
+                                                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-500 file:text-white hover:file:bg-blue-600"
                                             />
                                         </div>
                                         {monthlyPreview && (
@@ -1720,14 +1721,14 @@ const Admin = () => {
                                         )}
                                         <button
                                             type="submit"
-                                            className="w-full bg-gradient-to-r from-green-500 to-emerald-500 text-white py-3 rounded-lg hover:from-green-600 hover:to-emerald-600 transition-all transform hover:scale-105 disabled:opacity-50"
+                                            className="w-full bg-gradient-to-r from-cyan-500 to-blue-500 text-white py-3 rounded-lg hover:from-cyan-600 hover:to-blue-600 transition-all transform hover:scale-105 disabled:opacity-50"
                                             disabled={!monthlyPlanForm.image}
                                         >
                                             Upload Monthly Plan
                                         </button>
                                     </form>
                                     {currentMonthlyImage && (
-                                        <div className="mt-4 p-4 bg-green-50 rounded-lg border border-green-200">
+                                        <div className="mt-4 p-4 bg-cyan-50 rounded-lg border border-cyan-200">
                                             <p className="text-sm font-medium mb-2 text-gray-700">Current Monthly Plan:</p>
                                             <img src={`http://localhost:3001${currentMonthlyImage}`} alt="Current Monthly" className="max-h-48 max-w-full object-contain mx-auto rounded-lg" />
                                         </div>
@@ -1744,7 +1745,7 @@ const Admin = () => {
                                                 type="file"
                                                 accept="image/*"
                                                 onChange={handleCalendarChange}
-                                                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-purple-500 file:text-white hover:file:bg-purple-600"
+                                                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-500 file:text-white hover:file:bg-blue-600"
                                             />
                                         </div>
                                         {calendarPreview && (
@@ -1754,14 +1755,14 @@ const Admin = () => {
                                         )}
                                         <button
                                             type="submit"
-                                            className="w-full bg-gradient-to-r from-purple-500 to-indigo-500 text-white py-3 rounded-lg hover:from-purple-600 hover:to-indigo-600 transition-all transform hover:scale-105 disabled:opacity-50"
+                                            className="w-full bg-gradient-to-r from-cyan-500 to-blue-500 text-white py-3 rounded-lg hover:from-cyan-600 hover:to-blue-600 transition-all transform hover:scale-105 disabled:opacity-50"
                                             disabled={!calendarForm.image}
                                         >
                                             Upload Calendar Image
                                         </button>
                                     </form>
                                     {currentCalendarImage && (
-                                        <div className="mt-4 p-4 bg-purple-50 rounded-lg border border-purple-200">
+                                        <div className="mt-4 p-4 bg-cyan-50 rounded-lg border border-cyan-200">
                                             <p className="text-sm font-medium mb-2 text-gray-700">Current Calendar Image:</p>
                                             <img src={`http://localhost:3001${currentCalendarImage}`} alt="Current Calendar" className="max-h-48 max-w-full object-contain mx-auto rounded-lg" />
                                         </div>
@@ -1807,7 +1808,7 @@ const Admin = () => {
                                                         <div className="flex space-x-3">
                                                             <button
                                                                 onClick={() => handleEditEvent(event)}
-                                                                className="bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-4 py-2 rounded-lg hover:from-blue-600 hover:to-indigo-600 transition-all"
+                                                                className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2 rounded-lg hover:from-blue-600 hover:to-blue-600 transition-all"
                                                             >
                                                                 Edit
                                                             </button>
@@ -1836,55 +1837,55 @@ const Admin = () => {
                     </div>
                 );
 
-            // case 'applications':
-            //     return (
-            //         <div className="space-y-6">
-            //             <div className="flex items-center justify-between mb-6">
-            //                 <h2 className="text-2xl font-bold text-gray-800">Applications</h2>
-            //                 <div className="w-16 h-1 bg-gradient-to-r from-teal-500 to-cyan-500 rounded-full"></div>
-            //             </div>
-            //             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            //                 {applications.map(app => (
-            //                     <div
-            //                         key={app.id}
-            //                         className={`bg-white rounded-2xl shadow-lg p-6 border-2 cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-xl ${
-            //                             activeApplication === app.id 
-            //                             ? `border-gradient ${app.color} border-transparent bg-gradient-to-br ${app.color} text-white` 
-            //                             : 'border-gray-200 hover:border-gray-300'
-            //                         }`}
-            //                         onClick={() => setActiveApplication(app.id)}
-            //                     >
-            //                         <div className="flex items-center space-x-4">
-            //                             <div className={`p-3 rounded-xl ${
-            //                                 activeApplication === app.id 
-            //                                 ? 'bg-white bg-opacity-20' 
-            //                                 : `bg-gradient-to-br ${app.color} text-white`
-            //                             }`}>
-            //                                 {app.icon}
-            //                             </div>
-            //                             <div>
-            //                                 <h3 className="font-bold text-lg">{app.name}</h3>
-            //                                 <p className={`text-sm ${
-            //                                     activeApplication === app.id 
-            //                                     ? 'text-white text-opacity-90' 
-            //                                     : 'text-gray-500'
-            //                                 }`}>
-            //                                     Manage {app.name.toLowerCase()}
-            //                                 </p>
-            //                             </div>
-            //                         </div>
-            //                     </div>
-            //                 ))}
-            //             </div>
-            //         </div>
-            //     );
+            case 'applications':
+                return (
+                    <div className="space-y-6">
+                        <div className="flex items-center justify-between mb-6">
+                            <h2 className="text-2xl font-bold text-gray-800">Applications</h2>
+                            <div className="w-16 h-1 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full"></div>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {applications.map(app => (
+                                <div
+                                    key={app.id}
+                                    className={`bg-white rounded-2xl shadow-lg p-6 border-2 cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-xl ${
+                                        activeApplication === app.id 
+                                        ? `border-gradient ${app.color} border-transparent bg-gradient-to-br ${app.color} text-black` 
+                                        : 'border-gray-200 hover:border-gray-300'
+                                    }`}
+                                    onClick={() => setActiveApplication(app.id)}
+                                >
+                                    <div className="flex items-center space-x-4">
+                                        <div className={`p-3 rounded-xl ${
+                                            activeApplication === app.id 
+                                            ? 'bg-white bg-opacity-20' 
+                                            : `bg-gradient-to-br ${app.color} text-black`
+                                        }`}>
+                                            {app.icon}
+                                        </div>
+                                        <div>
+                                            <h3 className="font-bold text-lg">{app.name}</h3>
+                                            <p className={`text-sm ${
+                                                activeApplication === app.id 
+                                                ? 'text-black text-opacity-90' 
+                                                : 'text-gray-500'
+                                            }`}>
+                                                Manage {app.name.toLowerCase()}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                );
 
             case 'policies':
                 return (
                     <div className="space-y-6">
                         <div className="flex items-center justify-between mb-6">
                             <h2 className="text-2xl font-bold text-gray-800">Policies & Procedures</h2>
-                            <div className="w-16 h-1 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full"></div>
+                            <div className="w-16 h-1 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full"></div>
                         </div>
                         
                         {/* QMS Section */}
@@ -2570,7 +2571,7 @@ const Admin = () => {
                     <div className="space-y-6">
                         <div className="flex items-center justify-between mb-6">
                             <h2 className="text-2xl font-bold text-gray-800">Achievements</h2>
-                            <div className="w-16 h-1 bg-gradient-to-r from-amber-500 to-orange-500 rounded-full"></div>
+                            <div className="w-16 h-1 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full"></div>
                         </div>
                         
                         <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
@@ -2762,10 +2763,10 @@ const Admin = () => {
             <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
                 <div className="max-w-md w-full space-y-8 bg-white rounded-2xl shadow-2xl p-8 transform transition-all hover:scale-[1.02]">
                     <div className="text-center">
-                        <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500">
+                        <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500">
                             <FiLock className="h-8 w-8 text-white" />
                         </div>
-                        <h2 className="mt-6 text-3xl font-extrabold text-gray-900 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">
+                        <h2 className="mt-6 text-3xl font-extrabold text-gray-900 bg-clip-text text-transparent bg-gradient-to-r from-cyan-600 to-blue-600">
                             DSI Admin Portal
                         </h2>
                         <p className="mt-2 text-sm text-gray-500 font-medium">
@@ -2786,7 +2787,7 @@ const Admin = () => {
                                         type="text"
                                         required
                                         className="appearance-none rounded-lg relative block w-full px-10 py-3 border border-gray-300 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent sm:text-sm transition-all duration-300"
-                                        placeholder="Enter your username"
+                                        placeholder="example"
                                         value={username}
                                         onChange={(e) => setUsername(e.target.value)}
                                     />
@@ -2804,7 +2805,7 @@ const Admin = () => {
                                         type="password"
                                         required
                                         className="appearance-none rounded-lg relative block w-full px-10 py-3 border border-gray-300 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent sm:text-sm transition-all duration-300"
-                                        placeholder="Enter your password"
+                                        placeholder="********"
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
                                     />
@@ -2814,14 +2815,14 @@ const Admin = () => {
                         <div className="flex space-x-4">
                             <button
                                 type="submit"
-                                className="group relative flex-1 justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-300 transform hover:scale-[1.02] shadow-lg"
+                                className="group relative flex-1 justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-300 transform hover:scale-[1.02] shadow-lg"
                             >
                                 Sign In
                             </button>
                             <button
                                 type="button"
                                 onClick={handleCancel}
-                                className="group relative flex-1 justify-center py-3 px-4 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-300 transform hover:scale-[1.02] shadow-lg"
+                                className="group relative flex-1 justify-center py-3 px-4 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 hover:bg-gray-50 transition-all duration-300 transform hover:scale-[1.02] shadow-lg"
                             >
                                 Cancel
                             </button>
@@ -2843,17 +2844,17 @@ const Admin = () => {
                 {/* Sidebar */}
                 <div className="w-80 bg-gradient-to-b from-white to-blue-50 text-gray-800 p-6 overflow-y-auto border-r border-gray-200 shadow-lg">
                     <div className="text-center mb-8">
-                        <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">
+                        <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-cyan-600">
                             DSI Admin Panel
                         </h1>
-                        <p className="text-sm text-gray-500 mt-2">Management Dashboard</p>
+                        <p className="text-sm text-gray-600 mt-2">Management Dashboard</p>
                     </div>
                     <nav className="space-y-2">
                         {[
                             { id: 'carousel', label: 'Image Carousel', icon: FiImage, color: 'from-cyan-500 to-blue-500' },
                             { id: 'news', label: 'News & Announcements', icon: FaNewspaper, color: 'from-cyan-500 to-blue-500' },
                             { id: 'calendar', label: 'Working Calendar', icon: FiCalendar, color: 'from-cyan-500 to-blue-500' },
-                            // { id: 'applications', label: 'Applications', icon: FiSettings, color: 'from-teal-500 to-cyan-500' },
+                            { id: 'applications', label: 'Applications', icon: FiSettings, color: 'from-cyan-500 to-blue-500' },
                             { id: 'policies', label: 'Policies & Procedures', icon: FiFileText, color: 'from-cyan-500 to-blue-500' },
                             { id: 'communication', label: 'Communication', icon: FiMail, color: 'from-cyan-500 to-blue-500' },
                             { id: 'achievements', label: 'Achievements', icon: FiAward, color: 'from-cyan-500 to-blue-500' },

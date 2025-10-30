@@ -190,7 +190,7 @@ const Navbar = () => {
                     <ul className="py-1 hover:text-black">
                       <li>
                         <Link
-                          to="#"
+                          to="http://192.168.100.51:8082/User_Login.aspx"
                           className="block px-4 py-2 hover:bg-blue-200 hover:text-black"
                           onClick={() => setIsOpen(false)}
                         >
