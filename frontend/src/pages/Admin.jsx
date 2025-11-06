@@ -12,7 +12,6 @@ const COPYRIGHT_TEXT = `All rights reserved © DSI Samson Rubber Industries - In
 const Admin = () => {
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState('carousel');
-    const [activeApplication, setActiveApplication] = useState(null);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -1383,19 +1382,28 @@ const Admin = () => {
     // Application list
     const applications = [
         // { id: 'hr', name: 'Human Resource Management', icon: <FiUsers />, color: 'from-blue-500 to-blue-600' },
-        { id: 'hr', name: 'Human Resource Management', icon: <FiUsers />, color: 'from-blue-50 to-red-50'  },
-        { id: 'medical', name: 'Medical', icon: <FiFileText />, color: 'from-blue-50 to-pink-50' },
-        { id: 'display', name: 'Display Panel', icon: <FiImage />, color: 'from-blue-50 t0-pink-50' },
-        { id: 'appraisal', name: 'Appraisal', icon: <FiFileText />, color: 'from-blue-50 to-pink-50' },
-        { id: 'feedback', name: 'Feedback Form', icon: <FiMessageSquare />, color: 'from-blue-50 to-pink-50' },
-        { id: 'nonconformity', name: 'Non-Conformity', icon: <FiSettings />, color: 'from-blue-50 to-pink-50' },
-        { id: 'sfa', name: 'SFA', icon: <FiSettings />, color: 'from-blue-50 to-pink-50' },
-        { id: 'ifs', name: 'IFS', icon: <FiSettings />, color: 'from-blue-50 to-pink-50' },
-        { id: 'kpi', name: 'KPI', icon: <FiSettings />, color: 'from-blue-50 to-pink-50' },
-        { id: 'wms', name: 'WMS', icon: <FiSettings />, color: 'from-blue-50 to pink-50' },
-        { id: 'docware', name: 'Docware', icon: <FiSettings />, color: 'from-blue-50 to-pink-50' },
-        { id: 'production display', name: 'Production Display', icon: <FiSettings />, color: 'from-blue-50 to-pink-50' }
+        { id: 'Attendance', name: 'Human Resource Management', icon: <FiUsers />, color: 'from-blue-50 to-red-50', route: 'http://192.168.178.12/hris/login.aspx?ReturnUrl=%2fhris%2fdefault.aspx' },
+        { id: 'medical', name: 'Medical', icon: <FiFileText />, color: 'from-blue-50 to-pink-50', route: 'http://192.168.100.51:8082/User_Login.aspx' },
+        { id: 'appraisal', name: 'Appraisal', icon: <FiFileText />, color: 'from-blue-50 to-pink-50', route: '/http://192.168.100.51:8085/login.aspx' },
+        { id: 'kpi', name: 'KPI', icon: <FiSettings />, color: 'from-blue-50 to-pink-50', route: 'http://192.168.100.51:8088/loginhandler.aspx' },
+        { id: 'display', name: 'Display Panel', icon: <FiImage />, color: 'from-blue-50 t0-pink-50', route: '/display' },
+        { id: 'feedback', name: 'Feedback Form', icon: <FiMessageSquare />, color: 'from-blue-50 to-pink-50', route: 'http://192.168.100.51:8071/Account/Login.aspx' },
+        { id: 'nonconformity', name: 'Non-Conformity', icon: <FiSettings />, color: 'from-blue-50 to-pink-50', route: 'http://192.168.100.51:6060/User_Login.aspx' },
+        { id: 'wms', name: 'WMS', icon: <FiSettings />, color: 'from-blue-50 to pink-50', route: 'http://192.168.13.1:8080/User_Login.aspx' },
+        { id: 'ifs', name: 'IFS', icon: <FiSettings />, color: 'from-blue-50 to-pink-50', route: 'http://192.168.100.80:58080/' },
+        { id: 'docware', name: 'Docware', icon: <FiSettings />, color: 'from-blue-50 to-pink-50', route: 'http://192.168.100.15/DocuWare/Platform/WebClient/ClientAccount/LogIn?returnUrl=%2FDocuWare%2FPlatform%2FWebClient' },
+        { id: 'sfa', name: 'SFA', icon: <FiSettings />, color: 'from-blue-50 to-pink-50', route: '/sfa' },
+        { id: 'production display', name: 'Production Display', icon: <FiSettings />, color: 'from-blue-50 to-pink-50', route: '/production-display' }
     ];
+
+
+     const handleAppNavigation = (route) => {
+        if (route.startsWith('http')) {
+            window.open(route, '_blank');
+        } else {
+            navigate(route);
+        }
+    };
 
     const renderContent = () => {
         switch (activeTab) {
@@ -1699,6 +1707,71 @@ const Admin = () => {
                                     </form>
                                 </div>
                             </div>
+                            
+                             {/* Manage existing events */}
+                            <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+                                <div className="flex justify-between items-center mb-6">
+                                    <h3 className="text-xl font-bold text-gray-800">Manage Existing Events</h3>
+                                    <div className="relative">
+                                        <input
+                                            type="text"
+                                            placeholder="Search events..."
+                                            value={searchQuery}
+                                            onChange={handleSearchChange}
+                                            className="border border-gray-300 rounded-lg py-2 px-4 pl-10 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                        />
+                                        <IoSearchOutline className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+                                    </div>
+                                </div>
+                                <div className="overflow-x-auto rounded-xl">
+                                    <table className="min-w-full bg-white rounded-lg overflow-hidden shadow-sm">
+                                        <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
+                                            <tr>
+                                                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">Title</th>
+                                                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">Description</th>
+                                                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">Date</th>
+                                                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="bg-white divide-y divide-gray-200">
+                                            {filteredEvents.length > 0 ? (
+                                                filteredEvents.map((event) => (
+                                                    <tr key={event.Id} className="hover:bg-gray-50 transition-colors">
+                                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{event.Title}</td>
+                                                        <td className="px-6 py-4 text-sm text-gray-600 max-w-xs truncate">{event.Description}</td>
+                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                            {new Date(event.EventDate).toLocaleDateString()}
+                                                        </td>
+                                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                                            <div className="flex space-x-3">
+                                                                <button
+                                                                    onClick={() => handleEditEvent(event)}
+                                                                    className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2 rounded-lg hover:from-blue-600 hover:to-blue-600 transition-all"
+                                                                >
+                                                                    Edit
+                                                                </button>
+                                                                <button
+                                                                    onClick={() => handleDeleteEvent(event.Id)}
+                                                                    className="bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2 rounded-lg hover:from-red-600 hover:to-red-700 transition-all"
+                                                                >
+                                                                    Delete
+                                                                </button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                ))
+                                            ) : (
+                                                <tr>
+                                                    <td colSpan="4" className="text-center py-8 text-gray-500">
+                                                        <FiCalendar className="w-12 h-12 mx-auto mb-2 text-gray-300" />
+                                                        No events found.
+                                                    </td>
+                                                </tr>
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
 
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                 {/* Monthly Plan Image Upload */}
@@ -1770,70 +1843,7 @@ const Admin = () => {
                                 </div>
                             </div>
                         </div>
-
-                        <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-                            <div className="flex justify-between items-center mb-6">
-                                <h3 className="text-xl font-bold text-gray-800">Manage Existing Events</h3>
-                                <div className="relative">
-                                    <input
-                                        type="text"
-                                        placeholder="Search events..."
-                                        value={searchQuery}
-                                        onChange={handleSearchChange}
-                                        className="border border-gray-300 rounded-lg py-2 px-4 pl-10 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                                    />
-                                    <IoSearchOutline className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
-                                </div>
-                            </div>
-                            <div className="overflow-x-auto rounded-xl">
-                                <table className="min-w-full bg-white rounded-lg overflow-hidden shadow-sm">
-                                    <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
-                                        <tr>
-                                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">Title</th>
-                                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">Description</th>
-                                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">Date</th>
-                                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="bg-white divide-y divide-gray-200">
-                                        {filteredEvents.length > 0 ? (
-                                            filteredEvents.map((event) => (
-                                                <tr key={event.Id} className="hover:bg-gray-50 transition-colors">
-                                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{event.Title}</td>
-                                                    <td className="px-6 py-4 text-sm text-gray-600 max-w-xs truncate">{event.Description}</td>
-                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                        {new Date(event.EventDate).toLocaleDateString()}
-                                                    </td>
-                                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                                        <div className="flex space-x-3">
-                                                            <button
-                                                                onClick={() => handleEditEvent(event)}
-                                                                className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2 rounded-lg hover:from-blue-600 hover:to-blue-600 transition-all"
-                                                            >
-                                                                Edit
-                                                            </button>
-                                                            <button
-                                                                onClick={() => handleDeleteEvent(event.Id)}
-                                                                className="bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2 rounded-lg hover:from-red-600 hover:to-red-700 transition-all"
-                                                            >
-                                                                Delete
-                                                            </button>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            ))
-                                        ) : (
-                                            <tr>
-                                                <td colSpan="4" className="text-center py-8 text-gray-500">
-                                                    <FiCalendar className="w-12 h-12 mx-auto mb-2 text-gray-300" />
-                                                    No events found.
-                                                </td>
-                                            </tr>
-                                        )}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+                       
                     </div>
                 );
 
@@ -1848,28 +1858,16 @@ const Admin = () => {
                             {applications.map(app => (
                                 <div
                                     key={app.id}
-                                    className={`bg-white rounded-2xl shadow-lg p-6 border-2 cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-xl ${
-                                        activeApplication === app.id 
-                                        ? `border-gradient ${app.color} border-transparent bg-gradient-to-br ${app.color} text-black` 
-                                        : 'border-gray-200 hover:border-gray-300'
-                                    }`}
-                                    onClick={() => setActiveApplication(app.id)}
+                                    className="bg-white rounded-2xl shadow-lg p-6 border-2 border-gray-200 hover:border-gray-300 cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-xl"
+                                    onClick={() => handleAppNavigation(app.route)}
                                 >
                                     <div className="flex items-center space-x-4">
-                                        <div className={`p-3 rounded-xl ${
-                                            activeApplication === app.id 
-                                            ? 'bg-white bg-opacity-20' 
-                                            : `bg-gradient-to-br ${app.color} text-black`
-                                        }`}>
+                                        <div className={`p-3 rounded-xl bg-gradient-to-br ${app.color} text-black`}>
                                             {app.icon}
                                         </div>
                                         <div>
                                             <h3 className="font-bold text-lg">{app.name}</h3>
-                                            <p className={`text-sm ${
-                                                activeApplication === app.id 
-                                                ? 'text-black text-opacity-90' 
-                                                : 'text-gray-500'
-                                            }`}>
+                                            <p className="text-sm text-gray-500">
                                                 Manage {app.name.toLowerCase()}
                                             </p>
                                         </div>
@@ -2547,14 +2545,14 @@ const Admin = () => {
 
                         {/* Current Email List Display */}
                         {currentEmailFile && (
-                            <div className="bg-white rounded-2xl shadow-lg p-6 border border-green-200">
+                            <div className="bg-white rounded-2xl shadow-lg p-6 border border-cyan-200">
                                 <h4 className="text-lg font-semibold mb-4 text-gray-800">Current Email List</h4>
-                                <div className="flex justify-between items-center p-4 bg-green-50 rounded-lg border border-green-200">
+                                <div className="flex justify-between items-center p-4 bg-cyan-50 rounded-lg border border-cyan-200">
                                     <a
                                         href={`http://localhost:3001${currentEmailFile}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="text-green-700 hover:text-green-800 flex-1 truncate flex items-center"
+                                        className="text-blue-700 hover:text-blue-800 flex-1 truncate flex items-center"
                                         title={currentEmailFile.split('/').pop()}
                                     >
                                         <FiFileText className="w-5 h-5 mr-2" />
@@ -2740,12 +2738,12 @@ const Admin = () => {
             <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
                 <div className="max-w-md w-full space-y-8 bg-white rounded-2xl shadow-2xl p-8 transform transition-all">
                     <div className="text-center">
-                        <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100">
-                            <svg className="h-8 w-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-cyan-100">
+                            <svg className="h-8 w-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
                             </svg>
                         </div>
-                        <h2 className="mt-6 text-3xl font-extrabold text-gray-900 bg-clip-text text-transparent bg-gradient-to-r from-green-600 to-emerald-600">
+                        <h2 className="mt-6 text-3xl font-extrabold text-gray-900 bg-clip-text text-transparent bg-gradient-to-r from-cyan-600 to-blue-600">
                             {successMessage}
                         </h2>
                         <p className="mt-2 text-sm text-gray-500 font-medium">
@@ -2787,7 +2785,7 @@ const Admin = () => {
                                         type="text"
                                         required
                                         className="appearance-none rounded-lg relative block w-full px-10 py-3 border border-gray-300 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent sm:text-sm transition-all duration-300"
-                                        placeholder="example"
+                                        placeholder="username"
                                         value={username}
                                         onChange={(e) => setUsername(e.target.value)}
                                     />

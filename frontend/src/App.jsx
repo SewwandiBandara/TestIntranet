@@ -8,6 +8,7 @@ import Communication from "./pages/Communication";
 import Achievements from "./pages/Achievements";
 //applications imports
 import DisplayPanel from "./pages/DisplayPanel";
+import IFS from "./pages/IFS";
 //policies imports
 import SOP from "./pages/SOP";
 import POS from "./pages/POS";
@@ -31,9 +32,11 @@ function App() {
         <Route element={<Policies/>} path="/policies"/>
         <Route element={<Communication/>} path="/commu"/>
         <Route element={<Achievements/>} path="/ach"/>
-        
-        <Route element={<DisplayPanel/>} path="/display"/> 
-        
+
+        {/* Application routes */}
+        <Route element={<DisplayPanel/>} path="/display"/>
+        <Route element={<IFS/>} path="/ifs"/>
+
         {/* Admin routes */}
         <Route element={<Admin/>} path="/admin"/>
 
