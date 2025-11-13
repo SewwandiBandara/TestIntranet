@@ -10,9 +10,7 @@ const Navbar = () => {
   // New state for email modal
   const [isEmailModalOpen, setIsEmailModalOpen] = useState(false); 
   const [emailPdfUrl, setEmailPdfUrl] = useState(null); 
-  // New state for QMS PDF
-  // const [QmsPdfUrl, setQmsPdfUrl] = useState(null); 
-  // const [isQmsModalOpen, setIsQmsModalOpen] = useState(false); 
+
 
 
   const toggleMenu = () => {
@@ -55,29 +53,12 @@ const Navbar = () => {
     }
   };
 
-  // const fetchQmsPdf = async () => {
-  //   try {
-  //     const response = await fetch('http://localhost:3001/api/qms');
-  //     if (!response.ok) {
-  //       throw new Error('Failed to fetch QMS PDF');
-  //     }
-  //     const data = await response.json();
-  //     if (data.imagePath) {
-  //       setQmsPdfUrl(`http://localhost:3001${data.imagePath}`);
-  //     } else {
-  //       setQmsPdfUrl(null);
-  //     }
-  //   } catch (error) {
-  //     console.error('Error fetching QMS PDF:', error);
-  //     setQmsPdfUrl(null); //
-  //   }
-  // };
+ 
 
 
   useEffect(() => {
     fetchExtensionPdf();
     fetchEmailPdf();
-    // fetchQmsPdf(); 
   }, []);
 
 
@@ -95,13 +76,7 @@ const Navbar = () => {
     setIsEmailModalOpen(true);
   };
 
-  // const openQmsModal = async () => {
-  //   if (!QmsPdfUrl) {
-  //     await fetchQmsPdf(); // Refetch if not loaded
-  //   }
-  //   setIsQmsModalOpen(true);
-  // };
-
+  
   const closePdfModal = () => {
     setIsPdfModalOpen(false);
   };
@@ -110,11 +85,7 @@ const Navbar = () => {
     setIsEmailModalOpen(false);
   };
 
-  // const closeQmsModal = () => {
-  //   setIsQmsModalOpen(false);
-  // };
 
-  
 
   const noPdfMessage = !extensionPdfUrl ? (
     <div className="flex items-center justify-center h-[70vh] text-gray-500">
@@ -128,11 +99,6 @@ const Navbar = () => {
     </div>
   ) : null;
 
-  // const noQmsMessage = !QmsPdfUrl ? (
-  //   <div className="flex items-center justify-center h-[70vh] text-gray-500">
-  //     No QMS document available. Please upload one via Admin Panel.
-  //   </div>
-  // ) : null;
 
 
   return (
@@ -188,14 +154,42 @@ const Navbar = () => {
                   </Link>
                   <div className="absolute hidden group-hover/hr:block left-full top-0 ml-1 bg-green-50 min-w-[150px] rounded-md shadow-lg z-20 lg:left-auto lg:right-full lg:mr-1 transition-opacity duration-200 opacity-0 group-hover/hr:opacity-100">
                     <ul className="py-1 hover:text-black">
-                      <li>
-                        <Link
-                          to="http://192.168.100.51:8082/User_Login.aspx"
-                          className="block px-4 py-2 hover:bg-blue-200 hover:text-black"
-                          onClick={() => setIsOpen(false)}
-                        >
+                      {/* Medical with SRI / SRG / SBL sub-menu */}
+                      <li className="relative group/medical">
+                        <span className="block px-4 py-2 hover:bg-blue-300 hover:text-black cursor-default">
                           Medical
-                        </Link>
+                        </span>
+                        <div className="absolute hidden group-hover/medical:block left-full top-0 ml-1 bg-green-50 min-w-[180px] rounded-md shadow-lg z-30 lg:left-auto lg:right-full lg:mr-1 transition-opacity duration-200 opacity-0 group-hover/medical:opacity-100">
+                          <ul className="py-1">
+                            <li>
+                              <Link
+                                to="http://192.168.100.51:8082/User_Login.aspx"
+                                className="block px-4 py-2 hover:bg-blue-200 hover:text-black"
+                                onClick={() => setIsOpen(false)}
+                              >
+                                SRI
+                              </Link>
+                            </li>
+                            <li>
+                              <Link
+                                to="http://192.168.100.51:9099/User_Login.aspx"
+                                className="block px-4 py-2 hover:bg-blue-200 hover:text-black"
+                                onClick={() => setIsOpen(false)}
+                              >
+                                SRG
+                              </Link>
+                            </li>
+                            <li>
+                              <Link
+                                to="http://192.168.100.51:8092/User_Login.aspx"
+                                className="block px-4 py-2 hover:bg-blue-200 hover:text-black"
+                                onClick={() => setIsOpen(false)}
+                              >
+                                SBL
+                              </Link>
+                            </li>
+                          </ul>
+                        </div>
                       </li>
                       <li>
                         <Link
@@ -215,14 +209,33 @@ const Navbar = () => {
                           KPI
                         </Link>
                       </li>
-                      <li>
-                        <Link
-                          to="http://192.168.178.12/hris/login.aspx?ReturnUrl=%2fhris%2fdefault.aspx"
-                          className="block px-4 py-2 hover:bg-blue-200 hover:text-black"
-                          onClick={() => setIsOpen(false)}
-                        >
-                         Attendance
-                        </Link>
+                      {/* Attendance with Old / New sub‑menu */}
+                      <li className="relative group/attendance">
+                        <span className="block px-4 py-2 hover:bg-blue-300 hover:text-black cursor-default">
+                          Attendance
+                        </span>
+                        <div className="absolute hidden group-hover/attendance:block left-full top-0 ml-1 bg-green-50 min-w-[180px] rounded-md shadow-lg z-30 lg:left-auto lg:right-full lg:mr-1 transition-opacity duration-200 opacity-0 group-hover/attendance:opacity-100">
+                          <ul className="py-1">
+                            <li>
+                              <Link
+                                to="#"
+                                className="block px-4 py-2 hover:bg-blue-200 hover:text-black"
+                                onClick={() => setIsOpen(false)}
+                              >
+                                New Attendance
+                              </Link>
+                            </li>
+                            <li>
+                              <Link
+                                to="http://192.168.178.12/hris/login.aspx?ReturnUrl=%2fhris%2fdefault.aspx"
+                                className="block px-4 py-2 hover:bg-blue-200 hover:text-black"
+                                onClick={() => setIsOpen(false)}
+                              >
+                                Old Attendance
+                              </Link>
+                            </li>
+                          </ul>
+                        </div>
                       </li>
                     </ul>
                   </div>
@@ -263,7 +276,7 @@ const Navbar = () => {
                       </li>
                       <li>
                         <Link
-                          to="#"
+                          to="http://192.168.100.51:7070/OnlineDisplyPanels.aspx"
                           className="block px-4 py-2 hover:bg-blue-200 hover:text-black"
                           onClick={() => setIsOpen(false)}
                         >
