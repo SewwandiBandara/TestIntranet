@@ -52,6 +52,7 @@ const Admin = () => {
     const [uploadedFile, setUploadedFile] = useState(null);
     const [uploadStatus, setUploadStatus] = useState('');
     const fileInputRef = useRef(null);
+    const [currentExtensionFile, setCurrentExtensionFile] = useState(null);
 
     // Status for add email list in communication
     const [uploadedEmailFile, setUploadedEmailFile] = useState(null);
@@ -243,6 +244,21 @@ const Admin = () => {
         }
     };
 
+    // Function to fetch extension list from the backend
+    const fetchExtensionList = async () => {
+        try {
+            const response = await fetch('http://localhost:3001/api/extension');
+            if (!response.ok) {
+                throw new Error('Failed to fetch extension list');
+            }
+            const data = await response.json();
+            setCurrentExtensionFile(data.imagePath);
+        } catch (error) {
+           console.error('Error fetching extension list:', error);
+            setCurrentExtensionFile(null);
+        }
+    };
+  
     // Function to fetch QMS files from the backend
     const fetchQmsFiles = async () => {
         try {
@@ -338,6 +354,7 @@ const Admin = () => {
             fetchIsoFiles();
         } else if (activeTab === 'communication') {
             fetchEmailList();
+            fetchExtensionList();
         }
     }, [activeTab]);
 
@@ -2557,6 +2574,24 @@ const Admin = () => {
                                     >
                                         <FiFileText className="w-5 h-5 mr-2" />
                                         {currentEmailFile.split('/').pop()}
+                                    </a>
+                                </div>
+                            </div>
+                        )}
+                        {/* Current Extension List Display */}
+                        {currentExtensionFile && (
+                            <div className="bg-white rounded-2xl shadow-lg p-6 border border-cyan-200">
+                                <h4 className="text-lg font-semibold mb-4 text-gray-800">Current Extension List</h4>
+                                <div className="flex justify-between items-center p-4 bg-cyan-50 rounded-lg border border-cyan-200">
+                                    <a
+                                        href={`http://localhost:3001${currentExtensionFile}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-blue-700 hover:text-blue-800 flex-1 truncate flex items-center"
+                                        title={currentExtensionFile.split('/').pop()}
+                                    >
+                                        <FiFileText className="w-5 h-5 mr-2" />
+                                        {currentExtensionFile.split('/').pop()}
                                     </a>
                                 </div>
                             </div>

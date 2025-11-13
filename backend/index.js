@@ -1597,7 +1597,7 @@ app.get('/api/iso', async (req, res) => {
     }
 });
 
-
+ 
 app.post('/api/iso', uploadMultiple.array('isoFiles', 100), async (req, res) => {
     console.log('ISO POST route hit');
     try {
@@ -1726,26 +1726,6 @@ app.get('/api/test', (req, res) => {
 });
 
 
-// app.delete('/api/ems', async (req, res) => {
-//     console.log('EMS all DELETE route hit');
-//     try {
-//         const files = await fs.promises.readdir(emsDir);
-//         let deletedCount = 0;
-        
-//         for (const file of files) {
-//             const filePath = path.join(emsDir, file);
-//             await fs.promises.unlink(filePath);
-//             deletedCount++;
-//         }
-        
-//         res.status(200).json({ 
-//             message: `All ${deletedCount} files deleted successfully!` 
-//         });
-//     } catch (err) {
-//         console.error('Error deleting all EMS files:', err);
-//         res.status(500).json({ error: 'Failed to delete files' });
-//     }
-// });
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
