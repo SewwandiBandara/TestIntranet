@@ -58,8 +58,8 @@ const ISO = () => {
         DocumentName: file.filename,
         FileType: file.filename.split('.').pop().toLowerCase() || 'unknown',
         FileSize: file.size || 0, // Assuming backend includes size; otherwise 0
-        Category: 'EMS', // Default category
-        Description: `EMS Document: ${file.filename}`, // Default description
+        Category: 'ISO', // Default category
+        Description: `ISO Document: ${file.filename}`, // Default description
         UploadedAt: file.uploadDate,
         FilePath: file.filePath
       }));
